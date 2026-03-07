@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
+import { ArtworkImageUpload } from '@/components/article-editor/ArtworkImageUpload';
 import {
   Table,
   TableBody,
@@ -41,13 +42,12 @@ interface ArtworkFormData {
   title: string;
   medium: string;
   size: string;
-  year: number;
+  year: string;
   description: string;
-  image: string;
+  image_url: string;
   featured: boolean;
   price: number;
-  artist: string;
-  artistLocation: string;
+  artist_id: string;
   sold: boolean;
 }
 
@@ -55,13 +55,12 @@ const initialFormData: ArtworkFormData = {
   title: '',
   medium: '',
   size: '',
-  year: new Date().getFullYear(),
+  year: new Date().getFullYear().toString(),
   description: '',
-  image: '',
+  image_url: '',
   featured: false,
   price: 0,
-  artist: 'Rasayan',
-  artistLocation: 'India',
+  artist_id: '527c145a-faf4-4a40-8b2c-9a57a81c9cbf', // Default artist ID from your data
   sold: false,
 };
 
@@ -96,11 +95,10 @@ export default function ArtworkManager() {
         size: artwork.size,
         year: artwork.year,
         description: artwork.description,
-        image: artwork.image,
+        image_url: artwork.image_url,
         featured: artwork.featured || false,
         price: artwork.price,
-        artist: artwork.artist,
-        artistLocation: artwork.artistLocation,
+        artist_id: artwork.artist_id || '527c145a-faf4-4a40-8b2c-9a57a81c9cbf',
         sold: artwork.sold || false,
       });
     } else {
@@ -326,25 +324,14 @@ export default function ArtworkManager() {
               </TabsList>
 
               <TabsContent value="basic" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Title *</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="artist">Artist *</Label>
-                    <Input
-                      id="artist"
-                      value={formData.artist}
-                      onChange={(e) => handleInputChange('artist', e.target.value)}
-                      required
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    required
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -370,25 +357,16 @@ export default function ArtworkManager() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="year">Year *</Label>
-                    <Input
-                      id="year"
-                      type="number"
-                      value={formData.year}
-                      onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="artistLocation">Artist Location</Label>
-                    <Input
-                      id="artistLocation"
-                      value={formData.artistLocation}
-                      onChange={(e) => handleInputChange('artistLocation', e.target.value)}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="year">Year *</Label>
+                  <Input
+                    id="year"
+                    type="text"
+                    value={formData.year}
+                    onChange={(e) => handleInputChange('year', e.target.value)}
+                    placeholder="e.g., 2024"
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -403,14 +381,15 @@ export default function ArtworkManager() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="image">Image URL *</Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) => handleInputChange('image', e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    required
+                  <Label>Upload Image *</Label>
+                  <ArtworkImageUpload 
+                    onImageUpload={(url) => handleInputChange('image_url', url)}
                   />
+                  {formData.image_url && (
+                    <div className="text-sm text-green-600 font-medium">
+                      ✓ Image: {formData.image_url}
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 
