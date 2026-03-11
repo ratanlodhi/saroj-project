@@ -56,7 +56,7 @@ export function Header() {
           >
             <img 
               src={logo} 
-              alt="Rasayan Art Studio" 
+              alt="Rasayan Studio" 
               className="h-14 md:h-16 w-auto"
             />
           </Link>

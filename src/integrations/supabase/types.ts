@@ -14,10 +14,34 @@ export type Database = {
   }
   public: {
     Tables: {
+      painting_categories: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       artworks: {
         Row: {
-          artist: string
-          artist_location: string
+          artist_id: string
+          category_id: string | null
           created_at: string
           description: string
           featured: boolean | null
@@ -29,15 +53,15 @@ export type Database = {
           sold: boolean | null
           title: string
           updated_at: string
-          year: number
+          year: string
         }
         Insert: {
-          artist: string
-          artist_location: string
+          artist_id: string
+          category_id?: string | null
           created_at?: string
           description: string
           featured?: boolean | null
-          id: string
+          id?: string
           image_url: string
           medium: string
           price: number
@@ -45,11 +69,11 @@ export type Database = {
           sold?: boolean | null
           title: string
           updated_at?: string
-          year: number
+          year: string
         }
         Update: {
-          artist?: string
-          artist_location?: string
+          artist_id?: string
+          category_id?: string | null
           created_at?: string
           description?: string
           featured?: boolean | null
@@ -61,9 +85,24 @@ export type Database = {
           sold?: boolean | null
           title?: string
           updated_at?: string
-          year?: number
+          year?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artworks_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artworks_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "painting_categories"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       articles: {
         Row: {

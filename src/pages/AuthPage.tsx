@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signIn, signUp, signInWithGoogle, signInWithFacebook } = useAuth();
+  const { user, isAdmin, loading, signIn, signUp, signInWithGoogle, signInWithFacebook } = useAuth();
   const { setIsCartOpen } = useCart();
   const { toast } = useToast();
 
@@ -21,14 +21,24 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    // Wait for auth to finish loading before redirecting
+    if (user && !loading) {
       const state = location.state as { returnTo?: string; openCart?: boolean } | null;
+      
       if (state?.openCart) {
         setIsCartOpen(true);
       }
-      navigate(state?.returnTo || '/');
+      
+      // Redirect admins to admin panel, regular users to home or returnTo
+      if (isAdmin) {
+        navigate(state?.returnTo || '/admin');
+      } else {
+        // Don't allow non-admin users to access admin page
+        const returnTo = state?.returnTo;
+        navigate((returnTo && returnTo !== '/admin') ? returnTo : '/');
+      }
     }
-  }, [user, navigate, location, setIsCartOpen]);
+  }, [user, isAdmin, loading, navigate, location, setIsCartOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -91,15 +91,25 @@ export function useRazorpay() {
           currency: options.currency || 'INR',
           receipt: `order_${Date.now()}`,
         },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (error || !data) {
-        throw new Error(error?.message || 'Failed to create order');
+        let responseBody = '';
+        if (error?.context) {
+          try {
+            responseBody = await error.context.text();
+          } catch {
+            responseBody = '';
+          }
+        }
+        console.error('Edge Function error details:', {
+          error,
+          data,
+          message: error?.message,
+          context: error?.context,
+          responseBody,
+        });
+        throw new Error(responseBody || error?.message || data?.error || 'Failed to create order');
       }
 
       const { orderId, keyId } = data;
@@ -120,11 +130,6 @@ export function useRazorpay() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-              },
-              headers: {
-                Authorization: `Bearer ${session.access_token}`,
-                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
-                'Content-Type': 'application/json',
               },
             });
 

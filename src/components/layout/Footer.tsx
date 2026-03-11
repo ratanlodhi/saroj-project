@@ -47,7 +47,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link to="/" className="font-serif text-2xl font-medium text-primary">
-              Rasayan Art Studio
+              Rasayan Studio
             </Link>
             <p className="mt-4 text-muted-foreground font-sans text-sm leading-relaxed max-w-md">
               Exploring the depths of human emotion through art. Each painting is a journey, 

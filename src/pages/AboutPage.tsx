@@ -20,7 +20,7 @@ export default function AboutPage() {
           <div className="max-w-5xl mx-auto aspect-[21/9] rounded-sm overflow-hidden shadow-elegant">
             <img
               src={studioImage}
-              alt="Rasayan Art Studio workspace with painting easel and art supplies"
+              alt="Rasayan Studio workspace with painting easel and art supplies"
               className="w-full h-full object-cover"
             />
           </div>
@@ -36,7 +36,7 @@ export default function AboutPage() {
                 A Sanctuary for Artistic Expression
               </h2>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                Rasayan Art Studio was founded with a singular vision: to create art that speaks 
+                Rasayan Studio was founded with a singular vision: to create art that speaks 
                 to the soul. Nestled in a sunlit space where inspiration flows freely, the studio 
                 has become a place where classical techniques meet contemporary expression.
               </p>
@@ -70,7 +70,7 @@ export default function AboutPage() {
                 The Journey
               </h2>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                The journey of Rasayan Art Studio began with years of classical training, studying 
+                The journey of Rasayan Studio began with years of classical training, studying 
                 the old masters and understanding the foundations of painting technique. But true 
                 artistic growth came from breaking free of convention and finding a unique voice.
               </p>

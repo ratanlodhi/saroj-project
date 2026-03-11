@@ -1,4 +1,4 @@
-project_id = "mnefxebwbvxrvowkwkjy"
+project_id = "dcrfsaggvdfjjvinryxt"
 
 [api]
 enabled = true
@@ -27,7 +27,7 @@ enabled = true
 file_size_limit = "50MiB"
 
 [functions.create-razorpay-order]
-verify_jwt = true
+verify_jwt = false
 
 [functions.verify-razorpay-payment]
 verify_jwt = true

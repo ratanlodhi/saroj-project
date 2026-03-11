@@ -35,7 +35,7 @@ const videos = [
   {
     id: '3',
     title: 'Studio Tour',
-    description: 'An intimate look inside the Rasayan Art Studio workspace.',
+    description: 'An intimate look inside the  workspace.',
     thumbnail: '/gallery/realism-1.jpg',
     duration: '15:20',
   },

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Artwork } from '@/data/artworks';
+import { Artwork } from '@/hooks/useArtworks';
 
 export interface CartItem {
   artwork: Artwork;

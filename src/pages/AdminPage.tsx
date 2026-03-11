@@ -48,10 +48,21 @@ export default function AdminPage() {
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      navigate('/auth');
+    if (!loading) {
+      if (!user) {
+        // Not logged in - redirect to auth with returnTo
+        navigate('/auth', { state: { returnTo: '/admin' } });
+      } else if (!isAdmin) {
+        // Logged in but not admin - redirect to home
+        toast({
+          title: 'Access Denied',
+          description: 'You do not have permission to access the admin panel',
+          variant: 'destructive',
+        });
+        navigate('/');
+      }
     }
-  }, [user, isAdmin, loading, navigate]);
+  }, [user, isAdmin, loading, navigate, toast]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -65,8 +76,7 @@ export default function AdminPage() {
     // Get all profiles
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
 
     if (profilesError) {
       toast({

@@ -4,7 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
+import { useAuth } from '@/hooks/useAuth';
+import { useCategories } from '@/hooks/useCategories';
 import { ArtworkImageUpload } from '@/components/article-editor/ArtworkImageUpload';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -47,8 +56,9 @@ interface ArtworkFormData {
   image_url: string;
   featured: boolean;
   price: number;
-  artist_id: string;
+  artist_id?: string;
   sold: boolean;
+  category_id: string;
 }
 
 const initialFormData: ArtworkFormData = {
@@ -60,12 +70,15 @@ const initialFormData: ArtworkFormData = {
   image_url: '',
   featured: false,
   price: 0,
-  artist_id: '527c145a-faf4-4a40-8b2c-9a57a81c9cbf', // Default artist ID from your data
+  artist_id: undefined,
   sold: false,
+  category_id: '',
 };
 
 export default function ArtworkManager() {
   const { artworks, loading, createArtwork, updateArtwork, deleteArtwork } = useArtworks();
+  const { user } = useAuth();
+  const { categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<Artwork | null>(null);
@@ -75,7 +88,7 @@ export default function ArtworkManager() {
   const filteredArtworks = artworks.filter(artwork =>
     artwork.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     artwork.medium.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    artwork.artist.toLowerCase().includes(searchQuery.toLowerCase())
+    (artwork.artist || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const formatPrice = (price: number) => {
@@ -98,12 +111,17 @@ export default function ArtworkManager() {
         image_url: artwork.image_url,
         featured: artwork.featured || false,
         price: artwork.price,
-        artist_id: artwork.artist_id || '527c145a-faf4-4a40-8b2c-9a57a81c9cbf',
+        artist_id: artwork.artist_id || user?.id,
         sold: artwork.sold || false,
+        category_id: artwork.category_id || '',
       });
     } else {
       setEditingArtwork(null);
-      setFormData(initialFormData);
+      setFormData({
+        ...initialFormData,
+        artist_id: user?.id,
+        category_id: '',
+      });
     }
     setIsDialogOpen(true);
   };
@@ -119,12 +137,18 @@ export default function ArtworkManager() {
     setIsSubmitting(true);
 
     try {
+      let result = null;
+
       if (editingArtwork) {
-        await updateArtwork(editingArtwork.id, formData);
+        result = await updateArtwork(editingArtwork.id, formData);
       } else {
-        await createArtwork(formData);
+        result = await createArtwork(formData);
       }
-      handleCloseDialog();
+
+      // Keep dialog open if save failed so user can correct invalid input.
+      if (result) {
+        handleCloseDialog();
+      }
     } catch (error) {
       console.error('Error saving artwork:', error);
     } finally {
@@ -246,7 +270,9 @@ export default function ArtworkManager() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{artwork.medium}</Badge>
+                    <Badge variant="secondary">
+                      {categories.find(c => c.id === artwork.category_id)?.name || artwork.medium || '—'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="font-medium">{formatPrice(artwork.price)}</TableCell>
                   <TableCell>
@@ -336,13 +362,35 @@ export default function ArtworkManager() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="medium">Medium/Category *</Label>
+                    <Label htmlFor="category">Category</Label>
+                    <Select
+                      value={formData.category_id || ''}
+                      onValueChange={(val) => handleInputChange('category_id', val)}
+                    >
+                      <SelectTrigger id="category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.length === 0 && (
+                          <SelectItem value="_none" disabled>
+                            No categories available
+                          </SelectItem>
+                        )}
+                        {categories.map(cat => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="medium">Medium</Label>
                     <Input
                       id="medium"
                       value={formData.medium}
                       onChange={(e) => handleInputChange('medium', e.target.value)}
                       placeholder="e.g., Acrylic on Canvas"
-                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -402,7 +450,11 @@ export default function ArtworkManager() {
                       type="number"
                       step="0.01"
                       value={formData.price}
-                      onChange={(e) => handleInputChange('price', parseFloat(e.target.value))}
+                      onChange={(e) => {
+                        const rawPrice = e.target.value;
+                        const parsedPrice = Number(rawPrice);
+                        handleInputChange('price', Number.isFinite(parsedPrice) ? parsedPrice : 0);
+                      }}
                       required
                     />
                   </div>

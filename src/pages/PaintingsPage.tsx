@@ -1,38 +1,26 @@
 import { useState } from 'react';
-import { mediumCategories } from '@/data/artworks';
 import { cn } from '@/lib/utils';
 import { X, Filter, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
+import { useCategories } from '@/hooks/useCategories';
 import type { Artwork } from '@/hooks/useArtworks';
-
-// Helper to match artwork medium to medium category
-const getMediumCategory = (medium: string): string => {
-  const lowerMedium = medium.toLowerCase();
-  if (lowerMedium.includes('acrylic')) return 'acrylic';
-  if (lowerMedium.includes('oil')) return 'oil';
-  if (lowerMedium.includes('ink')) return 'ink';
-  if (lowerMedium.includes('gouache')) return 'gouache';
-  if (lowerMedium.includes('mixed media')) return 'mixed-media';
-  if (lowerMedium.includes('charcoal')) return 'charcoal';
-  if (lowerMedium.includes('soft pastel') || lowerMedium.includes('pastel')) return 'soft-pastel';
-  return 'other';
-};
 
 export default function PaintingsPage() {
 
-  const [activeMedium, setActiveMedium] = useState<string>('all');
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'price-low' | 'price-high'>('price-low');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
   const { artworks, loading } = useArtworks();
+  const { categories } = useCategories();
 
   const filteredArtworks = artworks.filter((a) => {
-    const mediumMatch = activeMedium === 'all' || getMediumCategory(a.medium) === activeMedium;
-    return mediumMatch;
+    if (activeCategoryId === 'all') return true;
+    return a.category_id === activeCategoryId;
   });
 
   const sortedArtworks = [...filteredArtworks].sort((a, b) => {
@@ -67,13 +55,14 @@ export default function PaintingsPage() {
 
             <div className="flex items-center gap-4 flex-wrap justify-center">
               <select
-                value={activeMedium}
-                onChange={(e) => setActiveMedium(e.target.value)}
+                value={activeCategoryId}
+                onChange={(e) => setActiveCategoryId(e.target.value)}
                 className="bg-card text-foreground px-4 py-2 rounded-sm text-sm font-sans border border-border focus:ring-2 focus:ring-accent focus:outline-none"
               >
-                {mediumCategories.map((medium) => (
-                  <option key={medium.id} value={medium.id}>
-                    {medium.label}
+                <option value="all">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
