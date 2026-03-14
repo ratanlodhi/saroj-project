@@ -1,7 +1,35 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, MapPin, Instagram, Facebook, Youtube, Linkedin, Twitter, BookOpen, MessageCircle } from 'lucide-react';
+import { Mail, MapPin, Instagram, Facebook, Youtube, Linkedin, Twitter, BookOpen } from 'lucide-react';
+
+const MediumIcon = ({ size = 20, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M2.846 6.99A.6.6 0 0 0 2.7 6.463L1.614 5.155V5h3.369l2.603 5.708L9.873 5H13.1v.155l-.927.889a.28.28 0 0 0-.106.269V17.69a.28.28 0 0 0 .106.269l.905.889V19h-4.55v-.155l.938-.911c.092-.092.092-.119.092-.269V8.47l-2.608 6.52h-.352L3.56 8.47v7.729a.62.62 0 0 0 .169.535l1.219 1.478V18.367h-3.46v-.155l1.219-1.478a.594.594 0 0 0 .161-.535V6.99z" />
+    <path d="M14.326 8.637l3.812-1.937v10.533l-3.812 1.937V8.637z" />
+    <path d="M22.386 6.021L19.343 4.5a.765.765 0 0 0-.735.028l-3.561 1.809 3.967 2.015 3.372-1.698z" />
+  </svg>
+);
+
+const WhatsAppIcon = ({ size = 20, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M20.52 3.48A11.8 11.8 0 0 0 12.13 0C5.62 0 .3 5.31.3 11.82c0 2.08.54 4.12 1.56 5.93L0 24l6.44-1.84a11.8 11.8 0 0 0 5.69 1.45h.01c6.51 0 11.82-5.31 11.82-11.82 0-3.16-1.23-6.12-3.44-8.31Zm-8.39 18.14h-.01a9.83 9.83 0 0 1-5.01-1.37l-.36-.21-3.82 1.09 1.1-3.72-.24-.38a9.83 9.83 0 0 1-1.5-5.21c0-5.43 4.43-9.85 9.87-9.85a9.78 9.78 0 0 1 6.98 2.89 9.8 9.8 0 0 1 2.89 6.99c0 5.43-4.43 9.86-9.9 9.86Zm5.41-7.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.46-.88-.79-1.48-1.77-1.65-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.23-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49 0 1.47 1.07 2.89 1.22 3.09.15.2 2.11 3.23 5.12 4.53.72.31 1.28.5 1.72.64.72.23 1.37.2 1.88.12.57-.08 1.76-.72 2.01-1.42.25-.69.25-1.28.17-1.42-.07-.13-.27-.2-.57-.35Z" />
+  </svg>
+);
 
 const socialLinks = [
   {
@@ -32,7 +60,7 @@ const socialLinks = [
   {
     href: 'https://sarojprakashbandi.medium.com',
     label: 'Medium',
-    icon: BookOpen,
+    icon: MediumIcon,
   },
   {
     href: 'https://www.goodreads.com/sarojprakashbandi',
@@ -177,7 +205,7 @@ export default function ContactPage() {
                   className="flex gap-4 p-4 bg-[#25D366]/10 border border-[#25D366]/20 rounded-sm hover:bg-[#25D366]/20 transition-all duration-300 group"
                 >
                   <div className="w-12 h-12 rounded-sm bg-[#25D366] flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-5 h-5 text-white" />
+                    <WhatsAppIcon className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-sans font-medium text-primary group-hover:text-[#25D366] transition-colors">

@@ -1,6 +1,21 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Youtube, Mail, Linkedin, Twitter, BookOpen } from 'lucide-react';
 
+const MediumIcon = ({ size = 18, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M2.846 6.99A.6.6 0 0 0 2.7 6.463L1.614 5.155V5h3.369l2.603 5.708L9.873 5H13.1v.155l-.927.889a.28.28 0 0 0-.106.269V17.69a.28.28 0 0 0 .106.269l.905.889V19h-4.55v-.155l.938-.911c.092-.092.092-.119.092-.269V8.47l-2.608 6.52h-.352L3.56 8.47v7.729a.62.62 0 0 0 .169.535l1.219 1.478V18.367h-3.46v-.155l1.219-1.478a.594.594 0 0 0 .161-.535V6.99z" />
+    <path d="M14.326 8.637l3.812-1.937v10.533l-3.812 1.937V8.637z" />
+    <path d="M22.386 6.021L19.343 4.5a.765.765 0 0 0-.735.028l-3.561 1.809 3.967 2.015 3.372-1.698z" />
+  </svg>
+);
+
 const socialLinks = [
   {
     href: 'https://www.instagram.com/_saroj_b?igsh=Y3FzdTB4bnV2Njls',
@@ -30,7 +45,7 @@ const socialLinks = [
   {
     href: 'https://sarojprakashbandi.medium.com',
     label: 'Medium',
-    icon: BookOpen,
+    icon: MediumIcon,
   },
   {
     href: 'https://www.goodreads.com/sarojprakashbandi',
