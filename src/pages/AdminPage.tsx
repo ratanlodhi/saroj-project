@@ -427,10 +427,10 @@ export default function AdminPage() {
 
           <TabsContent value="paintings">
             <ArtworkManager />
+          </TabsContent>
 
-                    <TabsContent value="articles">
-                      <ArticleManager />
-                    </TabsContent>
+          <TabsContent value="articles" forceMount>
+            <ArticleManager />
           </TabsContent>
         </Tabs>
       </div>

@@ -78,14 +78,15 @@ export default function ArticleEditorPage() {
 
     const { error: uploadError } = await supabase.storage
       .from('article-images')
-      .upload(filePath, file);
+      .upload(filePath, file, { upsert: false, cacheControl: '3600' });
 
     if (uploadError) {
       toast({
         title: 'Upload Failed',
-        description: uploadError.message,
+        description: uploadError.message || 'Storage bucket may not exist or policy is missing. Check Supabase Storage.',
         variant: 'destructive',
       });
+      console.error('[ArticleEditor] upload error:', uploadError);
       return null;
     }
 
@@ -117,7 +118,6 @@ export default function ArticleEditorPage() {
     setIsPublishing(true);
 
     const slug = slugify(title) + '-' + Date.now().toString(36);
-    const authorName = user?.email?.split('@')[0] || 'Admin';
 
     const articleData = {
       title: title.trim(),
@@ -125,7 +125,6 @@ export default function ArticleEditorPage() {
       content,
       cover_image_url: coverImage,
       author_id: user?.id,
-      author_name: authorName,
       slug,
       source: 'Internal',
     };

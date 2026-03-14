@@ -48,33 +48,14 @@ const videos = [
   },
 ];
 
-// Static external articles (existing)
-const externalArticles = [
-  {
-    id: 'ext-1',
-    title: 'Saroj Prakash Bandi Explores Memory and Silence by Capturing the Essence of Forgotten Spaces',
-    source: 'abirpothi.com',
-    description: 'Saroj Prakash Bandi, a talented artist from India, delves into the depths of memory and silence through his evocative artworks, capturing the essence of forgotten spaces.',
-    url: 'https://www.abirpothi.com/saroj-prakash-bandi-explores-memory-and-silence-by-capturing-the-essence-of-forgotten-spaces/',
-    thumbnail: '/media/abirpothi-article.jpg',
-  },
-  {
-    id: 'ext-2',
-    title: 'Artist Feature - Latest Works',
-    source: 'instagram.com',
-    description: 'Explore the latest artwork showcase featuring new pieces and creative process insights.',
-    url: 'https://www.instagram.com/p/DFb9URgyFPr/?igsh=eXQwOHZwemYwdjRl',
-    thumbnail: '/gallery/soft-pastel-1.jpg',
-  },
-];
-
 interface Article {
   id: string;
   title: string;
   subtitle: string | null;
   content: string;
   cover_image_url: string | null;
-  author_name: string;
+  author_id: string;
+  author_name?: string;
   published_at: string;
   slug: string;
   source: string | null;
@@ -99,7 +80,26 @@ export default function MediaPage() {
       .order('published_at', { ascending: false });
 
     if (!error && data) {
-      setArticles(data);
+      const authorIds = [...new Set(data.map(article => article.author_id))];
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, email')
+        .in('id', authorIds);
+
+      const profileById = new Map(
+        (profiles || []).map(profile => [
+          profile.id,
+          profile.display_name || 'Saroj Prakash Bandi',
+        ]),
+      );
+
+      const normalized = data.map(article => ({
+        ...article,
+        author_name: profileById.get(article.author_id) || 'Saroj Prakash Bandi',
+      }));
+
+      setArticles(normalized);
     }
     setLoading(false);
   };
@@ -263,46 +263,83 @@ export default function MediaPage() {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {/* Internal articles from database */}
+              {/* Articles from database */}
               {articles.map((article, index) => (
                 <div
                   key={article.id}
                   className="group block animate-fade-up relative"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <Link to={`/article/${article.slug}`}>
-                    <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                      <div className="px-4 py-2 border-b border-border/50">
-                        <span className="text-xs text-muted-foreground font-sans uppercase tracking-wide">Article</span>
-                      </div>
-                      
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        {article.cover_image_url ? (
-                          <img
-                            src={article.cover_image_url}
-                            alt={article.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-secondary flex items-center justify-center">
-                            <span className="text-muted-foreground text-sm">No cover image</span>
-                          </div>
-                        )}
-                      </div>
+                  {article.external_url ? (
+                    <a href={article.external_url} target="_blank" rel="noopener noreferrer">
+                      <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
+                        <div className="px-4 py-2 border-b border-border/50 flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground font-sans uppercase tracking-wide">Link</span>
+                          <ExternalLink size={14} className="text-muted-foreground" />
+                        </div>
 
-                      <div className="p-4 bg-card">
-                        <h3 className="font-serif text-base md:text-lg text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                          {article.title}
-                        </h3>
-                        <p className="text-muted-foreground text-sm font-sans mt-2 line-clamp-2">
-                          {article.subtitle || stripHtml(article.content).substring(0, 120) + '...'}
-                        </p>
-                        <p className="text-muted-foreground/70 text-xs font-sans mt-2">
-                          By {article.author_name} • {new Date(article.published_at).toLocaleDateString()}
-                        </p>
+                        <div className="relative aspect-[16/9] overflow-hidden">
+                          {article.cover_image_url ? (
+                            <img
+                              src={article.cover_image_url}
+                              alt={article.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-secondary flex items-center justify-center">
+                              <span className="text-muted-foreground text-sm">No cover image</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4 bg-card">
+                          <h3 className="font-serif text-base md:text-lg text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
+                            {article.title}
+                          </h3>
+                          <p className="text-muted-foreground text-sm font-sans mt-2 line-clamp-2">
+                            {article.subtitle || stripHtml(article.content).substring(0, 120) + '...'}
+                          </p>
+                          <p className="text-muted-foreground/70 text-xs font-sans mt-2">
+                            By {article.author_name} • {new Date(article.published_at).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
+                    </a>
+                  ) : (
+                    <Link to={`/article/${article.slug}`}>
+                      <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
+                        <div className="px-4 py-2 border-b border-border/50">
+                          <span className="text-xs text-muted-foreground font-sans uppercase tracking-wide">Article</span>
+                        </div>
+
+                        <div className="relative aspect-[16/9] overflow-hidden">
+                          {article.cover_image_url ? (
+                            <img
+                              src={article.cover_image_url}
+                              alt={article.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-secondary flex items-center justify-center">
+                              <span className="text-muted-foreground text-sm">No cover image</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4 bg-card">
+                          <h3 className="font-serif text-base md:text-lg text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
+                            {article.title}
+                          </h3>
+                          <p className="text-muted-foreground text-sm font-sans mt-2 line-clamp-2">
+                            {article.subtitle || stripHtml(article.content).substring(0, 120) + '...'}
+                          </p>
+                          <p className="text-muted-foreground/70 text-xs font-sans mt-2">
+                            By {article.author_name} • {new Date(article.published_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  )}
 
                   {/* Admin controls */}
                   {isAdmin && (
@@ -345,50 +382,6 @@ export default function MediaPage() {
                     </div>
                   )}
                 </div>
-              ))}
-
-              {/* External articles (static) */}
-              {externalArticles.map((article, index) => (
-                <a
-                  key={article.id}
-                  href={article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block animate-fade-up"
-                  style={{ animationDelay: `${(articles.length + index) * 100}ms` }}
-                >
-                  <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                    <div className="px-4 py-2 border-b border-border/50">
-                      <span className="text-xs text-muted-foreground font-sans uppercase tracking-wide">Link</span>
-                    </div>
-                    
-                    <div className="relative aspect-[16/9] overflow-hidden">
-                      <img
-                        src={article.thumbnail}
-                        alt={article.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors duration-300 flex items-center justify-center">
-                        <ExternalLink 
-                          size={32} 
-                          className="text-cream opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-card">
-                      <h3 className="font-serif text-base md:text-lg text-primary leading-snug group-hover:text-accent transition-colors line-clamp-2">
-                        {article.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm font-sans mt-2 line-clamp-2">
-                        {article.description}
-                      </p>
-                      <p className="text-muted-foreground/70 text-xs font-sans mt-2">
-                        {article.source}
-                      </p>
-                    </div>
-                  </div>
-                </a>
               ))}
             </div>
           )}

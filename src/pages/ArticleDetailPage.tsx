@@ -24,7 +24,8 @@ interface Article {
   subtitle: string | null;
   content: string;
   cover_image_url: string | null;
-  author_name: string;
+  author_id: string;
+  author_name?: string;
   published_at: string;
   slug: string;
 }
@@ -55,7 +56,16 @@ export default function ArticleDetailPage() {
       return;
     }
 
-    setArticle(data);
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name, email')
+      .eq('id', data.author_id)
+      .single();
+
+    setArticle({
+      ...data,
+      author_name: profile?.display_name || 'Saroj Prakash Bandi',
+    });
     setLoading(false);
   };
 
@@ -182,7 +192,7 @@ export default function ArticleDetailPage() {
           <div className="flex items-center gap-6 mt-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User size={16} />
-              <span>{article.author_name}</span>
+              <span>{article.author_name || 'Saroj Prakash Bandi'}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar size={16} />

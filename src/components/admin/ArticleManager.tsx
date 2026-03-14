@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Search, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, FileText, UserPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -25,12 +26,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Article {
   id: string;
   title: string;
   subtitle: string | null;
-  author_name: string;
+  author_id: string;
+  author_name?: string;
   published_at: string;
   cover_image_url: string | null;
   slug: string;
@@ -44,6 +53,9 @@ export default function ArticleManager() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editAuthorArticle, setEditAuthorArticle] = useState<Article | null>(null);
+  const [editAuthorName, setEditAuthorName] = useState('');
+  const [savingAuthor, setSavingAuthor] = useState(false);
 
   useEffect(() => {
     loadArticles();
@@ -53,7 +65,7 @@ export default function ArticleManager() {
     setLoading(true);
     const { data, error } = await supabase
       .from('articles')
-      .select('id, title, subtitle, author_name, published_at, cover_image_url, slug, source')
+      .select('id, title, subtitle, author_id, published_at, cover_image_url, slug, source')
       .order('published_at', { ascending: false });
 
     if (error) {
@@ -63,7 +75,32 @@ export default function ArticleManager() {
         variant: 'destructive',
       });
     } else {
-      setArticles(data || []);
+      const authorIds = [...new Set((data || []).map(article => article.author_id))];
+
+      if (authorIds.length === 0) {
+        setArticles(data || []);
+        setLoading(false);
+        return;
+      }
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, email')
+        .in('id', authorIds);
+
+      const profileById = new Map(
+        (profiles || []).map(profile => [
+          profile.id,
+          profile.display_name || 'Saroj Prakash Bandi',
+        ]),
+      );
+
+      const normalized = (data || []).map(article => ({
+        ...article,
+        author_name: profileById.get(article.author_id) || 'Saroj Prakash Bandi',
+      }));
+
+      setArticles(normalized);
     }
     setLoading(false);
   };
@@ -94,9 +131,41 @@ export default function ArticleManager() {
     });
   };
 
+  const openEditAuthor = (article: Article) => {
+    setEditAuthorArticle(article);
+    setEditAuthorName(article.author_name || '');
+  };
+
+  const handleSaveAuthor = async () => {
+    if (!editAuthorArticle) return;
+    setSavingAuthor(true);
+
+    const { error } = await supabase
+      .from('articles')
+      .update({ author_name: editAuthorName.trim() || 'Admin' } as any)
+      .eq('id', editAuthorArticle.id);
+
+    setSavingAuthor(false);
+
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      return;
+    }
+
+    setArticles(prev =>
+      prev.map(a =>
+        a.id === editAuthorArticle.id
+          ? { ...a, author_name: editAuthorName.trim() || 'Admin' }
+          : a,
+      ),
+    );
+    toast({ title: 'Saved', description: 'Author name updated.' });
+    setEditAuthorArticle(null);
+  };
+
   const filteredArticles = articles.filter(a =>
     a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.author_name.toLowerCase().includes(searchQuery.toLowerCase())
+    (a.author_name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -185,7 +254,17 @@ export default function ArticleManager() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{article.author_name}</TableCell>
+                  <TableCell>
+                    <button
+                      type="button"
+                      onClick={() => openEditAuthor(article)}
+                      className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors group"
+                      title="Click to edit author name"
+                    >
+                      <span>{article.author_name || 'Saroj Prakash Bandi'}</span>
+                      <UserPen size={13} className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </button>
+                  </TableCell>
                   <TableCell>
                     {article.source ? (
                       <Badge variant="secondary">{article.source}</Badge>
@@ -245,6 +324,31 @@ export default function ArticleManager() {
           </Table>
         )}
       </div>
+      {/* Edit Author Name Dialog */}
+      <Dialog open={!!editAuthorArticle} onOpenChange={open => !open && setEditAuthorArticle(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Edit Author Name</DialogTitle>
+          </DialogHeader>
+          <div className="py-2 space-y-2">
+            <Label htmlFor="author-name-input">Author Name</Label>
+            <Input
+              id="author-name-input"
+              value={editAuthorName}
+              onChange={e => setEditAuthorName(e.target.value)}
+              placeholder="e.g. Saroj Prakash"
+              onKeyDown={e => e.key === 'Enter' && handleSaveAuthor()}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditAuthorArticle(null)}>Cancel</Button>
+            <Button onClick={handleSaveAuthor} disabled={savingAuthor}>
+              {savingAuthor ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
