@@ -106,27 +106,29 @@ export function CartSidebar() {
                     alt={item.artwork.title}
                     className="w-20 h-20 object-cover rounded-sm"
                   />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-serif text-sm font-medium text-primary truncate">
-                      {item.artwork.title}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {item.artwork.artist}
-                    </p>
-                    <p className="text-sm font-semibold text-primary mt-1">
-                      {formatPrice(item.artwork.price)}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-muted-foreground">
+                  <div className="flex-1 min-w-0 flex items-stretch justify-between gap-3">
+                    <div className="min-w-0">
+                      <h4 className="font-serif text-sm font-medium text-primary truncate">
+                        {item.artwork.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {item.artwork.artist}
+                      </p>
+                      <span className="text-xs text-muted-foreground mt-2 block">
                         Qty: {item.quantity}
                       </span>
+                    </div>
+
+                    <div className="flex flex-col items-end justify-between self-stretch shrink-0">
+                      <p className="text-sm font-semibold text-primary text-right">
+                        {formatPrice(item.artwork.price)}
+                      </p>
                       <button
                         onClick={() => removeFromCart(item.artwork.id)}
                         className="text-muted-foreground hover:text-destructive transition-colors"
                         aria-label="Remove item"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </div>
