@@ -3,7 +3,6 @@ import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { formatShippingCost } from '@/data/shippingConfig';
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -68,8 +67,8 @@ export default function CartPage() {
                   <span>{formatPrice(getCartTotal())}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-muted-foreground text-xs">{formatShippingCost(getShippingCost())}</span>
+                  <span className="text-muted-foreground">Shipping & Insurance</span>
+                  <span>{formatPrice(getShippingCost())}</span>
                 </div>
               </div>
 

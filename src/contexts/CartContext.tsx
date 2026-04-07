@@ -1,7 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { Artwork } from '@/hooks/useArtworks';
 import { supabase } from '@/integrations/supabase/client';
-import { calculateShippingCost } from '@/data/shippingConfig';
+import {
+  calculateShippingCost,
+  DEFAULT_SHIPPING_INSURANCE_PERCENTAGE,
+  SHIPPING_INSURANCE_STORAGE_KEY,
+  normalizeShippingInsurancePercentage,
+} from '@/data/shippingConfig';
 
 export interface CartItem {
   artwork: Artwork;
@@ -27,6 +32,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [shippingPercentage, setShippingPercentage] = useState<number>(() => {
+    const saved = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
+    return saved === null
+      ? DEFAULT_SHIPPING_INSURANCE_PERCENTAGE
+      : normalizeShippingInsurancePercentage(saved);
+  });
 
   const db = supabase as any;
 
@@ -91,6 +102,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setItems(mappedItems);
   }, [db, getOrCreateActiveCartId]);
+
+  const loadShippingSettings = useCallback(async () => {
+    const { data, error } = await db
+      .from('app_settings')
+      .select('shipping_insurance_percentage')
+      .eq('id', 1)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Failed to load app shipping settings', error);
+      return;
+    }
+
+    const normalized = normalizeShippingInsurancePercentage(data?.shipping_insurance_percentage);
+    setShippingPercentage(normalized);
+    localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalized));
+  }, [db]);
+
+  useEffect(() => {
+    loadShippingSettings();
+  }, [loadShippingSettings]);
+
+  useEffect(() => {
+    const syncFromStorage = () => {
+      const saved = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
+      if (saved === null) {
+        setShippingPercentage(DEFAULT_SHIPPING_INSURANCE_PERCENTAGE);
+        return;
+      }
+
+      setShippingPercentage(normalizeShippingInsurancePercentage(saved));
+    };
+
+    window.addEventListener('storage', syncFromStorage);
+    window.addEventListener('shipping-settings-updated', syncFromStorage as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', syncFromStorage);
+      window.removeEventListener('shipping-settings-updated', syncFromStorage as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -221,7 +273,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const getShippingCost = () => {
     const subtotal = getCartTotal();
-    return calculateShippingCost(subtotal);
+    return calculateShippingCost(subtotal, shippingPercentage);
   };
 
   const getTotalWithShipping = () => {

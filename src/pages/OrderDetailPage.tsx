@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useOrders, type Order, type TrackingEvent } from '@/hooks/useOrders';
-import { formatShippingCost } from '@/data/shippingConfig';
 
 const orderedStages = ['placed', 'confirmed', 'packed', 'shipped', 'out_for_delivery', 'delivered'];
 
@@ -121,8 +120,8 @@ export default function OrderDetailPage() {
                 <span>{formatPrice(order.order_items?.reduce((sum, item) => sum + item.total_price, 0) || order.total_price)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span>{formatShippingCost(order.total_price - (order.order_items?.reduce((sum, item) => sum + item.total_price, 0) || 0))}</span>
+                <span className="text-muted-foreground">Shipping & Insurance</span>
+                <span>{formatPrice(order.shipping_fee || 0)}</span>
               </div>
             </div>
             

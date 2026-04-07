@@ -12,6 +12,8 @@ export function CartSidebar() {
     removeFromCart,
     clearCart,
     getCartTotal,
+    getShippingCost,
+    getTotalWithShipping,
     getItemCount,
     isCartOpen,
     setIsCartOpen,
@@ -154,8 +156,8 @@ export function CartSidebar() {
                   <span>{formatPrice(getCartTotal())}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-muted-foreground">Calculated at checkout</span>
+                  <span className="text-muted-foreground">Shipping & Insurance</span>
+                  <span>{formatPrice(getShippingCost())}</span>
                 </div>
               </div>
 
@@ -163,7 +165,7 @@ export function CartSidebar() {
 
               <div className="flex items-center justify-between font-serif text-lg">
                 <span>Total</span>
-                <span className="font-semibold">{formatPrice(getCartTotal())}</span>
+                <span className="font-semibold">{formatPrice(getTotalWithShipping())}</span>
               </div>
 
               <Button

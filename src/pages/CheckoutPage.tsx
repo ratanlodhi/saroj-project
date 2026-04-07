@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useAddresses, type AddressInput } from '@/hooks/useAddresses';
 import { useOrders } from '@/hooks/useOrders';
 import { useRazorpay } from '@/hooks/useRazorpay';
-import { formatShippingCost } from '@/data/shippingConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -360,8 +359,8 @@ export default function CheckoutPage() {
               <span>{formatPrice(subtotal)}</span>
             </div>
             <div className="flex items-center justify-between mt-2">
-              <span>Shipping</span>
-              <span>{formatShippingCost(shippingCost)}</span>
+              <span>Shipping & Insurance</span>
+              <span>{formatPrice(shippingCost)}</span>
             </div>
             <div className="flex items-center justify-between mt-4 font-serif text-lg border-t border-border pt-4">
               <span>Total</span>

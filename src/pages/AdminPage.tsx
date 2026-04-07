@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, ShieldOff, Search, Users, Palette, FileText } from 'lucide-react';
+import { ArrowLeft, Shield, ShieldOff, Search, Users, Palette, FileText, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ArtworkManager from '@/components/admin/ArtworkManager';
 import ArticleManager from '@/components/admin/ArticleManager';
+import ShippingInsuranceSettings from '@/components/admin/ShippingInsuranceSettings';
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
@@ -262,13 +263,13 @@ export default function AdminPage() {
             Admin Panel
           </h1>
           <p className="text-muted-foreground font-sans mt-2">
-            Manage users, paintings, and articles
+            Manage users, paintings, articles, and shipping settings
           </p>
           <div className="section-divider mt-6" />
         </div>
 
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="users" className="gap-2">
               <Shield size={16} />
               User Management
@@ -280,6 +281,10 @@ export default function AdminPage() {
             <TabsTrigger value="articles" className="gap-2">
               <FileText size={16} />
               Article Management
+            </TabsTrigger>
+            <TabsTrigger value="shipping" className="gap-2">
+              <Truck size={16} />
+              Shipping & Insurance
             </TabsTrigger>
           </TabsList>
 
@@ -431,6 +436,10 @@ export default function AdminPage() {
 
           <TabsContent value="articles" forceMount>
             <ArticleManager />
+          </TabsContent>
+
+          <TabsContent value="shipping" forceMount>
+            <ShippingInsuranceSettings />
           </TabsContent>
         </Tabs>
       </div>
