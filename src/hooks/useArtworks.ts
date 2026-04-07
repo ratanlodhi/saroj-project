@@ -15,6 +15,9 @@ export interface Artwork {
   price: number;
   artist_id?: string;
   artist?: string;
+  artist_profile?: {
+    display_name?: string | null;
+  } | null;
   artist_location?: string;
   artistLocation?: string;
   sold?: boolean;
@@ -40,6 +43,7 @@ const EXPECTED_SUPABASE_REF = 'dcrfsaggvdfjjvinryxt';
 const DEFAULT_SUPABASE_URL = `https://${EXPECTED_SUPABASE_REF}.supabase.co`;
 const DEFAULT_SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjcmZzYWdndmRmamp2aW5yeXh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDk2NjcsImV4cCI6MjA4NDk4NTY2N30.3jwSRMODQSYLGar9uxxeCJ21FYV6Mo-c6gEEbgawwAA';
+const ARTWORKS_SELECT = '*, artist_profile:profiles!artworks_artist_id_fkey(display_name)';
 
 export function useArtworks() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
@@ -47,23 +51,31 @@ export function useArtworks() {
   const [isOffline, setIsOffline] = useState(false);
   const { toast } = useToast();
 
-  const normalizeArtwork = (artwork: any): Artwork => ({
-    ...artwork,
-    image_url: artwork?.image_url || artwork?.image || '',
-    image: artwork?.image_url || artwork?.image || '',
-    artist: artwork?.artist || 'Unknown Artist',
-    artist_location: artwork?.artist_location || artwork?.artistLocation || '',
-    artistLocation: artwork?.artistLocation || artwork?.artist_location || '',
-    // Price & Details with defaults
-    status: artwork?.status || 'For Sale',
-    quantity: artwork?.quantity ?? 1,
-    commission_percentage: artwork?.commission_percentage ?? 60,
-    packaging_type: artwork?.packaging_type || '',
-    shipping_weight: artwork?.shipping_weight ?? 0,
-    number_of_panels: artwork?.number_of_panels ?? 1,
-    ready_to_hang: artwork?.ready_to_hang ?? false,
-    decorative_frame: artwork?.decorative_frame ?? false,
-  });
+  const normalizeArtwork = (artwork: any): Artwork => {
+    const profileArtistName =
+      artwork?.artist_profile?.display_name ||
+      artwork?.profiles?.display_name ||
+      artwork?.profiles?.[0]?.display_name ||
+      '';
+
+    return {
+      ...artwork,
+      image_url: artwork?.image_url || artwork?.image || '',
+      image: artwork?.image_url || artwork?.image || '',
+      artist: artwork?.artist || profileArtistName || 'Unknown Artist',
+      artist_location: artwork?.artist_location || artwork?.artistLocation || '',
+      artistLocation: artwork?.artistLocation || artwork?.artist_location || '',
+      // Price & Details with defaults
+      status: artwork?.status || 'For Sale',
+      quantity: artwork?.quantity ?? 1,
+      commission_percentage: artwork?.commission_percentage ?? 60,
+      packaging_type: artwork?.packaging_type || '',
+      shipping_weight: artwork?.shipping_weight ?? 0,
+      number_of_panels: artwork?.number_of_panels ?? 1,
+      ready_to_hang: artwork?.ready_to_hang ?? false,
+      decorative_frame: artwork?.decorative_frame ?? false,
+    };
+  };
 
   const sanitizeArtworkPayload = <T extends Partial<ArtworkMutationInput>>(artwork: T): T => {
     const payload = { ...artwork } as Record<string, any>;
@@ -186,9 +198,8 @@ export function useArtworks() {
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      // Select only core columns - newer Price & Details columns are handled with defaults if missing
       const selectParams = new URLSearchParams({
-        select: 'id,title,medium,size,year,description,image_url,featured,price,artist_id,sold,category_id'
+        select: ARTWORKS_SELECT,
       });
       
       const response = await fetch(
@@ -220,8 +231,7 @@ export function useArtworks() {
     const { data, error } = await withTimeout(
       supabase
         .from('artworks')
-        // Select only core columns - Price & Details columns handled with defaults if missing
-        .select('id, title, medium, size, year, description, image_url, featured, price, artist_id, sold, category_id'),
+        .select(ARTWORKS_SELECT),
       timeoutMs,
       'supabase.from(artworks).select'
     );
@@ -287,7 +297,7 @@ export function useArtworks() {
       const { data, error } = await supabase
         .from('artworks')
         .insert([payload])
-        .select()
+        .select(ARTWORKS_SELECT)
         .single();
 
       if (error) throw error;
@@ -321,7 +331,7 @@ export function useArtworks() {
         .from('artworks')
         .update(payload)
         .eq('id', id)
-        .select()
+        .select(ARTWORKS_SELECT)
         .single();
 
       if (error) throw error;

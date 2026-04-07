@@ -23,7 +23,7 @@ const recentWorkImages = [
 
 export default function HomePage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const { formatPrice } = useCurrency();
@@ -34,12 +34,21 @@ export default function HomePage() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    if (latestArtworks.length === 0) {
+      setCurrentIndex(0);
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+
     const scrollLeft = container.scrollLeft;
     const maxScroll = container.scrollWidth - container.clientWidth;
-    const itemWidth = container.scrollWidth / latestArtworks.length;
-    const index = Math.round(scrollLeft / itemWidth) + 1;
+    const firstCard = container.firstElementChild as HTMLElement | null;
+    const gap = Number.parseFloat(window.getComputedStyle(container).columnGap || '0') || 0;
+    const itemStep = (firstCard?.offsetWidth || container.clientWidth) + gap;
+    const index = Math.round(scrollLeft / Math.max(itemStep, 1)) + 1;
     
-    setCurrentIndex(Math.min(index, latestArtworks.length));
+    setCurrentIndex(Math.max(1, Math.min(index, latestArtworks.length)));
     setCanScrollLeft(scrollLeft > 0);
     setCanScrollRight(scrollLeft < maxScroll - 10);
   };
@@ -51,7 +60,7 @@ export default function HomePage() {
     container.addEventListener('scroll', updateScrollState);
     updateScrollState();
     return () => container.removeEventListener('scroll', updateScrollState);
-  }, []);
+  }, [latestArtworks.length]);
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -148,12 +157,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Latest Pieces - Horizontal Scroll Section */}
+      {/* Latest Paintings - Horizontal Scroll Section */}
       <section className="py-16 md:py-20 lg:py-24 bg-background">
         <div className="px-6 md:px-8 lg:px-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-sans text-sm md:text-base font-normal text-primary tracking-wide">
-              Latest pieces
+              Latest paintings
             </h2>
             <div className="flex items-center gap-4">
               <span className="font-sans text-sm text-muted-foreground">
@@ -183,7 +192,7 @@ export default function HomePage() {
           {/* Horizontal Scrolling Container */}
           <div 
             ref={scrollContainerRef}
-            className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+            className="flex gap-0 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
             style={{ 
               scrollbarWidth: 'none', 
               msOverflowStyle: 'none',
@@ -194,8 +203,7 @@ export default function HomePage() {
               <Link
                 key={artwork.id}
                 to="/paintings"
-                className="group flex-shrink-0 snap-start"
-                style={{ width: 'calc(50% - 8px)', minWidth: '280px', maxWidth: '400px' }}
+                className="group flex-shrink-0 snap-start w-full md:w-[calc(50%-12px)] md:min-w-[280px] md:max-w-[400px]"
               >
                 <div className="aspect-[3/4] overflow-hidden bg-secondary/20 mb-4">
                   <img

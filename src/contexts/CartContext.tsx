@@ -57,7 +57,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const { data, error } = await db
       .from('cart_items')
-      .select('quantity, artwork_id, artworks(*)')
+      .select('quantity, artwork_id, artworks(*, artist_profile:profiles!artworks_artist_id_fkey(display_name))')
       .eq('cart_id', cartId)
       .order('created_at', { ascending: true });
 
@@ -66,10 +66,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const mappedItems: CartItem[] = (data || [])
       .filter((row: any) => row.artworks)
       .map((row: any) => ({
+        // Prefer denormalized artworks.artist, then related profile display_name.
         artwork: {
           ...row.artworks,
           image: row.artworks.image_url,
-          artist: row.artworks.artist || 'Unknown Artist',
+          artist:
+            row.artworks.artist ||
+            row.artworks.artist_profile?.display_name ||
+            row.artworks.profiles?.display_name ||
+            row.artworks.profiles?.[0]?.display_name ||
+            'Unknown Artist',
           artistLocation: row.artworks.artist_location || '',
         },
         quantity: row.quantity,
