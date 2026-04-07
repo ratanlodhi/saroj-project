@@ -1,4 +1,4 @@
-import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
+import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
@@ -10,7 +10,6 @@ export function CartSidebar() {
   const {
     items,
     removeFromCart,
-    updateQuantity,
     clearCart,
     getCartTotal,
     getItemCount,
@@ -119,29 +118,9 @@ export function CartSidebar() {
                     </p>
 
                     <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.artwork.id, item.quantity - 1)
-                          }
-                          className="w-7 h-7 flex items-center justify-center rounded-sm bg-secondary hover:bg-secondary/80 transition-colors"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="w-8 text-center text-sm font-medium">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.artwork.id, item.quantity + 1)
-                          }
-                          className="w-7 h-7 flex items-center justify-center rounded-sm bg-secondary hover:bg-secondary/80 transition-colors"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        Qty: {item.quantity}
+                      </span>
                       <button
                         onClick={() => removeFromCart(item.artwork.id)}
                         className="text-muted-foreground hover:text-destructive transition-colors"

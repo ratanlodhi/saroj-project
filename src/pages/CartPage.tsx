@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -7,7 +7,7 @@ import { formatShippingCost } from '@/data/shippingConfig';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { items, updateQuantity, removeFromCart, clearCart, getCartTotal, getShippingCost, getTotalWithShipping, getItemCount } = useCart();
+  const { items, removeFromCart, clearCart, getCartTotal, getShippingCost, getTotalWithShipping, getItemCount } = useCart();
   const { formatPrice } = useCurrency();
 
   return (
@@ -50,23 +50,7 @@ export default function CartPage() {
                     >
                       <Trash2 size={16} />
                     </button>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQuantity(item.artwork.id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-sm bg-secondary flex items-center justify-center"
-                        aria-label="Decrease quantity"
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span className="w-8 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.artwork.id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-sm bg-secondary flex items-center justify-center"
-                        aria-label="Increase quantity"
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
+                    <span className="text-sm text-muted-foreground">Qty: {item.quantity}</span>
                   </div>
                 </div>
               ))}

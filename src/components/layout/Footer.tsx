@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Youtube, Mail, Linkedin, Twitter, BookOpen } from 'lucide-react';
+import { SiteLogo } from './SiteLogo';
 
 const MediumIcon = ({ size = 18, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -61,9 +62,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="font-serif text-2xl font-medium text-primary">
-              Rasayan Studio
-            </Link>
+            <SiteLogo imageClassName="h-12" />
             <p className="mt-4 text-muted-foreground font-sans text-sm leading-relaxed max-w-md">
               Exploring the depths of human emotion through art. Each painting is a journey, 
               each brushstroke a whisper of the soul.
@@ -75,7 +74,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                  className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
                   aria-label={social.label}
                   title={social.label}
                 >
@@ -84,7 +83,7 @@ export function Footer() {
               ))}
               <a
                 href="mailto:sarojbandi31@gmail.com"
-                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
                 aria-label="Email"
                 title="Email"
               >
@@ -135,7 +134,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Rasayan Art Studio. All rights reserved.
+            © {new Date().getFullYear()} Rasayan Studio. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center">
             <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>

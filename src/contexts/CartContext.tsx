@@ -12,7 +12,6 @@ interface CartContextType {
   items: CartItem[];
   addToCart: (artwork: Artwork) => Promise<void>;
   removeFromCart: (artworkId: string) => Promise<void>;
-  updateQuantity: (artworkId: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   getCartTotal: () => number;
   getShippingCost: () => number;
@@ -55,6 +54,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const loadCartFromDb = useCallback(async (uid: string) => {
     const cartId = await getOrCreateActiveCartId(uid);
 
+    const { error: normalizeError } = await db
+      .from('cart_items')
+      .update({ quantity: 1 })
+      .eq('cart_id', cartId);
+
+    if (normalizeError) {
+      console.warn('Failed to normalize cart quantities', normalizeError);
+    }
+
     const { data, error } = await db
       .from('cart_items')
       .select('quantity, artwork_id, artworks(*, artist_profile:profiles!artworks_artist_id_fkey(display_name))')
@@ -78,7 +86,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             'Unknown Artist',
           artistLocation: row.artworks.artist_location || '',
         },
-        quantity: row.quantity,
+        quantity: 1,
       }));
 
     setItems(mappedItems);
@@ -127,11 +135,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setItems((prev) => {
         const existingItem = prev.find((item) => item.artwork.id === artwork.id);
         if (existingItem) {
-          return prev.map((item) =>
-            item.artwork.id === artwork.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
+          return prev;
         }
         return [...prev, { artwork, quantity: 1 }];
       });
@@ -153,7 +157,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existing?.id) {
         const { error: updateError } = await db
           .from('cart_items')
-          .update({ quantity: existing.quantity + 1 })
+          .update({ quantity: 1 })
           .eq('id', existing.id);
         if (updateError) throw updateError;
       } else {
@@ -176,11 +180,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existingItem = prev.find((item) => item.artwork.id === artwork.id);
       if (existingItem) {
-        return prev.map((item) =>
-          item.artwork.id === artwork.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        return prev;
       }
       return [...prev, { artwork, quantity: 1 }];
     });
@@ -198,32 +198,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setItems((prev) => prev.filter((item) => item.artwork.id !== artworkId));
-  };
-
-  const updateQuantity = async (artworkId: string, quantity: number) => {
-    if (quantity < 1) {
-      removeFromCart(artworkId);
-      return;
-    }
-
-    if (userId) {
-      try {
-        const cartId = await getOrCreateActiveCartId(userId);
-        await db
-          .from('cart_items')
-          .update({ quantity })
-          .eq('cart_id', cartId)
-          .eq('artwork_id', artworkId);
-      } catch (error) {
-        console.error('Failed to update cart quantity', error);
-      }
-    }
-
-    setItems((prev) =>
-      prev.map((item) =>
-        item.artwork.id === artworkId ? { ...item, quantity } : item
-      )
-    );
   };
 
   const clearCart = async () => {
@@ -264,7 +238,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         items,
         addToCart,
         removeFromCart,
-        updateQuantity,
         clearCart,
         getCartTotal,
         getShippingCost,

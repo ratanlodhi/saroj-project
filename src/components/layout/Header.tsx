@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency, currencies } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
-import logo from '@/assets/logo.png';
+import { SiteLogo } from './SiteLogo';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -50,16 +50,7 @@ export function Header() {
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
-          <Link
-            to="/"
-            className="hover:opacity-80 transition-opacity"
-          >
-            <img 
-              src={logo} 
-              alt="Rasayan Studio" 
-              className="h-14 md:h-16 w-auto"
-            />
-          </Link>
+          <SiteLogo imageClassName="h-14 md:h-16" />
 
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-8">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, MapPin, Instagram, Facebook, Youtube, Linkedin, Twitter, BookOpen } from 'lucide-react';
+import { SiteLogo } from '@/components/layout/SiteLogo';
 
 const MediumIcon = ({ size = 20, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -109,6 +110,11 @@ export default function ContactPage() {
       {/* Header */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
+          <SiteLogo
+            imageClassName="h-10 md:h-12 mx-auto"
+            className="mb-6"
+            ariaLabel="Rasayan Studio home"
+          />
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Get in Touch</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
             Contact
@@ -202,13 +208,13 @@ export default function ContactPage() {
                   href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex gap-4 p-4 bg-[#25D366]/10 border border-[#25D366]/20 rounded-sm hover:bg-[#25D366]/20 transition-all duration-300 group"
+                  className="flex gap-4 p-4 rounded-sm border border-border/40 hover:border-[#5b4538]/40 transition-all duration-300 group"
                 >
-                  <div className="w-12 h-12 rounded-sm bg-[#25D366] flex items-center justify-center flex-shrink-0">
-                    <WhatsAppIcon className="w-5 h-5 text-white" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 text-[#5b4538]">
+                    <WhatsAppIcon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="font-sans font-medium text-primary group-hover:text-[#25D366] transition-colors">
+                    <h3 className="font-sans font-medium text-primary group-hover:text-[#5b4538] transition-colors">
                       Chat on WhatsApp
                     </h3>
                     <p className="text-muted-foreground">
@@ -218,8 +224,8 @@ export default function ContactPage() {
                 </a>
 
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-accent" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 text-[#5b4538]">
+                    <Mail className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-sans font-medium text-primary">Email</h3>
@@ -233,8 +239,8 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-accent" />
+                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 text-[#5b4538]">
+                    <MapPin className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-sans font-medium text-primary">Studio Location</h3>
@@ -255,7 +261,7 @@ export default function ContactPage() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                        className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
                         aria-label={social.label}
                         title={social.label}
                       >
