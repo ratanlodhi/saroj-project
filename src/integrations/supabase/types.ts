@@ -43,15 +43,23 @@ export type Database = {
           artist: string | null
           artist_id: string
           category_id: string | null
+          commission_percentage: number
           created_at: string
+          decorative_frame: boolean
           description: string
           featured: boolean | null
           id: string
           image_url: string
           medium: string
+          number_of_panels: number
+          packaging_type: string
           price: number
+          quantity: number
+          ready_to_hang: boolean
+          shipping_weight: number
           size: string
           sold: boolean | null
+          status: string
           title: string
           updated_at: string
           year: string
@@ -60,15 +68,23 @@ export type Database = {
           artist?: string | null
           artist_id: string
           category_id?: string | null
+          commission_percentage?: number
           created_at?: string
+          decorative_frame?: boolean
           description: string
           featured?: boolean | null
           id?: string
           image_url: string
           medium: string
+          number_of_panels?: number
+          packaging_type?: string
           price: number
+          quantity?: number
+          ready_to_hang?: boolean
+          shipping_weight?: number
           size: string
           sold?: boolean | null
+          status?: string
           title: string
           updated_at?: string
           year: string
@@ -77,15 +93,23 @@ export type Database = {
           artist?: string | null
           artist_id?: string
           category_id?: string | null
+          commission_percentage?: number
           created_at?: string
+          decorative_frame?: boolean
           description?: string
           featured?: boolean | null
           id?: string
           image_url?: string
           medium?: string
+          number_of_panels?: number
+          packaging_type?: string
           price?: number
+          quantity?: number
+          ready_to_hang?: boolean
+          shipping_weight?: number
           size?: string
           sold?: boolean | null
+          status?: string
           title?: string
           updated_at?: string
           year?: string
