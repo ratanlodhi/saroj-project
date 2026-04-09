@@ -33,56 +33,42 @@ export default function AboutPage() {
           <div className="max-w-3xl mx-auto">
             <div className="prose prose-lg prose-stone max-w-none">
               <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary mb-6">
-                A Sanctuary for Artistic Expression
+                About the Artist
               </h2>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                Rasayan Studio was founded with a singular vision: to create art that speaks 
-                to the soul. Nestled in a sunlit space where inspiration flows freely, the studio 
-                has become a place where classical techniques meet contemporary expression.
+                Saroj Prakash Bandi is a modern and contemporary visual artist based in Maharashtra. 
+                With formal training in chemical engineering and an MBA in operations, her intellectual 
+                foundation is rooted in systems, structure and analytical precision. This orientation 
+                continues to inform her artistic practice. Her transition into visual art is not a 
+                departure from science, but a reconfiguration of it. The same rigor that governs 
+                physics and mathematics with attention to structure, internal coherence and underlying 
+                order finds expression in her visual language as well. Over time, this engagement with 
+                logic has evolved into a deeper philosophical inquiry.
               </p>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                The name "Rasayan" draws from the ancient concept of transformation and essence—the 
-                alchemical process of turning raw materials into something precious. This philosophy 
-                permeates every aspect of our work, from the careful preparation of canvases to the 
-                final brushstroke that brings a painting to life.
-              </p>
-
-              <div className="section-divider my-12" />
-
-              <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary mb-6">
-                Artistic Philosophy
-              </h2>
-              <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                We believe that art is a dialogue—between artist and canvas, between color and form, 
-                between the work and its viewer. Each painting is an invitation to pause, to feel, 
-                and to discover something new within oneself.
+                Saroj's work operates at the intersection of modernist discipline and contemporary 
+                conceptual exploration. Her paintings are constructed through a deliberate orchestration 
+                of forms, particularly geometric structures, which serve as vessels for ideas drawn 
+                from physics, mathematics, philosophy and the human condition. These forms often embody 
+                tensions between control and chaos, logic and the unknowable, human intention and the 
+                autonomy of nature. Recurring themes in her practice include duality, philosophical 
+                inquiry and the subtle conflict between human systems and natural order. Her work 
+                reflects an acute awareness of humanity's impulse to impose control, while simultaneously 
+                acknowledging the limits of that control within a universe that resists complete 
+                comprehension.
               </p>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                Our work spans multiple disciplines, from abstract explorations that delve into 
-                pure emotion and color theory, to detailed portraits that capture the subtle 
-                complexities of human character. What unites these diverse approaches is a 
-                commitment to authenticity and emotional truth.
-              </p>
-
-              <div className="section-divider my-12" />
-
-              <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary mb-6">
-                The Journey
-              </h2>
-              <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                The journey of Rasayan Studio began with years of classical training, studying 
-                the old masters and understanding the foundations of painting technique. But true 
-                artistic growth came from breaking free of convention and finding a unique voice.
+                Materiality plays a critical role in her process. Bandi adopts a restrained, 
+                minimalistic approach favoring limited palettes, often in earthy tones or monochromatic 
+                compositions. Her work relies on precision and reduction, allowing form and concept to 
+                emerge. Her engagement with geometry is deeply observational. Drawing from patterns 
+                inherent in nature, she recontextualizes these forms into a philosophical language that 
+                bridges the scientific and the spiritual.
               </p>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                Today, the studio continues to evolve, embracing new subjects and techniques while 
-                remaining grounded in the timeless principles of good art: careful observation, 
-                skilled execution, and honest expression.
-              </p>
-              <p className="text-muted-foreground font-sans leading-relaxed mb-6">
-                Whether you're a collector seeking a meaningful addition to your space, or simply 
-                an art lover who appreciates the beauty of handcrafted paintings, we welcome you 
-                to explore our world. Every painting has a story waiting to be discovered.
+                Working from her studio, Rasayan Studios, Saroj continues to explore the convergence 
+                of analytical thought and intuitive insight creating works that are at once structured 
+                and searching, disciplined yet open-ended.
               </p>
             </div>
 
