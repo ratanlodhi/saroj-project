@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { X, Filter, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import type { Artwork } from '@/hooks/useArtworks';
 
 export default function PaintingsPage() {
 
+  const [searchParams] = useSearchParams();
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'price-low' | 'price-high'>('price-low');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
@@ -18,10 +20,21 @@ export default function PaintingsPage() {
   const { formatPrice } = useCurrency();
   const { artworks, loading } = useArtworks();
   const { categories } = useCategories();
+  const searchTerm = searchParams.get('search')?.trim().toLowerCase() ?? '';
 
   const filteredArtworks = artworks.filter((a) => {
-    if (activeCategoryId === 'all') return true;
-    return a.category_id === activeCategoryId;
+    const matchesCategory = activeCategoryId === 'all' || a.category_id === activeCategoryId;
+
+    if (!searchTerm) {
+      return matchesCategory;
+    }
+
+    const searchableText = [a.title, a.description, a.artist, a.medium, a.size]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return matchesCategory && searchableText.includes(searchTerm);
   });
 
   const sortedArtworks = [...filteredArtworks].sort((a, b) => {
@@ -53,6 +66,11 @@ export default function PaintingsPage() {
           <p className="text-muted-foreground font-sans mt-4 max-w-xl mx-auto">
             Detailed view of our complete artwork collection with specifications and descriptions.
           </p>
+          {searchTerm && (
+            <p className="text-sm text-muted-foreground font-sans mt-3">
+              Showing results for "{searchParams.get('search')}"
+            </p>
+          )}
           <div className="section-divider mt-8" />
         </div>
       </section>
@@ -101,7 +119,7 @@ export default function PaintingsPage() {
             </div>
           ) : sortedArtworks.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No paintings found for the selected filters.
+              No paintings found for the selected filters{searchTerm ? ' and search term' : ''}.
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
