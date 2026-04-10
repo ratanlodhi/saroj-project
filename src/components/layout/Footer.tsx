@@ -82,7 +82,7 @@ export function Footer() {
                 </a>
               ))}
               <a
-                href="mailto:sarojbandi31@gmail.com"
+                href="mailto:studio@sarojprakashbandi.com"
                 className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
                 aria-label="Email"
                 title="Email"
@@ -114,8 +114,8 @@ export function Footer() {
             <h4 className="font-serif text-lg font-medium text-primary mb-4">Contact</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href="mailto:sarojbandi31@gmail.com" className="hover:text-primary transition-colors">
-                  sarojbandi31@gmail.com
+                <a href="mailto:contact@sarojprakashbandi.com" className="hover:text-primary transition-colors">
+                  contact@sarojprakashbandi.com
                 </a>
               </li>
               <li>

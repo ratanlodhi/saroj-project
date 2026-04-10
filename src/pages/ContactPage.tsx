@@ -230,10 +230,10 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-sans font-medium text-primary">Email</h3>
                     <a
-                      href="mailto:contact@sarojprakashbandi.com"
+                      href="mailto:studio@sarojprakashbandi.com"
                       className="text-muted-foreground hover:text-accent transition-colors"
                     >
-                      contact@sarojprakashbandi.com
+                      studio@sarojprakashbandi.com
                     </a>
                   </div>
                 </div>

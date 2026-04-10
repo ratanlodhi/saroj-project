@@ -111,7 +111,7 @@ export default function TermsOfServicePage() {
               If you have any questions about these Terms of Service, please contact us at:
             </p>
             <p className="text-muted-foreground">
-              Email: <a href="mailto:sarojbandi31@gmail.com" className="text-primary hover:text-accent">sarojbandi31@gmail.com</a>
+              Email: <a href="mailto:support@sarojprakashbandi.com" className="text-primary hover:text-accent">support@sarojprakashbandi.com</a>
             </p>
           </div>
 

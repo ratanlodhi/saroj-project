@@ -76,7 +76,7 @@ export default function ShippingPolicyPage() {
             </p>
             <div className="bg-card border border-border rounded-lg p-4 space-y-2">
               <p className="text-muted-foreground">
-                Email: <a href="mailto:sarojbandi31@gmail.com" className="text-primary hover:text-accent">sarojbandi31@gmail.com</a>
+                Email: <a href="mailto:art@sarojprakashbandi.com" className="text-primary hover:text-accent">art@sarojprakashbandi.com</a>
               </p>
               <p className="text-muted-foreground">
                 WhatsApp: <a href="https://wa.me/919492710600" className="text-primary hover:text-accent">9492710600</a>
