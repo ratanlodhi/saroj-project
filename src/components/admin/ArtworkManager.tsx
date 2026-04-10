@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Plus, Edit, Trash2, Search, Image as ImageIcon, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,6 +96,8 @@ export default function ArtworkManager() {
   const { user } = useAuth();
   const { categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'pricing' | 'status'>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<Artwork | null>(null);
   const [formData, setFormData] = useState<ArtworkFormData>(initialFormData);
@@ -106,6 +108,43 @@ export default function ArtworkManager() {
     artwork.medium.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (artwork.artist || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const sortedArtworks = useMemo(() => {
+    const directionMultiplier = sortDirection === 'asc' ? 1 : -1;
+
+    return [...filteredArtworks].sort((a, b) => {
+      const getStatusValue = (artwork: Artwork) => {
+        if (artwork.sold) return 'sold';
+        if (artwork.status) return artwork.status.toLowerCase();
+        return 'available';
+      };
+
+      if (sortBy === 'name') {
+        return a.title.localeCompare(b.title) * directionMultiplier;
+      }
+
+      if (sortBy === 'pricing') {
+        return (a.price - b.price) * directionMultiplier;
+      }
+
+      return getStatusValue(a).localeCompare(getStatusValue(b)) * directionMultiplier;
+    });
+  }, [filteredArtworks, sortBy, sortDirection]);
+
+  const handleSort = (column: 'name' | 'pricing' | 'status') => {
+    if (sortBy === column) {
+      setSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortBy(column);
+    setSortDirection(column === 'pricing' ? 'desc' : 'asc');
+  };
+
+  const sortMarker = (column: 'name' | 'pricing' | 'status') => {
+    if (sortBy !== column) return '↕';
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -247,7 +286,7 @@ export default function ArtworkManager() {
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : filteredArtworks.length === 0 ? (
+        ) : sortedArtworks.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             {searchQuery ? 'No paintings match your search' : 'No paintings found'}
           </div>
@@ -257,16 +296,43 @@ export default function ArtworkManager() {
               <TableRow>
                 <TableHead>Item No</TableHead>
                 <TableHead>Image</TableHead>
-                <TableHead>Item Name</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => handleSort('name')}
+                    className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                    aria-label={`Sort by item name ${sortBy === 'name' && sortDirection === 'asc' ? 'descending' : 'ascending'}`}
+                  >
+                    Item Name <span className="text-xs text-muted-foreground">{sortMarker('name')}</span>
+                  </button>
+                </TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Pricing</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => handleSort('pricing')}
+                    className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                    aria-label={`Sort by pricing ${sortBy === 'pricing' && sortDirection === 'asc' ? 'descending' : 'ascending'}`}
+                  >
+                    Pricing <span className="text-xs text-muted-foreground">{sortMarker('pricing')}</span>
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => handleSort('status')}
+                    className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                    aria-label={`Sort by status ${sortBy === 'status' && sortDirection === 'asc' ? 'descending' : 'ascending'}`}
+                  >
+                    Status <span className="text-xs text-muted-foreground">{sortMarker('status')}</span>
+                  </button>
+                </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredArtworks.map((artwork, index) => (
+              {sortedArtworks.map((artwork, index) => (
                 <TableRow key={artwork.id}>
                   <TableCell className="font-mono text-sm">{index + 1}</TableCell>
                   <TableCell>
