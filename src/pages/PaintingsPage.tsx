@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { X, Filter, ShoppingCart } from 'lucide-react';
@@ -16,11 +16,25 @@ export default function PaintingsPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'price-low' | 'price-high'>('price-low');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
+  const openedArtworkIdRef = useRef<string | null>(null);
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
   const { artworks, loading } = useArtworks();
   const { categories } = useCategories();
   const searchTerm = searchParams.get('search')?.trim().toLowerCase() ?? '';
+  const artworkId = searchParams.get('artwork')?.trim() ?? '';
+
+  useEffect(() => {
+    if (!artworkId || loading || !artworks.length || openedArtworkIdRef.current === artworkId) {
+      return;
+    }
+
+    const matchingArtwork = artworks.find((artwork) => artwork.id === artworkId);
+    if (matchingArtwork) {
+      setSelectedArtwork(matchingArtwork);
+      openedArtworkIdRef.current = artworkId;
+    }
+  }, [artworkId, artworks, loading]);
 
   const filteredArtworks = artworks.filter((a) => {
     const matchesCategory = activeCategoryId === 'all' || a.category_id === activeCategoryId;

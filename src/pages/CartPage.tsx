@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -31,16 +31,23 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
                 <div key={item.artwork.id} className="bg-card border border-border rounded-lg p-4 flex gap-4">
-                  <img
-                    src={item.artwork.image || item.artwork.image_url}
-                    alt={item.artwork.title}
-                    className="w-20 h-20 object-cover rounded-sm"
-                  />
-                  <div className="flex-1">
-                    <h2 className="font-serif text-lg text-primary">{item.artwork.title}</h2>
-                    <p className="text-sm text-muted-foreground">{item.artwork.medium}</p>
-                    <p className="font-medium mt-1">{formatPrice(item.artwork.price)}</p>
-                  </div>
+                  <Link
+                    to={`/paintings?artwork=${encodeURIComponent(item.artwork.id)}`}
+                    className="flex flex-1 gap-4 min-w-0 text-left group"
+                  >
+                    <img
+                      src={item.artwork.image || item.artwork.image_url}
+                      alt={item.artwork.title}
+                      className="w-20 h-20 object-cover rounded-sm shrink-0 transition-opacity group-hover:opacity-90"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h2 className="font-serif text-lg text-primary group-hover:underline">
+                        {item.artwork.title}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">{item.artwork.medium}</p>
+                      <p className="font-medium mt-1">{formatPrice(item.artwork.price)}</p>
+                    </div>
+                  </Link>
                   <div className="flex flex-col items-end justify-between">
                     <button
                       onClick={() => removeFromCart(item.artwork.id)}
