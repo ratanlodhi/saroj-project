@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DEFAULT_SHIPPING_INSURANCE_PERCENTAGE,
+  DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE,
+  INTERNATIONAL_SHIPPING_STORAGE_KEY,
   SHIPPING_INSURANCE_STORAGE_KEY,
   normalizeShippingInsurancePercentage,
 } from '@/data/shippingConfig';
@@ -16,7 +18,8 @@ const db = supabase as any;
 export default function ShippingInsuranceSettings() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [shippingPercentage, setShippingPercentage] = useState<number>(DEFAULT_SHIPPING_INSURANCE_PERCENTAGE);
+  const [domesticPercentage, setDomesticPercentage] = useState<number>(DEFAULT_SHIPPING_INSURANCE_PERCENTAGE);
+  const [internationalPercentage, setInternationalPercentage] = useState<number>(DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -26,25 +29,48 @@ export default function ShippingInsuranceSettings() {
 
       const localValue = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
       if (localValue !== null) {
-        setShippingPercentage(normalizeShippingInsurancePercentage(localValue));
+        setDomesticPercentage(normalizeShippingInsurancePercentage(localValue));
+      }
+
+      const localInternationalValue = localStorage.getItem(INTERNATIONAL_SHIPPING_STORAGE_KEY);
+      if (localInternationalValue !== null) {
+        setInternationalPercentage(normalizeShippingInsurancePercentage(localInternationalValue));
       }
 
       const { data, error } = await db
         .from('app_settings')
-        .select('shipping_insurance_percentage')
+        .select('shipping_insurance_percentage, international_shipping_percentage')
         .eq('id', 1)
         .maybeSingle();
 
       setLoading(false);
 
       if (error) {
-        console.error('Failed to load shipping settings', error);
+        // Fallback for environments where international column is not added yet.
+        const { data: legacyData, error: legacyError } = await db
+          .from('app_settings')
+          .select('shipping_insurance_percentage')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (legacyError) {
+          console.error('Failed to load shipping settings', legacyError);
+          return;
+        }
+
+        const normalizedDomestic = normalizeShippingInsurancePercentage(legacyData?.shipping_insurance_percentage);
+        setDomesticPercentage(normalizedDomestic);
+        localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalizedDomestic));
         return;
       }
 
-      const normalized = normalizeShippingInsurancePercentage(data?.shipping_insurance_percentage);
-      setShippingPercentage(normalized);
-      localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalized));
+      const normalizedDomestic = normalizeShippingInsurancePercentage(data?.shipping_insurance_percentage);
+      const normalizedInternational = normalizeShippingInsurancePercentage(data?.international_shipping_percentage);
+
+      setDomesticPercentage(normalizedDomestic);
+      setInternationalPercentage(normalizedInternational);
+      localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalizedDomestic));
+      localStorage.setItem(INTERNATIONAL_SHIPPING_STORAGE_KEY, String(normalizedInternational));
     };
 
     loadSettings();
@@ -53,74 +79,121 @@ export default function ShippingInsuranceSettings() {
   const handleSave = async () => {
     setSaving(true);
 
-    const normalized = normalizeShippingInsurancePercentage(shippingPercentage);
+    const normalizedDomestic = normalizeShippingInsurancePercentage(domesticPercentage);
+    const normalizedInternational = normalizeShippingInsurancePercentage(internationalPercentage);
 
     const { error } = await db
       .from('app_settings')
       .upsert(
         {
           id: 1,
-          shipping_insurance_percentage: normalized,
+          shipping_insurance_percentage: normalizedDomestic,
+          international_shipping_percentage: normalizedInternational,
           updated_by: user?.id ?? null,
         },
         { onConflict: 'id' }
       );
 
-    setSaving(false);
-
     if (error) {
-      toast({
-        title: 'Save Failed',
-        description: error.message || 'Unable to update Shipping and Insurance percentage',
-        variant: 'destructive',
-      });
-      return;
+      // Fallback for environments where international column is not added yet.
+      const { error: legacyError } = await db
+        .from('app_settings')
+        .upsert(
+          {
+            id: 1,
+            shipping_insurance_percentage: normalizedDomestic,
+            updated_by: user?.id ?? null,
+          },
+          { onConflict: 'id' }
+        );
+
+      if (legacyError) {
+        toast({
+          title: 'Save Failed',
+          description: legacyError.message || 'Unable to update shipping percentages',
+          variant: 'destructive',
+        });
+        setSaving(false);
+        return;
+      }
     }
 
-    setShippingPercentage(normalized);
-    localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalized));
-    window.dispatchEvent(new CustomEvent('shipping-settings-updated', { detail: { percentage: normalized } }));
+    setDomesticPercentage(normalizedDomestic);
+    setInternationalPercentage(normalizedInternational);
+    localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalizedDomestic));
+    localStorage.setItem(INTERNATIONAL_SHIPPING_STORAGE_KEY, String(normalizedInternational));
+    window.dispatchEvent(
+      new CustomEvent('shipping-settings-updated', {
+        detail: {
+          domesticPercentage: normalizedDomestic,
+          internationalPercentage: normalizedInternational,
+        },
+      })
+    );
 
     toast({
       title: 'Settings Updated',
-      description: `Shipping and Insurance is now ${normalized}%`,
+      description: `Domestic: ${normalizedDomestic}% | International: ${normalizedInternational}%`,
     });
+
+    setSaving(false);
   };
 
   const sampleSubtotal = 1000;
-  const sampleShipping = Math.round((sampleSubtotal * shippingPercentage) / 100);
+  const sampleDomesticShipping = Math.round((sampleSubtotal * domesticPercentage) / 100);
+  const sampleInternationalShipping = Math.round((sampleSubtotal * internationalPercentage) / 100);
 
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-6">
       <div>
-        <h2 className="font-serif text-2xl font-medium text-primary">Shipping and Insurance</h2>
+        <h2 className="font-serif text-2xl font-medium text-primary">Shipping Percentages</h2>
         <p className="text-muted-foreground font-sans mt-1">
-          Configure the shipping charge percentage applied at checkout.
+          Configure domestic and international shipping percentages applied at checkout.
         </p>
       </div>
 
       <div className="max-w-sm space-y-2">
-        <Label htmlFor="shipping-insurance-percentage">Custom Percentage</Label>
+        <Label htmlFor="domestic-shipping-percentage">Domestic Percentage</Label>
         <div className="flex items-center gap-3">
           <Input
-            id="shipping-insurance-percentage"
+            id="domestic-shipping-percentage"
             type="number"
             min="0"
             max="100"
             step="0.1"
-            value={shippingPercentage}
-            onChange={(e) => setShippingPercentage(Number(e.target.value))}
+            value={domesticPercentage}
+            onChange={(e) => setDomesticPercentage(Number(e.target.value))}
             disabled={loading || saving}
           />
           <span className="text-sm text-muted-foreground">%</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Example: For subtotal Rs{sampleSubtotal}, shipping is Rs{sampleShipping}.
+          Example: For subtotal Rs{sampleSubtotal}, domestic shipping is Rs{sampleDomesticShipping}.
+        </p>
+      </div>
+
+      <div className="max-w-sm space-y-2">
+        <Label htmlFor="international-shipping-percentage">International Percentage</Label>
+        <div className="flex items-center gap-3">
+          <Input
+            id="international-shipping-percentage"
+            type="number"
+            min="0"
+            max="100"
+            step="0.1"
+            value={internationalPercentage}
+            onChange={(e) => setInternationalPercentage(Number(e.target.value))}
+            disabled={loading || saving}
+          />
+          <span className="text-sm text-muted-foreground">%</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Example: For subtotal Rs{sampleSubtotal}, international shipping is Rs{sampleInternationalShipping}.
         </p>
       </div>
 
       <Button onClick={handleSave} disabled={loading || saving}>
-        {saving ? 'Saving...' : 'Save Shipping Settings'}
+        {saving ? 'Saving...' : 'Save Shipping Percentages'}
       </Button>
     </div>
   );

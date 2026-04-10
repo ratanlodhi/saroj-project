@@ -284,7 +284,7 @@ export default function AdminPage() {
             </TabsTrigger>
             <TabsTrigger value="shipping" className="gap-2">
               <Truck size={16} />
-              Shipping & Insurance
+              Shipping Percentages
             </TabsTrigger>
           </TabsList>
 
