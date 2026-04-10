@@ -66,7 +66,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-const ADMIN_EMAIL = 'admin@gmail.com';
+const ADMIN_EMAIL = 'admin@sarojprakashbandi.com';
 const ADMIN_PASSWORD = 'Admin@123';
 const ADMIN_NAME = 'Admin';
 

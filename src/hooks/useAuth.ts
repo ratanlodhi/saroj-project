@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-const ADMIN_EMAIL = 'admin@gmail.com';
+const ADMIN_EMAIL = 'admin@sarojprakashbandi.com';
 const ADMIN_PASSWORD = 'admin@123';
 const ADMIN_NAME = 'Admin';
 

@@ -22,7 +22,7 @@ const sb = createClient(url, serviceRole, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const ADMIN_EMAIL = 'admin@gmail.com';
+const ADMIN_EMAIL = 'admin@sarojprakashbandi.com';
 const ADMIN_PASSWORD = 'admin@123';
 
 async function main() {
