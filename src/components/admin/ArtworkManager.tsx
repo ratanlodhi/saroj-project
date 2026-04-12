@@ -53,7 +53,6 @@ interface ArtworkFormData {
   size: string;
   height: string;
   width: string;
-  year: string;
   description: string;
   image_url: string;
   featured: boolean;
@@ -104,11 +103,11 @@ const buildSizeFromDimensions = (height: string, width: string) => {
   const trimmedWidth = width.trim();
 
   if (trimmedHeight && trimmedWidth) {
-    return `${trimmedHeight} x ${trimmedWidth} cm`;
+    return `${trimmedHeight} x ${trimmedWidth} inch`;
   }
 
   if (trimmedHeight || trimmedWidth) {
-    return `${trimmedHeight || trimmedWidth} cm`;
+    return `${trimmedHeight || trimmedWidth} inch`;
   }
 
   return '';
@@ -120,7 +119,6 @@ const initialFormData: ArtworkFormData = {
   size: '',
   height: '',
   width: '',
-  year: new Date().getFullYear().toString(),
   description: '',
   image_url: '',
   featured: false,
@@ -212,7 +210,6 @@ export default function ArtworkManager() {
         size: artwork.size,
         height,
         width,
-        year: artwork.year,
         description: artwork.description,
         image_url: artwork.image_url,
         featured: artwork.featured || false,
@@ -255,6 +252,7 @@ export default function ArtworkManager() {
       const payload = {
         ...payloadBase,
         size: buildSizeFromDimensions(height, width),
+        year: '',
         packaging_type: DEFAULT_PACKAGING_TYPE,
       };
 
@@ -542,7 +540,7 @@ export default function ArtworkManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm) *</Label>
+                    <Label htmlFor="height">Height (inch) *</Label>
                     <Input
                       id="height"
                       type="number"
@@ -550,12 +548,12 @@ export default function ArtworkManager() {
                       step="0.1"
                       value={formData.height}
                       onChange={(e) => handleInputChange('height', e.target.value)}
-                      placeholder="e.g., 30"
+                      placeholder="e.g., 12"
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="width">Width (cm) *</Label>
+                    <Label htmlFor="width">Width (inch) *</Label>
                     <Input
                       id="width"
                       type="number"
@@ -563,22 +561,10 @@ export default function ArtworkManager() {
                       step="0.1"
                       value={formData.width}
                       onChange={(e) => handleInputChange('width', e.target.value)}
-                      placeholder="e.g., 40"
+                      placeholder="e.g., 16"
                       required
                     />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="year">Year *</Label>
-                  <Input
-                    id="year"
-                    type="text"
-                    value={formData.year}
-                    onChange={(e) => handleInputChange('year', e.target.value)}
-                    placeholder="e.g., 2024"
-                    required
-                  />
                 </div>
 
                 <div className="border-t pt-6">
