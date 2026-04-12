@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, MapPin, Instagram, Facebook, Youtube, Linkedin, Twitter, BookOpen } from 'lucide-react';
-import { SiteLogo } from '@/components/layout/SiteLogo';
 
 const MediumIcon = ({ size = 20, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -106,15 +105,10 @@ export default function ContactPage() {
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Header */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
-          <SiteLogo
-            imageClassName="h-10 md:h-12 mx-auto"
-            className="mb-6"
-            ariaLabel="Rasayan Studio home"
-          />
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Get in Touch</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
             Contact

@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       <div className="container mx-auto px-4 max-w-3xl">
         <Link
           to="/"

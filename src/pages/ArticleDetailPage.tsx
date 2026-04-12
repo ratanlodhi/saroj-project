@@ -100,7 +100,7 @@ export default function ArticleDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -117,7 +117,7 @@ export default function ArticleDetailPage() {
   });
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       <article className="container mx-auto px-4 max-w-4xl">
         {/* Navigation */}
         <div className="flex items-center justify-between mb-8">

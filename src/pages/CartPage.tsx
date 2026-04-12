@@ -10,7 +10,7 @@ export default function CartPage() {
   const { formatPrice } = useCurrency();
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-10">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Checkout</span>

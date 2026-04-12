@@ -165,8 +165,8 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className="min-h-screen pb-20">
+      <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
         <div className="text-center mb-10">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Checkout</span>
           <h1 className="font-serif text-3xl md:text-4xl font-medium text-primary mt-3">Delivery and Payment</h1>
@@ -174,12 +174,13 @@ export default function CheckoutPage() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <section className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-serif text-xl">Select Delivery Address</h2>
+            <section className="bg-card border border-border rounded-lg p-4 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <h2 className="font-serif text-lg sm:text-xl">Select Delivery Address</h2>
                 <Button
                   variant="outline"
                   size="sm"
+                  className="w-full sm:w-auto shrink-0"
                   onClick={() => {
                     setShowAddressForm((v) => !v);
                     if (showAddressForm) {

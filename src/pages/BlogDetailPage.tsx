@@ -9,7 +9,7 @@ export default function BlogDetailPage() {
 
   if (!post) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="text-center">
           <h1 className="font-serif text-3xl text-primary mb-4">Post Not Found</h1>
           <Button asChild>
@@ -23,7 +23,7 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Header */}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">

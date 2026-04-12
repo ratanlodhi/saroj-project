@@ -42,7 +42,7 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Header */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
@@ -58,7 +58,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Medium Filters */}
-      <section className="py-4 sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
+      <section className="py-4 sticky top-36 lg:top-24 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex justify-center gap-2 md:gap-4 flex-wrap">
             {mediumCategories.map((medium) => (

@@ -61,9 +61,10 @@ export function Header() {
           : 'bg-[#bba472] py-5'
       )}
     >
-      <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between">
-          <SiteLogo imageClassName="h-14 md:h-16" />
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex flex-col gap-3 lg:gap-0">
+          <nav className="flex items-center justify-between gap-2 min-w-0">
+          <SiteLogo imageClassName="h-10 w-auto sm:h-12 md:h-16 shrink-0" />
 
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-8">
@@ -110,23 +111,23 @@ export function Header() {
           </ul>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Auth Buttons */}
             {user ? (
               <button
                 onClick={signOut}
-                className="p-2 text-primary hover:text-accent transition-colors"
+                className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
                 aria-label="Sign out"
               >
-                <LogOut size={22} />
+                <LogOut className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
               </button>
             ) : (
               <button
                 onClick={() => navigate('/auth')}
-                className="p-2 text-primary hover:text-accent transition-colors"
+                className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
                 aria-label="Sign in"
               >
-                <LogIn size={22} />
+                <LogIn className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
               </button>
             )}
 
@@ -134,7 +135,7 @@ export function Header() {
             <select
               value={activeCurrency}
               onChange={(e) => setActiveCurrency(e.target.value)}
-              className="bg-transparent text-primary px-2 py-1.5 rounded-sm text-sm font-sans border border-border/50 focus:ring-2 focus:ring-accent focus:outline-none cursor-pointer hover:bg-background/20 transition-colors"
+              className="bg-transparent text-primary max-w-[4.25rem] sm:max-w-none px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-sm text-xs sm:text-sm font-sans border border-border/50 focus:ring-2 focus:ring-accent focus:outline-none cursor-pointer hover:bg-background/20 transition-colors"
               aria-label="Select currency"
             >
               {currencies.map((currency) => (
@@ -147,10 +148,10 @@ export function Header() {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-primary hover:text-accent transition-colors"
+              className="relative p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
               aria-label="Open cart"
             >
-              <ShoppingCart size={22} />
+              <ShoppingCart className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
               {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-cream text-xs font-medium rounded-full flex items-center justify-center">
                   {itemCount > 9 ? '9+' : itemCount}
@@ -161,22 +162,49 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-primary hover:text-accent transition-colors"
+              className="lg:hidden p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </nav>
+
+          {/* Search: always visible below header row on phones & tablets */}
+          <form
+            onSubmit={handlePaintingsSearch}
+            className="lg:hidden w-full min-w-0"
+          >
+            <label htmlFor="header-painting-search-bar" className="sr-only">
+              Search paintings
+            </label>
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/65 pointer-events-none"
+                aria-hidden="true"
+              />
+              <input
+                id="header-painting-search-bar"
+                type="search"
+                enterKeyHint="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search paintings"
+                className="w-full rounded-sm border border-primary/30 bg-cream/90 py-2 pl-9 pr-3 text-sm font-sans text-primary placeholder:text-primary/55 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/45"
+              />
+            </div>
+          </form>
+        </div>
 
         {/* Mobile Navigation */}
         <div
           className={cn(
             'lg:hidden overflow-hidden transition-all duration-500 ease-out',
-            isMobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+            isMobileMenuOpen ? 'max-h-[min(32rem,calc(100dvh-7rem))] opacity-100 mt-4' : 'max-h-0 opacity-0'
           )}
         >
-          <ul className="flex flex-col gap-4 py-4 border-t border-border">
+          <ul className="flex flex-col gap-1 sm:gap-4 py-4 border-t border-border overflow-y-auto overscroll-contain max-h-[min(28rem,calc(100dvh-8rem))]">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link

@@ -41,7 +41,7 @@ export default function AuthPage() {
 
   if (!loading && user && !((location.state as { returnTo?: string } | null)?.returnTo)) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="w-full max-w-md mx-auto px-4">
           <div className="bg-card border border-border rounded-lg p-8 shadow-elegant text-center">
             <h1 className="font-serif text-3xl font-medium text-primary">You are already logged in</h1>
@@ -140,7 +140,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+    <div className="min-h-screen pb-20 flex items-center justify-center">
       <div className="w-full max-w-md mx-auto px-4">
         <div className="bg-card border border-border rounded-lg p-8 shadow-elegant">
           <div className="text-center mb-8">

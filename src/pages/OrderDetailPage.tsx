@@ -32,7 +32,7 @@ export default function OrderDetailPage() {
 
   if (loading && !order) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -40,7 +40,7 @@ export default function OrderDetailPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen pt-24 pb-20">
+      <div className="min-h-screen pb-20">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <p className="text-muted-foreground">Order not found</p>
           <Button className="mt-4" onClick={() => navigate('/orders')}>
@@ -52,7 +52,7 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       <div className="container mx-auto px-4 max-w-5xl space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>

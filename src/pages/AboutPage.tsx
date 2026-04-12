@@ -2,7 +2,7 @@ import studioImage from '@/assets/studio.jpg';
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Header */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
@@ -17,7 +17,7 @@ export default function AboutPage() {
       {/* Hero Image */}
       <section className="py-4">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto aspect-[21/9] rounded-sm overflow-hidden shadow-elegant">
+          <div className="max-w-5xl mx-auto aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] rounded-sm overflow-hidden shadow-elegant">
             <img
               src={studioImage}
               alt="Rasayan Studio workspace with painting easel and art supplies"

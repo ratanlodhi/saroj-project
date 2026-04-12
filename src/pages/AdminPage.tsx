@@ -221,7 +221,7 @@ export default function AdminPage() {
 
   if ((loading || (Boolean(user) && !roleResolved)) && !authTimedOut) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -229,7 +229,7 @@ export default function AdminPage() {
 
   if (loading && authTimedOut) {
     return (
-      <div className="min-h-screen pt-24 pb-20 flex items-center justify-center">
+      <div className="min-h-screen pb-20 flex items-center justify-center">
         <div className="max-w-md text-center px-4">
           <h1 className="font-serif text-2xl text-primary">Admin Session Check Delayed</h1>
           <p className="text-muted-foreground mt-2">
@@ -244,7 +244,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

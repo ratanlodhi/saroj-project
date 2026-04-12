@@ -16,7 +16,7 @@ export default function BlogPage() {
   const showNetworkError = error && BLOG_CONFIG.enableBlogspotFeed && BLOG_CONFIG.useFallbackData;
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
+    <div className="min-h-screen pb-20">
       {/* Header */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">

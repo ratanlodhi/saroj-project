@@ -58,7 +58,7 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="bg-secondary/50 border-t border-border">
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="container mx-auto px-3 sm:px-4 py-10 sm:py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-2">
@@ -132,11 +132,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Rasayan Studio. All rights reserved.
           </p>
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs sm:text-sm text-muted-foreground justify-center md:justify-end max-w-full">
             <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
             <Link to="/return-policy" className="hover:text-primary transition-colors">Return Policy</Link>

@@ -66,7 +66,7 @@ export default function HomePage() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const scrollAmount = container.clientWidth * 0.8;
+    const scrollAmount = container.clientWidth;
     container.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth'
@@ -77,11 +77,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Full-width Hero Image */}
       <section className="w-full">
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden bg-secondary/20 flex justify-center max-h-[70vh] md:max-h-[85vh]">
           <img
             src={heroImage}
             alt="Hero artwork by Rasayan"
-            className="w-full h-auto object-cover max-h-[70vh] md:max-h-[85vh]"
+            className="w-full max-h-[70vh] md:max-h-[85vh] h-auto object-contain md:object-cover"
           />
         </div>
         <p className="text-center text-muted-foreground italic py-2 md:py-4 text-xs md:text-base px-4">
@@ -91,13 +91,13 @@ export default function HomePage() {
 
       {/* Recent Work - Horizontal Scroll Section */}
       <section className="py-12 md:py-16 lg:py-20 bg-background">
-        <div className="px-6 md:px-8 lg:px-12">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12">
           <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal text-primary mb-8 md:mb-10">
             Recent Work
           </h2>
           
           <div 
-            className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+            className="flex w-full max-w-full min-w-0 gap-0 md:gap-6 overflow-x-auto overflow-y-hidden pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
             style={{ 
               scrollbarWidth: 'none', 
               msOverflowStyle: 'none',
@@ -107,14 +107,13 @@ export default function HomePage() {
             {recentWorkImages.map((image, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 snap-start"
-                style={{ width: 'calc(80% - 8px)', minWidth: '280px', maxWidth: '500px' }}
+                className="box-border block max-md:w-full max-md:min-w-full max-md:max-w-full shrink-0 grow-0 max-md:basis-full snap-start snap-always md:w-[calc(80%-8px)] md:min-w-[280px] md:max-w-[500px] md:basis-auto md:snap-start"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-secondary/20">
+                <div className="aspect-[4/3] overflow-hidden bg-secondary/20 flex items-center justify-center">
                   <img
                     src={image}
                     alt={`Recent work ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="max-h-full w-full h-full object-contain md:object-cover"
                   />
                 </div>
               </div>
@@ -126,16 +125,16 @@ export default function HomePage() {
       <section className="bg-background">
         <div className="grid md:grid-cols-2">
           {/* Image Side */}
-          <div className="aspect-[4/5] md:aspect-auto md:min-h-[500px] lg:min-h-[600px] overflow-hidden">
+          <div className="aspect-[4/5] md:aspect-auto md:min-h-[500px] lg:min-h-[600px] overflow-hidden bg-secondary/20 flex items-center justify-center">
             <img
               src="/gallery/abstract-1.jpg"
               alt="Studio sale artwork"
-              className="w-full h-full object-cover"
+              className="max-h-full w-full h-full object-contain md:object-cover"
             />
           </div>
 
           {/* Text Side */}
-          <div className="flex flex-col justify-center px-8 py-16 md:px-12 lg:px-20 xl:px-28 bg-secondary/30">
+          <div className="flex flex-col justify-center px-5 sm:px-8 py-12 sm:py-16 md:px-12 lg:px-20 xl:px-28 bg-secondary/30">
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal text-primary mb-6 leading-tight">
               Latest<br />Update
             </h2>
@@ -159,16 +158,16 @@ export default function HomePage() {
 
       {/* Latest Paintings - Horizontal Scroll Section */}
       <section className="py-16 md:py-20 lg:py-24 bg-background">
-        <div className="px-6 md:px-8 lg:px-12">
-          <div className="flex items-center justify-between mb-8">
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <h2 className="font-sans text-sm md:text-base font-normal text-primary tracking-wide">
               Latest paintings
             </h2>
-            <div className="flex items-center gap-4">
-              <span className="font-sans text-sm text-muted-foreground">
+            <div className="flex items-center justify-between gap-4 sm:justify-end">
+              <span className="font-sans text-sm text-muted-foreground tabular-nums">
                 {currentIndex} / of {latestArtworks.length}
               </span>
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => scroll('left')}
                   disabled={!canScrollLeft}
@@ -192,7 +191,7 @@ export default function HomePage() {
           {/* Horizontal Scrolling Container */}
           <div 
             ref={scrollContainerRef}
-            className="flex gap-0 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
+            className="flex w-full max-w-full min-w-0 gap-0 md:gap-6 overflow-x-auto overflow-y-hidden pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth"
             style={{ 
               scrollbarWidth: 'none', 
               msOverflowStyle: 'none',
@@ -203,13 +202,13 @@ export default function HomePage() {
               <Link
                 key={artwork.id}
                 to="/paintings"
-                className="group flex-shrink-0 snap-start w-full md:w-[calc(50%-12px)] md:min-w-[280px] md:max-w-[400px]"
+                className="group box-border block max-md:w-full max-md:min-w-full max-md:max-w-full shrink-0 grow-0 max-md:basis-full snap-start snap-always md:w-[calc(50%-12px)] md:min-w-[280px] md:max-w-[400px] md:basis-auto md:snap-start"
               >
-                <div className="aspect-[3/4] overflow-hidden bg-secondary/20 mb-4">
+                <div className="aspect-[3/4] overflow-hidden bg-secondary/20 mb-4 flex items-center justify-center">
                   <img
                     src={artwork.image}
                     alt={artwork.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="max-h-full w-full h-full object-contain md:object-cover transition-transform duration-500 md:group-hover:scale-105"
                   />
                 </div>
                 <h3 className="font-sans text-sm md:text-base text-primary mb-1 group-hover:underline">
@@ -224,71 +223,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Collection Categories Grid */}
-      <section className="bg-background">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          <Link to="/paintings?medium=gouache" className="group relative aspect-square overflow-hidden">
-            <img 
-              src="/gallery/gouache-1.jpg" 
-              alt="Gouache collection"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/30 transition-colors duration-300" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-lg md:text-xl text-primary-foreground">Gouache</span>
-            </div>
-          </Link>
-          <Link to="/paintings?medium=acrylic" className="group relative aspect-square overflow-hidden">
-            <img 
-              src="/gallery/acrylic-1.jpg" 
-              alt="Acrylic collection"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/30 transition-colors duration-300" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-lg md:text-xl text-primary-foreground">Acrylic</span>
-            </div>
-          </Link>
-          <Link to="/paintings?medium=oil" className="group relative aspect-square overflow-hidden">
-            <img 
-              src="/gallery/oil-1.jpg" 
-              alt="Oil collection"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/30 transition-colors duration-300" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-lg md:text-xl text-primary-foreground">Oil</span>
-            </div>
-          </Link>
-          <Link to="/paintings?medium=charcoal" className="group relative aspect-square overflow-hidden">
-            <img 
-              src="/gallery/charcoal-1.jpg" 
-              alt="Charcoal collection"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-charcoal/30 transition-colors duration-300" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-serif text-lg md:text-xl text-primary-foreground">Charcoal</span>
-            </div>
-          </Link>
-        </div>
-      </section>
-
       {/* Bottom Lifestyle Images */}
       <section className="bg-background">
-        <div className="grid md:grid-cols-2">
-          <div className="aspect-[4/3] md:aspect-auto md:min-h-[400px] overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          <div className="relative aspect-[4/3] w-full overflow-hidden md:aspect-auto md:min-h-[400px]">
             <img
               src={studioImage}
               alt="Artwork in living space"
-              className="w-full h-full object-cover"
+              className="block h-full w-full object-cover md:min-h-[400px]"
             />
           </div>
-          <div className="aspect-[4/3] md:aspect-auto md:min-h-[400px] overflow-hidden">
+          <div className="relative aspect-[4/3] w-full overflow-hidden md:aspect-auto md:min-h-[400px]">
             <img
               src="/gallery/mixed-media-1.jpg"
               alt="Studio materials"
-              className="w-full h-full object-cover"
+              className="block h-full w-full object-cover md:min-h-[400px]"
             />
           </div>
         </div>
