@@ -15,9 +15,9 @@ export default function PriceAndDetailsSection({
   readOnly = true,
 }: PriceAndDetailsSectionProps) {
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0,
     }).format(price);
   };
@@ -93,7 +93,7 @@ export default function PriceAndDetailsSection({
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-600">Shipping Weight</p>
                 <p className="text-base font-medium text-gray-900">
-                  {artwork.shipping_weight} lb
+                  {artwork.shipping_weight} g
                 </p>
               </div>
             )}

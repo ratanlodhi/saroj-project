@@ -51,6 +51,8 @@ interface ArtworkFormData {
   title: string;
   medium: string;
   size: string;
+  height: string;
+  width: string;
   year: string;
   description: string;
   image_url: string;
@@ -69,10 +71,55 @@ interface ArtworkFormData {
   decorative_frame: boolean;
 }
 
+const DEFAULT_COMMISSION_PERCENTAGE = 15;
+const DEFAULT_PACKAGING_TYPE = 'Tube';
+
+const parseSizeDimensions = (size: string) => {
+  const normalized = (size || '').replace(/\s+/g, ' ').trim();
+  const match = normalized.match(/^(\d+(?:\.\d+)?)\s*[xX×]\s*(\d+(?:\.\d+)?)/);
+
+  if (match) {
+    return {
+      height: match[1],
+      width: match[2],
+    };
+  }
+
+  const numericParts = normalized.match(/\d+(?:\.\d+)?/g) || [];
+  if (numericParts.length >= 2) {
+    return {
+      height: numericParts[0],
+      width: numericParts[1],
+    };
+  }
+
+  return {
+    height: numericParts[0] || '',
+    width: '',
+  };
+};
+
+const buildSizeFromDimensions = (height: string, width: string) => {
+  const trimmedHeight = height.trim();
+  const trimmedWidth = width.trim();
+
+  if (trimmedHeight && trimmedWidth) {
+    return `${trimmedHeight} x ${trimmedWidth} cm`;
+  }
+
+  if (trimmedHeight || trimmedWidth) {
+    return `${trimmedHeight || trimmedWidth} cm`;
+  }
+
+  return '';
+};
+
 const initialFormData: ArtworkFormData = {
   title: '',
   medium: '',
   size: '',
+  height: '',
+  width: '',
   year: new Date().getFullYear().toString(),
   description: '',
   image_url: '',
@@ -83,8 +130,8 @@ const initialFormData: ArtworkFormData = {
   category_id: '',
   status: 'For Sale',
   quantity: 1,
-  commission_percentage: 60,
-  packaging_type: '',
+  commission_percentage: DEFAULT_COMMISSION_PERCENTAGE,
+  packaging_type: DEFAULT_PACKAGING_TYPE,
   shipping_weight: 0,
   number_of_panels: 1,
   ready_to_hang: false,
@@ -147,20 +194,24 @@ export default function ArtworkManager() {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 2,
     }).format(price);
   };
 
   const handleOpenDialog = (artwork?: Artwork) => {
     if (artwork) {
+      const { height, width } = parseSizeDimensions(artwork.size);
+
       setEditingArtwork(artwork);
       setFormData({
         title: artwork.title,
         medium: artwork.medium,
         size: artwork.size,
+        height,
+        width,
         year: artwork.year,
         description: artwork.description,
         image_url: artwork.image_url,
@@ -171,8 +222,8 @@ export default function ArtworkManager() {
         category_id: artwork.category_id || '',
         status: artwork.status || 'For Sale',
         quantity: artwork.quantity || 1,
-        commission_percentage: artwork.commission_percentage || 60,
-        packaging_type: artwork.packaging_type || '',
+        commission_percentage: artwork.commission_percentage ?? DEFAULT_COMMISSION_PERCENTAGE,
+        packaging_type: artwork.packaging_type || DEFAULT_PACKAGING_TYPE,
         shipping_weight: artwork.shipping_weight || 0,
         number_of_panels: artwork.number_of_panels || 1,
         ready_to_hang: artwork.ready_to_hang || false,
@@ -200,12 +251,19 @@ export default function ArtworkManager() {
     setIsSubmitting(true);
 
     try {
+      const { height, width, ...payloadBase } = formData;
+      const payload = {
+        ...payloadBase,
+        size: buildSizeFromDimensions(height, width),
+        packaging_type: DEFAULT_PACKAGING_TYPE,
+      };
+
       let result = null;
 
       if (editingArtwork) {
-        result = await updateArtwork(editingArtwork.id, formData);
+        result = await updateArtwork(editingArtwork.id, payload);
       } else {
-        result = await createArtwork(formData);
+        result = await createArtwork(payload);
       }
 
       // Keep dialog open if save failed so user can correct invalid input.
@@ -484,12 +542,28 @@ export default function ArtworkManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="size">Size *</Label>
+                    <Label htmlFor="height">Height (cm) *</Label>
                     <Input
-                      id="size"
-                      value={formData.size}
-                      onChange={(e) => handleInputChange('size', e.target.value)}
-                      placeholder="e.g., 30 × 30 cm"
+                      id="height"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formData.height}
+                      onChange={(e) => handleInputChange('height', e.target.value)}
+                      placeholder="e.g., 30"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="width">Width (cm) *</Label>
+                    <Input
+                      id="width"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formData.width}
+                      onChange={(e) => handleInputChange('width', e.target.value)}
+                      placeholder="e.g., 40"
                       required
                     />
                   </div>
@@ -505,6 +579,36 @@ export default function ArtworkManager() {
                     placeholder="e.g., 2024"
                     required
                   />
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="text-sm font-semibold text-primary mb-4">Weight & Packaging</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="packagingType">Packaging Type</Label>
+                      <Input
+                        id="packagingType"
+                        type="text"
+                        value={DEFAULT_PACKAGING_TYPE}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="shippingWeight">Shipping Weight (g)</Label>
+                      <Input
+                        id="shippingWeight"
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={formData.shipping_weight}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          handleInputChange('shipping_weight', val >= 0 ? val : 0);
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -534,7 +638,7 @@ export default function ArtworkManager() {
               <TabsContent value="details" className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="price">Price (USD) *</Label>
+                    <Label htmlFor="price">Price (INR) *</Label>
                     <Input
                       id="price"
                       type="number"
@@ -605,7 +709,7 @@ export default function ArtworkManager() {
                   </div>
 
                   <div className="space-y-2 mt-4">
-                    <Label htmlFor="commission">Commission Percentage</Label>
+                    <Label htmlFor="commission">Shipping & Insurance Commission</Label>
                     <div className="flex gap-2 items-center">
                       <Input
                         id="commission"
@@ -622,39 +726,8 @@ export default function ArtworkManager() {
                       />
                       <span className="text-sm text-muted-foreground">%</span>
                       <span className="text-sm font-medium">
-                        ${((formData.price * formData.commission_percentage) / 100).toFixed(2)}
+                        {formatPrice((formData.price * formData.commission_percentage) / 100)}
                       </span>
-                    </div>
-                  </div>
-
-                  {/* Weight & Packaging */}
-                  <div className="border-t mt-6 pt-6">
-                    <h4 className="text-sm font-semibold text-primary mb-4">Weight & Packaging</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="packagingType">Packaging Type</Label>
-                        <Input
-                          id="packagingType"
-                          type="text"
-                          value={formData.packaging_type}
-                          onChange={(e) => handleInputChange('packaging_type', e.target.value)}
-                          placeholder="e.g., Tube, Box, Envelope"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="shippingWeight">Shipping Weight (lb)</Label>
-                        <Input
-                          id="shippingWeight"
-                          type="number"
-                          min="0"
-                          step="0.1"
-                          value={formData.shipping_weight}
-                          onChange={(e) => {
-                            const val = Number(e.target.value);
-                            handleInputChange('shipping_weight', val >= 0 ? val : 0);
-                          }}
-                        />
-                      </div>
                     </div>
                   </div>
 

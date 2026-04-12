@@ -68,8 +68,8 @@ export function useArtworks() {
       // Price & Details with defaults
       status: artwork?.status || 'For Sale',
       quantity: artwork?.quantity ?? 1,
-      commission_percentage: artwork?.commission_percentage ?? 60,
-      packaging_type: artwork?.packaging_type || '',
+      commission_percentage: artwork?.commission_percentage ?? 15,
+      packaging_type: artwork?.packaging_type || 'Tube',
       shipping_weight: artwork?.shipping_weight ?? 0,
       number_of_panels: artwork?.number_of_panels ?? 1,
       ready_to_hang: artwork?.ready_to_hang ?? false,
@@ -119,9 +119,9 @@ export function useArtworks() {
     }
     if ('commission_percentage' in payload) {
       const parsedCommission = Number(payload.commission_percentage);
-      payload.commission_percentage = Number.isFinite(parsedCommission) ? parsedCommission : 60;
+      payload.commission_percentage = Number.isFinite(parsedCommission) ? parsedCommission : 15;
     }
-    if ('packaging_type' in payload) payload.packaging_type = (payload.packaging_type || '').trim();
+    if ('packaging_type' in payload) payload.packaging_type = (payload.packaging_type || '').trim() || 'Tube';
     if ('shipping_weight' in payload) {
       const parsedWeight = Number(payload.shipping_weight);
       payload.shipping_weight = Number.isFinite(parsedWeight) ? parsedWeight : 0;

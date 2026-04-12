@@ -263,7 +263,7 @@ export default function AdminPage() {
             Admin Panel
           </h1>
           <p className="text-muted-foreground font-sans mt-2">
-            Manage users, paintings, articles, and shipping settings
+            Manage users, paintings, articles, and shipping & insurance settings
           </p>
           <div className="section-divider mt-6" />
         </div>
@@ -284,7 +284,7 @@ export default function AdminPage() {
             </TabsTrigger>
             <TabsTrigger value="shipping" className="gap-2">
               <Truck size={16} />
-              Shipping Percentages
+              Shipping & Insurance
             </TabsTrigger>
           </TabsList>
 

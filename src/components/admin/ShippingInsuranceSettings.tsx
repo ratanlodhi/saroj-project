@@ -146,9 +146,9 @@ export default function ShippingInsuranceSettings() {
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-6">
       <div>
-        <h2 className="font-serif text-2xl font-medium text-primary">Shipping Percentages</h2>
+        <h2 className="font-serif text-2xl font-medium text-primary">Shipping & Insurance</h2>
         <p className="text-muted-foreground font-sans mt-1">
-          Configure domestic and international shipping percentages applied at checkout.
+          Configure domestic and international shipping/insurance percentages applied at checkout.
         </p>
       </div>
 
@@ -193,7 +193,7 @@ export default function ShippingInsuranceSettings() {
       </div>
 
       <Button onClick={handleSave} disabled={loading || saving}>
-        {saving ? 'Saving...' : 'Save Shipping Percentages'}
+        {saving ? 'Saving...' : 'Save Shipping & Insurance'}
       </Button>
     </div>
   );
