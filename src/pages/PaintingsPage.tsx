@@ -171,9 +171,6 @@ export default function PaintingsPage() {
                       <h2 className="font-serif text-lg md:text-xl font-medium text-primary mt-1">
                         {artwork.title} Painting
                       </h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {artwork.artist}, {artwork.artist_location}
-                      </p>
                       <div className="mt-3 space-y-1 text-sm text-muted-foreground">
                         <p>{artwork.medium}</p>
                         <p>{artwork.size}</p>
@@ -250,12 +247,7 @@ export default function PaintingsPage() {
               <h2 className="font-serif text-xl md:text-2xl font-medium text-primary mt-3">
                 {selectedArtwork.title} Painting
               </h2>
-              
-              {/* Artist Info */}
-              <p className="text-muted-foreground font-sans mt-2">
-                {selectedArtwork.artist}, {selectedArtwork.artistLocation}
-              </p>
-              
+
               {/* Medium & Size */}
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>{selectedArtwork.medium}</p>

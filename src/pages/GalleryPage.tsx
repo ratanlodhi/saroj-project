@@ -163,12 +163,7 @@ export default function GalleryPage() {
               <h2 className="font-serif text-xl md:text-2xl font-medium text-primary mt-3">
                 {selectedArtwork.title} Painting
               </h2>
-              
-              {/* Artist Info */}
-              <p className="text-muted-foreground font-sans mt-2">
-                {selectedArtwork.artist}, {selectedArtwork.artistLocation}
-              </p>
-              
+
               {/* Medium & Size */}
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>{selectedArtwork.medium}</p>

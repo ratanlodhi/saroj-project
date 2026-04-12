@@ -113,9 +113,6 @@ export function CartSidebar() {
                       <h4 className="font-serif text-sm font-medium text-primary truncate">
                         {item.artwork.title}
                       </h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {item.artwork.artist}
-                      </p>
                       <span className="text-xs text-muted-foreground mt-2 block">
                         Qty: {item.quantity}
                       </span>
