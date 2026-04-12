@@ -12,7 +12,6 @@ export function CartSidebar() {
     removeFromCart,
     clearCart,
     getCartTotal,
-    getShippingCost,
     getTotalWithShipping,
     getItemCount,
     isCartOpen,
@@ -152,10 +151,14 @@ export function CartSidebar() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(getCartTotal())}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Shipping & Insurance</span>
-                  <span>{formatPrice(getShippingCost())}</span>
-                </div>
+                {user && (
+                  <div className="flex items-center justify-between text-sm gap-2">
+                    <span className="text-muted-foreground">Shipping & Insurance</span>
+                    <span className="text-muted-foreground shrink-0" aria-hidden>
+                      —
+                    </span>
+                  </div>
+                )}
               </div>
 
               <Separator />

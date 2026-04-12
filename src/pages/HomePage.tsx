@@ -84,7 +84,7 @@ export default function HomePage() {
             className="w-full max-h-[70vh] md:max-h-[85vh] h-auto object-contain md:object-cover"
           />
         </div>
-        <p className="text-center text-muted-foreground italic py-2 md:py-4 text-xs md:text-base px-4">
+        <p className="text-right text-muted-foreground italic py-2 md:py-4 text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 lg:px-12 max-w-3xl ml-auto">
           A fervent storyteller trying to tell the story of silence
         </p>
       </section>

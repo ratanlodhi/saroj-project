@@ -2,8 +2,10 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback 
 import { Artwork } from '@/hooks/useArtworks';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  calculateShippingCost,
+  calculateShippingByCountry,
+  DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE,
   DEFAULT_SHIPPING_INSURANCE_PERCENTAGE,
+  INTERNATIONAL_SHIPPING_STORAGE_KEY,
   SHIPPING_INSURANCE_STORAGE_KEY,
   normalizeShippingInsurancePercentage,
 } from '@/data/shippingConfig';
@@ -19,7 +21,11 @@ interface CartContextType {
   removeFromCart: (artworkId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   getCartTotal: () => number;
+  /** Uses delivery country at checkout; India = domestic % (default 0%), other countries = international % (default 15%). */
+  getShippingCostForCountry: (country: string | null | undefined) => number;
+  /** Cart only: always 0 — shipping is applied at checkout once a delivery address is chosen. */
   getShippingCost: () => number;
+  getTotalWithShippingForCountry: (country: string | null | undefined) => number;
   getTotalWithShipping: () => number;
   getItemCount: () => number;
   isCartOpen: boolean;
@@ -32,10 +38,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [shippingPercentage, setShippingPercentage] = useState<number>(() => {
+  const [domesticShippingPercentage, setDomesticShippingPercentage] = useState<number>(() => {
     const saved = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
     return saved === null
       ? DEFAULT_SHIPPING_INSURANCE_PERCENTAGE
+      : normalizeShippingInsurancePercentage(saved);
+  });
+  const [internationalShippingPercentage, setInternationalShippingPercentage] = useState<number>(() => {
+    const saved = localStorage.getItem(INTERNATIONAL_SHIPPING_STORAGE_KEY);
+    return saved === null
+      ? DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE
       : normalizeShippingInsurancePercentage(saved);
   });
 
@@ -106,7 +118,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const loadShippingSettings = useCallback(async () => {
     const { data, error } = await db
       .from('app_settings')
-      .select('shipping_insurance_percentage')
+      .select('shipping_insurance_percentage, international_shipping_percentage')
       .eq('id', 1)
       .maybeSingle();
 
@@ -115,9 +127,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const normalized = normalizeShippingInsurancePercentage(data?.shipping_insurance_percentage);
-    setShippingPercentage(normalized);
-    localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(normalized));
+    const domestic = normalizeShippingInsurancePercentage(data?.shipping_insurance_percentage);
+    const international = normalizeShippingInsurancePercentage(
+      data?.international_shipping_percentage ?? DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE
+    );
+    setDomesticShippingPercentage(domestic);
+    setInternationalShippingPercentage(international);
+    localStorage.setItem(SHIPPING_INSURANCE_STORAGE_KEY, String(domestic));
+    localStorage.setItem(INTERNATIONAL_SHIPPING_STORAGE_KEY, String(international));
   }, [db]);
 
   useEffect(() => {
@@ -126,13 +143,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const syncFromStorage = () => {
-      const saved = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
-      if (saved === null) {
-        setShippingPercentage(DEFAULT_SHIPPING_INSURANCE_PERCENTAGE);
-        return;
-      }
-
-      setShippingPercentage(normalizeShippingInsurancePercentage(saved));
+      const domesticSaved = localStorage.getItem(SHIPPING_INSURANCE_STORAGE_KEY);
+      const intlSaved = localStorage.getItem(INTERNATIONAL_SHIPPING_STORAGE_KEY);
+      setDomesticShippingPercentage(
+        domesticSaved === null
+          ? DEFAULT_SHIPPING_INSURANCE_PERCENTAGE
+          : normalizeShippingInsurancePercentage(domesticSaved)
+      );
+      setInternationalShippingPercentage(
+        intlSaved === null
+          ? DEFAULT_INTERNATIONAL_SHIPPING_PERCENTAGE
+          : normalizeShippingInsurancePercentage(intlSaved)
+      );
     };
 
     window.addEventListener('storage', syncFromStorage);
@@ -271,14 +293,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const getShippingCost = () => {
-    const subtotal = getCartTotal();
-    return calculateShippingCost(subtotal, shippingPercentage);
-  };
+  const getShippingCostForCountry = useCallback(
+    (country: string | null | undefined) => {
+      const subtotal = items.reduce((total, item) => total + item.artwork.price * item.quantity, 0);
+      return calculateShippingByCountry(
+        subtotal,
+        country,
+        domesticShippingPercentage,
+        internationalShippingPercentage
+      );
+    },
+    [items, domesticShippingPercentage, internationalShippingPercentage]
+  );
 
-  const getTotalWithShipping = () => {
-    return getCartTotal() + getShippingCost();
-  };
+  /** Cart / drawer: no shipping until checkout (address-based). Guest or logged-in — same behavior. */
+  const getShippingCost = useCallback(() => {
+    return 0;
+  }, []);
+
+  const getTotalWithShippingForCountry = useCallback(
+    (country: string | null | undefined) => {
+      const subtotal = items.reduce((total, item) => total + item.artwork.price * item.quantity, 0);
+      return subtotal + calculateShippingByCountry(
+        subtotal,
+        country,
+        domesticShippingPercentage,
+        internationalShippingPercentage
+      );
+    },
+    [items, domesticShippingPercentage, internationalShippingPercentage]
+  );
+
+  /** Cart total excludes shipping; shipping is added at checkout with address. */
+  const getTotalWithShipping = useCallback(() => {
+    return items.reduce((total, item) => total + item.artwork.price * item.quantity, 0);
+  }, [items]);
 
   const getItemCount = () => {
     return items.reduce((count, item) => count + item.quantity, 0);
@@ -292,7 +341,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         removeFromCart,
         clearCart,
         getCartTotal,
+        getShippingCostForCountry,
         getShippingCost,
+        getTotalWithShippingForCountry,
         getTotalWithShipping,
         getItemCount,
         isCartOpen,

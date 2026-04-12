@@ -148,12 +148,13 @@ export default function ShippingInsuranceSettings() {
       <div>
         <h2 className="font-serif text-2xl font-medium text-primary">Shipping & Insurance</h2>
         <p className="text-muted-foreground font-sans mt-1">
-          Configure domestic and international shipping/insurance percentages applied at checkout.
+          India (domestic) orders use the domestic percentage (0% = free). Addresses outside India use the
+          international percentage of the order subtotal for shipping and insurance.
         </p>
       </div>
 
       <div className="max-w-sm space-y-2">
-        <Label htmlFor="domestic-shipping-percentage">Domestic Percentage</Label>
+        <Label htmlFor="domestic-shipping-percentage">India (domestic) %</Label>
         <div className="flex items-center gap-3">
           <Input
             id="domestic-shipping-percentage"
@@ -168,12 +169,12 @@ export default function ShippingInsuranceSettings() {
           <span className="text-sm text-muted-foreground">%</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Example: For subtotal Rs{sampleSubtotal}, domestic shipping is Rs{sampleDomesticShipping}.
+          Example: For subtotal Rs{sampleSubtotal}, shipping in India is Rs{sampleDomesticShipping}.
         </p>
       </div>
 
       <div className="max-w-sm space-y-2">
-        <Label htmlFor="international-shipping-percentage">International Percentage</Label>
+        <Label htmlFor="international-shipping-percentage">Outside India (international) %</Label>
         <div className="flex items-center gap-3">
           <Input
             id="international-shipping-percentage"
@@ -188,7 +189,7 @@ export default function ShippingInsuranceSettings() {
           <span className="text-sm text-muted-foreground">%</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Example: For subtotal Rs{sampleSubtotal}, international shipping is Rs{sampleInternationalShipping}.
+          Example: For subtotal Rs{sampleSubtotal}, shipping outside India is Rs{sampleInternationalShipping}.
         </p>
       </div>
 

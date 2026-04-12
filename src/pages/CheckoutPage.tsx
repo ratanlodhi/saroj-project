@@ -29,7 +29,8 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { items, getCartTotal, getShippingCost, getTotalWithShipping, clearCart } = useCart();
+  const { items, getCartTotal, getShippingCostForCountry, getTotalWithShippingForCountry, clearCart } =
+    useCart();
   const { formatPrice } = useCurrency();
   const { addresses, loading: addressesLoading, addAddress, updateAddress, deleteAddress } = useAddresses();
   const { placeOrder } = useOrders();
@@ -42,13 +43,19 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
-  const subtotal = getCartTotal();
-  const shippingCost = getShippingCost();
-  const total = getTotalWithShipping();
-
   const selectedAddress = useMemo(
     () => addresses.find((a) => a.id === selectedAddressId) || null,
     [addresses, selectedAddressId]
+  );
+
+  const subtotal = getCartTotal();
+  const shippingCost = useMemo(
+    () => getShippingCostForCountry(selectedAddress?.country),
+    [getShippingCostForCountry, selectedAddress?.country, items]
+  );
+  const total = useMemo(
+    () => getTotalWithShippingForCountry(selectedAddress?.country),
+    [getTotalWithShippingForCountry, selectedAddress?.country, items]
   );
 
   const canCheckout = user && items.length > 0 && selectedAddress && agreeToTerms;

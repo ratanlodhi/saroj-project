@@ -3,11 +3,13 @@ import { ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { items, removeFromCart, clearCart, getCartTotal, getShippingCost, getTotalWithShipping, getItemCount } = useCart();
+  const { items, removeFromCart, clearCart, getCartTotal, getTotalWithShipping, getItemCount } = useCart();
   const { formatPrice } = useCurrency();
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen pb-20">
@@ -73,10 +75,14 @@ export default function CartPage() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(getCartTotal())}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Shipping & Insurance</span>
-                  <span>{formatPrice(getShippingCost())}</span>
-                </div>
+                {user && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground">Shipping & Insurance</span>
+                    <span className="text-muted-foreground shrink-0" aria-hidden>
+                      —
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-border my-4" />
