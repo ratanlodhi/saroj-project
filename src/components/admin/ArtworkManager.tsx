@@ -71,7 +71,19 @@ interface ArtworkFormData {
 }
 
 const DEFAULT_COMMISSION_PERCENTAGE = 15;
-const DEFAULT_PACKAGING_TYPE = 'Tube';
+
+/** Admin-selectable packaging; stored on each artwork. */
+const PACKAGING_OPTIONS = ['Tube', 'Box', 'Envelope '] as const;
+type PackagingTypeOption = (typeof PACKAGING_OPTIONS)[number];
+const DEFAULT_PACKAGING_TYPE: PackagingTypeOption = 'Tube';
+
+function normalizePackagingType(value: string | undefined | null): PackagingTypeOption {
+  const v = (value || '').trim();
+  if (PACKAGING_OPTIONS.includes(v as PackagingTypeOption)) {
+    return v as PackagingTypeOption;
+  }
+  return DEFAULT_PACKAGING_TYPE;
+}
 
 const parseSizeDimensions = (size: string) => {
   const normalized = (size || '').replace(/\s+/g, ' ').trim();
@@ -220,7 +232,7 @@ export default function ArtworkManager() {
         status: artwork.status || 'For Sale',
         quantity: artwork.quantity || 1,
         commission_percentage: artwork.commission_percentage ?? DEFAULT_COMMISSION_PERCENTAGE,
-        packaging_type: artwork.packaging_type || DEFAULT_PACKAGING_TYPE,
+        packaging_type: normalizePackagingType(artwork.packaging_type),
         shipping_weight: artwork.shipping_weight || 0,
         number_of_panels: artwork.number_of_panels || 1,
         ready_to_hang: artwork.ready_to_hang || false,
@@ -253,7 +265,7 @@ export default function ArtworkManager() {
         ...payloadBase,
         size: buildSizeFromDimensions(height, width),
         year: '',
-        packaging_type: DEFAULT_PACKAGING_TYPE,
+        packaging_type: normalizePackagingType(payloadBase.packaging_type),
       };
 
       let result = null;
@@ -315,7 +327,7 @@ export default function ArtworkManager() {
           <div className="text-2xl font-serif font-medium text-primary">
             {artworks.filter(a => a.sold).length}
           </div>
-          <div className="text-sm text-muted-foreground">Sold</div>
+          <div className="text-xs text-muted-foreground leading-snug px-0.5">Not available for sale</div>
         </div>
         <div className="bg-card border border-border rounded-lg p-4 text-center">
           <div className="text-2xl font-serif font-medium text-primary">
@@ -425,7 +437,9 @@ export default function ArtworkManager() {
                     <div className="flex gap-1">
                       {artwork.featured && <Badge variant="default">Featured</Badge>}
                       {artwork.sold ? (
-                        <Badge variant="destructive">Sold</Badge>
+                        <Badge variant="destructive" className="max-w-[11rem] whitespace-normal text-center text-xs leading-tight">
+                          Not available for sale
+                        </Badge>
                       ) : (
                         <Badge variant="outline">Available</Badge>
                       )}
@@ -572,13 +586,23 @@ export default function ArtworkManager() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="packagingType">Packaging Type</Label>
-                      <Input
-                        id="packagingType"
-                        type="text"
-                        value={DEFAULT_PACKAGING_TYPE}
-                        readOnly
-                        disabled
-                      />
+                      <Select
+                        value={formData.packaging_type}
+                        onValueChange={(val) =>
+                          handleInputChange('packaging_type', val as PackagingTypeOption)
+                        }
+                      >
+                        <SelectTrigger id="packagingType">
+                          <SelectValue placeholder="Select packaging" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PACKAGING_OPTIONS.map((opt) => (
+                            <SelectItem key={opt} value={opt}>
+                              {opt}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="shippingWeight">Shipping Weight (g)</Label>
@@ -661,7 +685,7 @@ export default function ArtworkManager() {
                     checked={formData.sold}
                     onCheckedChange={(checked) => handleInputChange('sold', checked)}
                   />
-                  <Label htmlFor="sold">Mark as sold</Label>
+                  <Label htmlFor="sold">Mark as not available for sale</Label>
                 </div>
 
                 {/* Price & Details Section */}

@@ -266,7 +266,7 @@ export function CreateArtworkForm({ onArtworkCreated }: CreateArtworkFormProps) 
                     }))
                   }
                 />
-                <span className="text-sm font-medium">Sold</span>
+                <span className="text-sm font-medium">Mark as not available for sale</span>
               </label>
             </div>
           </div>

@@ -164,7 +164,7 @@ export default function PaintingsPage() {
                         </p>
                         {artwork.sold && (
                           <span className="px-2 py-0.5 text-xs font-medium bg-highlight text-highlight-foreground rounded">
-                            Sold
+                            Not available for sale
                           </span>
                         )}
                       </div>
@@ -180,9 +180,9 @@ export default function PaintingsPage() {
                       </p>
                       <div className="mt-4 flex items-center gap-3">
                         {artwork.sold ? (
-                          <Button size="sm" disabled className="gap-2 opacity-50">
+                          <Button size="sm" disabled className="gap-2 opacity-50 text-xs">
                             <ShoppingCart size={16} />
-                            Sold
+                            Not available for sale
                           </Button>
                         ) : (
                           <Button
