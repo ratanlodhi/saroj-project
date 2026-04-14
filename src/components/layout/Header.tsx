@@ -1,11 +1,69 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, LogIn, LogOut, Loader2, Search, User } from 'lucide-react';
+import { Menu, X, ShoppingCart, LogOut, Loader2, Search, User, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency, currencies } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { SiteLogo } from './SiteLogo';
+
+const accountIconClass =
+  'w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]';
+
+type AccountMenuProps = {
+  trigger: ReactNode;
+  align?: 'start' | 'end';
+};
+
+function AccountMenu({ trigger, align = 'end' }: AccountMenuProps) {
+  const navigate = useNavigate();
+  const { user, signOut, isAdmin, roleResolved } = useAuth();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuContent align={align} className="w-56 z-[60]">
+        <DropdownMenuLabel className="truncate font-normal text-xs text-muted-foreground">
+          {user?.email ?? 'Signed in'}
+        </DropdownMenuLabel>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onSelect={() => navigate('/profile')}
+        >
+          <User className="mr-2 h-4 w-4" aria-hidden />
+          Profile
+        </DropdownMenuItem>
+        {isAdmin && roleResolved && (
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onSelect={() => navigate('/admin')}
+          >
+            <LayoutDashboard className="mr-2 h-4 w-4" aria-hidden />
+            Dashboard
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer text-destructive focus:text-destructive"
+          onSelect={() => {
+            void signOut();
+          }}
+        >
+          <LogOut className="mr-2 h-4 w-4" aria-hidden />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -25,9 +83,13 @@ export function Header() {
   const navigate = useNavigate();
   const { getItemCount, setIsCartOpen } = useCart();
   const { activeCurrency, setActiveCurrency } = useCurrency();
-  const { session, signOut, loading: authLoading } = useAuth();
+  const { session, loading: authLoading } = useAuth();
   const itemCount = getItemCount();
   const isLoggedIn = Boolean(session?.user);
+
+  const goToAuth = () => {
+    navigate('/auth', { state: { returnTo: `${location.pathname}${location.search}` } });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,32 +185,26 @@ export function Header() {
                 <Loader2 className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] animate-spin" />
               </div>
             ) : isLoggedIn ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => navigate('/profile')}
-                  className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
-                  aria-label="Profile"
-                >
-                  <User className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
-                </button>
-                <button
-                  type="button"
-                  onClick={signOut}
-                  className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
-                  aria-label="Sign out"
-                >
-                  <LogOut className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
-                </button>
-              </>
+              <AccountMenu
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    aria-label="Account menu"
+                    aria-haspopup="menu"
+                  >
+                    <User className={accountIconClass} strokeWidth={1.75} />
+                  </button>
+                }
+              />
             ) : (
               <button
                 type="button"
-                onClick={() => navigate('/auth')}
-                className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
+                onClick={goToAuth}
+                className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                 aria-label="Sign in"
               >
-                <LogIn className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
+                <User className={accountIconClass} strokeWidth={1.75} />
               </button>
             )}
 
@@ -249,32 +305,28 @@ export function Header() {
                   Checking sign-in…
                 </div>
               ) : isLoggedIn ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/profile')}
-                    className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
-                  >
-                    <User size={18} />
-                    Profile
-                  </button>
-                  <button
-                    type="button"
-                    onClick={signOut}
-                    className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
-                  >
-                    <LogOut size={18} />
-                    Sign Out
-                  </button>
-                </>
+                <AccountMenu
+                  align="start"
+                  trigger={
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left rounded-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                      aria-label="Account menu"
+                      aria-haspopup="menu"
+                    >
+                      <User size={18} strokeWidth={1.75} />
+                      Account
+                    </button>
+                  }
+                />
               ) : (
                 <button
                   type="button"
-                  onClick={() => navigate('/auth')}
-                  className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
+                  onClick={goToAuth}
+                  className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left rounded-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                 >
-                  <LogIn size={18} />
-                  Sign In
+                  <User size={18} strokeWidth={1.75} />
+                  Sign in
                 </button>
               )}
             </li>

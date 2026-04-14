@@ -134,6 +134,10 @@ export function useAuth() {
   }, []);
 
   const checkAdminRole = async (userId: string, userEmail?: string | null) => {
+    // Clear first so the UI never shows admin affordances from a previous session/user
+    // while this check is in flight (or if the user is not an admin).
+    setIsAdmin(false);
+
     if (userEmail?.toLowerCase() === ADMIN_EMAIL) {
       setIsAdmin(true);
       return;
