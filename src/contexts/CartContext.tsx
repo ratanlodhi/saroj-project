@@ -21,7 +21,7 @@ interface CartContextType {
   removeFromCart: (artworkId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   getCartTotal: () => number;
-  /** Uses delivery country at checkout; India = domestic % (default 0%), other countries = international % (default 15%). */
+  /** Uses delivery country at checkout; India = Rs 0; other countries = international % of subtotal (default 15%). */
   getShippingCostForCountry: (country: string | null | undefined) => number;
   /** Cart only: always 0 — shipping is applied at checkout once a delivery address is chosen. */
   getShippingCost: () => number;

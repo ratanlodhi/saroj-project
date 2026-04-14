@@ -8,6 +8,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
+import { PaintingZoomImage } from '@/components/PaintingZoomImage';
 import type { Artwork } from '@/hooks/useArtworks';
 
 export default function PaintingsPage() {
@@ -230,10 +231,10 @@ export default function PaintingsPage() {
             </button>
 
             <div className="md:w-2/3 bg-muted/20 flex items-center justify-center p-4">
-              <img
-                src={selectedArtwork.image_url}
+              <PaintingZoomImage
+                src={selectedArtwork.image_url || selectedArtwork.image}
                 alt={selectedArtwork.title}
-                className="w-full h-auto max-h-[70vh] md:max-h-[85vh] object-contain"
+                zoomScale={5}
               />
             </div>
 

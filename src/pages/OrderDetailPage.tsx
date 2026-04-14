@@ -43,8 +43,8 @@ export default function OrderDetailPage() {
       <div className="min-h-screen pb-20">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <p className="text-muted-foreground">Order not found</p>
-          <Button className="mt-4" onClick={() => navigate('/orders')}>
-            Back to Orders
+          <Button className="mt-4" onClick={() => navigate('/profile?tab=orders')}>
+            Back to orders
           </Button>
         </div>
       </div>
@@ -60,8 +60,8 @@ export default function OrderDetailPage() {
             <h1 className="font-serif text-3xl text-primary mt-2">{order.order_number}</h1>
             <p className="text-muted-foreground text-sm mt-1">Placed on {new Date(order.created_at).toLocaleString()}</p>
           </div>
-          <Button variant="outline" onClick={() => navigate('/orders')}>
-            Back to Orders
+          <Button variant="outline" onClick={() => navigate('/profile?tab=orders')}>
+            Back to orders
           </Button>
         </div>
 

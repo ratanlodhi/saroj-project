@@ -27,27 +27,75 @@ export function calculateShippingCost(orderTotal: number, shippingPercentage: nu
   return Math.round((orderTotal * shippingPercentage) / 100);
 }
 
-/** True when country is India (common spellings / codes). Unknown/empty treated as domestic for cart pricing. */
+function normalizeCountryInput(country: string): string {
+  return String(country)
+    .normalize('NFKC')
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+/** ISO / common spellings for India (not Indonesia). */
+const INDIA_ALIASES = new Set([
+  'india',
+  'in',
+  'ind',
+  'भारत',
+  'bharat',
+  'hindustan',
+  'republic of india',
+]);
+
+/**
+ * True when the delivery country is India (handles codes, Hindi, comma-separated lines, etc.).
+ * Empty / unknown is treated as domestic for cart-only pricing before an address exists.
+ */
 export function isIndiaCountry(country: string | null | undefined): boolean {
   if (country == null || String(country).trim() === '') {
     return true;
   }
-  const c = String(country).trim().toLowerCase();
-  return c === 'india' || c === 'in' || c === 'भारत';
+
+  const raw = String(country);
+  const n = normalizeCountryInput(raw);
+
+  if (INDIA_ALIASES.has(n)) {
+    return true;
+  }
+
+  // Parentheses forms: "India (IN)", "(IN)"
+  if (/\(\s*in\s*\)/i.test(raw) || /\(\s*ind\s*\)/i.test(raw)) {
+    return true;
+  }
+
+  const segments = n.split(',').map((s) => s.trim()).filter(Boolean);
+  const last = segments[segments.length - 1] ?? n;
+  if (INDIA_ALIASES.has(last)) {
+    return true;
+  }
+
+  // "State, India" — word "india" but not Indonesia
+  if (/\bindia\b/i.test(n) && !/\bindonesia\b/i.test(n)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
- * Shipping & insurance: India = domestic % (default 0 = free); any other country = international % (default 15).
+ * Shipping & insurance: India is always free (0). Other countries use the international % of subtotal.
+ * (Domestic % from settings is not applied to India so misconfigured values cannot charge Indian addresses.)
  */
 export function calculateShippingByCountry(
   orderTotal: number,
   country: string | null | undefined,
-  domesticPercentage: number,
+  _domesticPercentage: number,
   internationalPercentage: number
 ): number {
   if (orderTotal <= 0) {
     return 0;
   }
-  const pct = isIndiaCountry(country) ? domesticPercentage : internationalPercentage;
-  return calculateShippingCost(orderTotal, pct);
+  if (isIndiaCountry(country)) {
+    return 0;
+  }
+  return calculateShippingCost(orderTotal, internationalPercentage);
 }

@@ -140,7 +140,6 @@ export default function ShippingInsuranceSettings() {
   };
 
   const sampleSubtotal = 1000;
-  const sampleDomesticShipping = Math.round((sampleSubtotal * domesticPercentage) / 100);
   const sampleInternationalShipping = Math.round((sampleSubtotal * internationalPercentage) / 100);
 
   return (
@@ -148,8 +147,8 @@ export default function ShippingInsuranceSettings() {
       <div>
         <h2 className="font-serif text-2xl font-medium text-primary">Shipping & Insurance</h2>
         <p className="text-muted-foreground font-sans mt-1">
-          India (domestic) orders use the domestic percentage (0% = free). Addresses outside India use the
-          international percentage of the order subtotal for shipping and insurance.
+          India addresses always get Rs 0 shipping and insurance at checkout. Addresses outside India pay the
+          international percentage of the order subtotal. The domestic % is kept in settings for reference only.
         </p>
       </div>
 
@@ -169,7 +168,7 @@ export default function ShippingInsuranceSettings() {
           <span className="text-sm text-muted-foreground">%</span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Example: For subtotal Rs{sampleSubtotal}, shipping in India is Rs{sampleDomesticShipping}.
+          Checkout always charges Rs 0 for India regardless of this value (legacy field).
         </p>
       </div>
 

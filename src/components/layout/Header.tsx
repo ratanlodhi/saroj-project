@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, LogIn, LogOut, Search } from 'lucide-react';
+import { Menu, X, ShoppingCart, LogIn, LogOut, Loader2, Search, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency, currencies } from '@/contexts/CurrencyContext';
@@ -25,8 +25,9 @@ export function Header() {
   const navigate = useNavigate();
   const { getItemCount, setIsCartOpen } = useCart();
   const { activeCurrency, setActiveCurrency } = useCurrency();
-  const { user, signOut } = useAuth();
+  const { session, signOut, loading: authLoading } = useAuth();
   const itemCount = getItemCount();
+  const isLoggedIn = Boolean(session?.user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,17 +113,37 @@ export function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Auth Buttons */}
-            {user ? (
-              <button
-                onClick={signOut}
-                className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
-                aria-label="Sign out"
+            {/* Auth: profile only when logged in; guests see sign-in only */}
+            {authLoading ? (
+              <div
+                className="p-1.5 sm:p-2 flex items-center justify-center text-primary/50"
+                aria-busy="true"
+                aria-label="Checking sign-in status"
               >
-                <LogOut className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
-              </button>
+                <Loader2 className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] animate-spin" />
+              </div>
+            ) : isLoggedIn ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
+                  aria-label="Profile"
+                >
+                  <User className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={signOut}
+                  className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
+                </button>
+              </>
             ) : (
               <button
+                type="button"
                 onClick={() => navigate('/auth')}
                 className="p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
                 aria-label="Sign in"
@@ -220,20 +241,37 @@ export function Header() {
                 </Link>
               </li>
             ))}
-            {/* Mobile Auth Button */}
-            <li className="border-t border-border pt-4 mt-2">
-              {user ? (
-                <button
-                  onClick={signOut}
-                  className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <LogOut size={18} />
-                  Sign Out
-                </button>
+            {/* Mobile Auth */}
+            <li className="border-t border-border pt-4 mt-2 space-y-1">
+              {authLoading ? (
+                <div className="flex items-center gap-2 py-2 text-muted-foreground font-sans text-sm" aria-busy="true">
+                  <Loader2 size={18} className="animate-spin shrink-0" />
+                  Checking sign-in…
+                </div>
+              ) : isLoggedIn ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/profile')}
+                    className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
+                  >
+                    <User size={18} />
+                    Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
+                  >
+                    <LogOut size={18} />
+                    Sign Out
+                  </button>
+                </>
               ) : (
                 <button
+                  type="button"
                   onClick={() => navigate('/auth')}
-                  className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors"
+                  className="flex items-center gap-2 font-sans text-base py-2 text-muted-foreground hover:text-primary transition-colors w-full text-left"
                 >
                   <LogIn size={18} />
                   Sign In

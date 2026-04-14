@@ -22,6 +22,7 @@ import AdminPage from "./pages/AdminPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import ProfilePage from "./pages/ProfilePage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -59,6 +60,7 @@ const App = () => (
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/orders/:orderId" element={<OrderDetailPage />} />
                 <Route path="/article/new" element={<ArticleEditorPage />} />
