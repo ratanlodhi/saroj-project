@@ -216,6 +216,8 @@ export default function ArticleManager() {
             )}
           </div>
         ) : (
+          <div className="overflow-x-auto overscroll-x-contain">
+            <div className="min-w-[640px]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -322,11 +324,13 @@ export default function ArticleManager() {
               ))}
             </TableBody>
           </Table>
+            </div>
+          </div>
         )}
       </div>
       {/* Edit Author Name Dialog */}
       <Dialog open={!!editAuthorArticle} onOpenChange={open => !open && setEditAuthorArticle(null)}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-sm p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Edit Author Name</DialogTitle>
           </DialogHeader>

@@ -33,6 +33,7 @@ export interface Artwork {
   number_of_panels?: number;
   ready_to_hang?: boolean;
   decorative_frame?: boolean;
+  orientation?: 'horizontal' | 'square' | 'vertical';
 }
 
 type ArtworkMutationInput = Omit<Artwork, 'id' | 'created_at' | 'updated_at'>;
@@ -74,6 +75,9 @@ export function useArtworks() {
       number_of_panels: artwork?.number_of_panels ?? 1,
       ready_to_hang: artwork?.ready_to_hang ?? false,
       decorative_frame: artwork?.decorative_frame ?? false,
+      orientation: (['horizontal', 'square', 'vertical'] as const).includes(artwork?.orientation)
+        ? artwork.orientation
+        : 'horizontal',
     };
   };
 
@@ -132,6 +136,10 @@ export function useArtworks() {
     }
     if ('ready_to_hang' in payload) payload.ready_to_hang = Boolean(payload.ready_to_hang);
     if ('decorative_frame' in payload) payload.decorative_frame = Boolean(payload.decorative_frame);
+    if ('orientation' in payload) {
+      const validOrientations = ['horizontal', 'square', 'vertical'];
+      payload.orientation = validOrientations.includes(payload.orientation) ? payload.orientation : 'horizontal';
+    }
 
     return payload as T;
   };

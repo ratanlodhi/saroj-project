@@ -245,14 +245,22 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto max-w-5xl w-full min-w-0 px-3 sm:px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Button variant="ghost" onClick={() => navigate('/media')} className="gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/media')}
+            className="gap-2 w-full sm:w-auto justify-center sm:justify-start"
+          >
             <ArrowLeft size={18} />
             Back
           </Button>
-          <Button variant="outline" onClick={() => navigate('/admin/orders')}>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/admin/orders')}
+            className="w-full sm:w-auto shrink-0"
+          >
             Manage Orders
           </Button>
         </div>
@@ -268,23 +276,35 @@ export default function AdminPage() {
           <div className="section-divider mt-6" />
         </div>
 
-        <Tabs defaultValue="users" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="users" className="gap-2">
-              <Shield size={16} />
-              User Management
+        <Tabs defaultValue="users" className="w-full min-w-0">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-1.5 mb-6 sm:mb-8 h-auto min-h-0 p-1.5">
+            <TabsTrigger value="users" className="gap-1.5 text-xs sm:text-sm px-2 py-2.5 whitespace-normal leading-snug">
+              <Shield size={16} className="shrink-0" />
+              <span>
+                <span className="lg:hidden">Users</span>
+                <span className="hidden lg:inline">User Management</span>
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="paintings" className="gap-2">
-              <Palette size={16} />
-              Paintings Management
+            <TabsTrigger value="paintings" className="gap-1.5 text-xs sm:text-sm px-2 py-2.5 whitespace-normal leading-snug">
+              <Palette size={16} className="shrink-0" />
+              <span>
+                <span className="lg:hidden">Paintings</span>
+                <span className="hidden lg:inline">Paintings Management</span>
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="articles" className="gap-2">
-              <FileText size={16} />
-              Article Management
+            <TabsTrigger value="articles" className="gap-1.5 text-xs sm:text-sm px-2 py-2.5 whitespace-normal leading-snug">
+              <FileText size={16} className="shrink-0" />
+              <span>
+                <span className="lg:hidden">Articles</span>
+                <span className="hidden lg:inline">Article Management</span>
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="shipping" className="gap-2">
-              <Truck size={16} />
-              Shipping & Insurance
+            <TabsTrigger value="shipping" className="gap-1.5 text-xs sm:text-sm px-2 py-2.5 whitespace-normal leading-snug">
+              <Truck size={16} className="shrink-0" />
+              <span>
+                <span className="lg:hidden">Shipping</span>
+                <span className="hidden lg:inline">Shipping & Insurance</span>
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -325,6 +345,8 @@ export default function AdminPage() {
                   {searchQuery ? 'No users match your search' : 'No users found'}
                 </div>
               ) : (
+                <div className="overflow-x-auto overscroll-x-contain">
+                  <div className="min-w-[560px]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -421,6 +443,8 @@ export default function AdminPage() {
                     ))}
                   </TableBody>
                 </Table>
+                  </div>
+                </div>
               )}
             </div>
 

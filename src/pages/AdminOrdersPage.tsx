@@ -81,13 +81,15 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center justify-between mb-8">
-          <div>
+      <div className="container mx-auto max-w-7xl w-full min-w-0 px-3 sm:px-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-6 sm:mb-8">
+          <div className="min-w-0">
             <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Admin</span>
-            <h1 className="font-serif text-3xl md:text-4xl font-medium text-primary mt-2">Order Management</h1>
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-medium text-primary mt-2">
+              Order Management
+            </h1>
           </div>
-          <Button variant="outline" onClick={() => navigate('/admin')}>
+          <Button variant="outline" onClick={() => navigate('/admin')} className="w-full sm:w-auto shrink-0">
             Back to Admin Panel
           </Button>
         </div>
@@ -101,10 +103,10 @@ export default function AdminOrdersPage() {
             {orders.map((order) => {
               const draft = drafts[order.id];
               return (
-                <div key={order.id} className="bg-card border border-border rounded-lg p-5">
-                  <div className="flex flex-wrap justify-between gap-3">
-                    <div>
-                      <p className="font-serif text-lg">{order.order_number}</p>
+                <div key={order.id} className="bg-card border border-border rounded-lg p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-serif text-lg break-all">{order.order_number}</p>
                       <p className="text-sm text-muted-foreground">
                         {order.profiles?.display_name || order.profiles?.email || order.user_id}
                       </p>
@@ -112,7 +114,7 @@ export default function AdminOrdersPage() {
                         {new Date(order.created_at).toLocaleString()} • {order.order_items?.length || 0} item(s)
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right shrink-0">
                       <p className="font-serif text-lg text-primary">{formatPrice(order.total_price)}</p>
                       <p className="text-sm">Current: {statusLabel(order.order_status)}</p>
                       <p className="text-xs text-muted-foreground">Payment: {statusLabel(order.payment_status)}</p>
@@ -120,7 +122,7 @@ export default function AdminOrdersPage() {
                   </div>
 
                   {draft && (
-                    <div className="grid md:grid-cols-5 gap-3 mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-4">
                       <select
                         value={draft.status}
                         onChange={(e) =>
@@ -171,7 +173,7 @@ export default function AdminOrdersPage() {
                         }
                       />
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:col-span-2 lg:col-span-1">
                         <Input
                           placeholder="Note"
                           value={draft.note}
@@ -181,10 +183,12 @@ export default function AdminOrdersPage() {
                               [order.id]: { ...prev[order.id], note: e.target.value },
                             }))
                           }
+                          className="min-w-0 flex-1"
                         />
                         <Button
                           onClick={() => handleUpdate(order.id)}
                           disabled={pendingId === order.id}
+                          className="shrink-0 w-full sm:w-auto"
                         >
                           {pendingId === order.id ? 'Saving...' : 'Update'}
                         </Button>

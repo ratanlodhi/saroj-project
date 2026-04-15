@@ -8,8 +8,9 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
-import { PaintingZoomImage } from '@/components/PaintingZoomImage';
+import PaintingFrame from '@/components/PaintingFrame';
 import type { Artwork } from '@/hooks/useArtworks';
+import type { Orientation } from '@/components/PaintingFrame';
 
 export default function PaintingsPage() {
 
@@ -137,28 +138,32 @@ export default function PaintingsPage() {
               No paintings found for the selected filters{searchTerm ? ' and search term' : ''}.
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
               {sortedArtworks.map((artwork, index) => (
                 <article
                   key={artwork.id}
                   className="group animate-fade-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="grid md:grid-cols-5 gap-6 items-start">
-                    <button
-                      onClick={() => setSelectedArtwork(artwork)}
-                      className="md:col-span-2 w-full aspect-square overflow-hidden rounded-sm artistic-border hover-lift bg-accent flex items-center justify-center"
-                    >
-                      <img
-                        src={artwork.image}
-                        alt={artwork.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,11rem)_1fr] md:grid-cols-[minmax(0,12rem)_1fr] gap-5 sm:gap-6 items-start">
+                    <div className="hover-lift flex justify-center sm:justify-start mx-auto sm:mx-0 w-full sm:max-w-[11rem] md:max-w-[12rem]">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedArtwork(artwork)}
+                        className="w-full cursor-pointer block text-left"
+                      >
+                        {/* Listing thumbnail: fixed frame keeps row height sensible; full detail in lightbox */}
+                        <div className="overflow-hidden bg-secondary/20 rounded-sm flex h-[200px] sm:h-[210px] md:h-[200px] lg:h-[220px] w-full items-center justify-center p-2">
+                          <img
+                            src={artwork.image || ''}
+                            alt={artwork.title}
+                            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+                      </button>
+                    </div>
 
-                    <div className="md:col-span-3">
+                    <div className="min-w-0">
                       <div className="flex items-center gap-3">
                         <p className="font-serif text-xl font-semibold text-primary">
                           {formatPrice(artwork.price)}
@@ -214,31 +219,34 @@ export default function PaintingsPage() {
       {/* Lightbox */}
       {selectedArtwork && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in overflow-y-auto overscroll-contain"
           onClick={() => setSelectedArtwork(null)}
         >
           <div className="absolute inset-0 bg-charcoal/90 backdrop-blur-sm" />
           <div
-            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row bg-card rounded-sm overflow-hidden shadow-elegant animate-scale-in"
+            className="relative my-auto w-full max-w-5xl max-h-[min(100dvh,900px)] min-h-0 flex flex-col md:flex-row bg-card rounded-sm overflow-hidden shadow-elegant animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedArtwork(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-background/80 flex items-center justify-center text-primary hover:bg-background transition-colors"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-background/80 flex items-center justify-center text-primary hover:bg-background transition-colors"
               aria-label="Close"
             >
               <X size={20} />
             </button>
 
-            <div className="md:w-2/3 bg-muted/20 flex items-center justify-center p-4">
-              <PaintingZoomImage
-                src={selectedArtwork.image_url || selectedArtwork.image}
+            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] flex items-center justify-center bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
+              <PaintingFrame
+                imageUrl={selectedArtwork.image_url || selectedArtwork.image || ''}
                 alt={selectedArtwork.title}
-                zoomScale={5}
+                orientation={(selectedArtwork.orientation as Orientation) || undefined}
+                allowFrameSwitch={true}
+                compact
+                className="w-full max-h-full min-h-0"
               />
             </div>
 
-            <div className="md:w-1/3 p-6 md:p-8 flex flex-col justify-start overflow-y-auto max-h-[85vh]">
+            <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border md:max-h-[min(90vh,900px)]">
               {/* Price */}
               <p className="font-serif text-2xl md:text-3xl font-semibold text-primary">
                 {formatPrice(selectedArtwork.price)}

@@ -46,6 +46,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { detectOrientationFromUrl } from '@/components/PaintingFrame';
+
+type OrientationOption = 'horizontal' | 'square' | 'vertical';
 
 interface ArtworkFormData {
   title: string;
@@ -68,6 +71,7 @@ interface ArtworkFormData {
   number_of_panels: number;
   ready_to_hang: boolean;
   decorative_frame: boolean;
+  orientation: OrientationOption;
 }
 
 const DEFAULT_COMMISSION_PERCENTAGE = 15;
@@ -125,6 +129,12 @@ const buildSizeFromDimensions = (height: string, width: string) => {
   return '';
 };
 
+const ORIENTATION_OPTIONS: { value: OrientationOption; label: string; hint: string }[] = [
+  { value: 'horizontal', label: 'Horizontal (Landscape)', hint: 'Width > Height' },
+  { value: 'square',     label: 'Square',                 hint: 'Width ≈ Height' },
+  { value: 'vertical',   label: 'Vertical (Portrait)',    hint: 'Height > Width' },
+];
+
 const initialFormData: ArtworkFormData = {
   title: '',
   medium: '',
@@ -146,6 +156,7 @@ const initialFormData: ArtworkFormData = {
   number_of_panels: 1,
   ready_to_hang: false,
   decorative_frame: false,
+  orientation: 'horizontal',
 };
 
 export default function ArtworkManager() {
@@ -237,6 +248,7 @@ export default function ArtworkManager() {
         number_of_panels: artwork.number_of_panels || 1,
         ready_to_hang: artwork.ready_to_hang || false,
         decorative_frame: artwork.decorative_frame || false,
+        orientation: (artwork.orientation as OrientationOption) || 'horizontal',
       });
     } else {
       setEditingArtwork(null);
@@ -298,14 +310,14 @@ export default function ArtworkManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-serif text-2xl font-medium text-primary">Paintings Management</h2>
-          <p className="text-muted-foreground font-sans mt-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="font-serif text-xl sm:text-2xl font-medium text-primary">Paintings Management</h2>
+          <p className="text-muted-foreground font-sans mt-1 text-sm sm:text-base">
             Manage your artwork collection
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="gap-2">
+        <Button onClick={() => handleOpenDialog()} className="gap-2 w-full sm:w-auto shrink-0">
           <Plus size={18} />
           Add New Painting
         </Button>
@@ -338,7 +350,7 @@ export default function ArtworkManager() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative max-w-md w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
         <Input
           value={searchQuery}
@@ -359,6 +371,8 @@ export default function ArtworkManager() {
             {searchQuery ? 'No paintings match your search' : 'No paintings found'}
           </div>
         ) : (
+          <div className="overflow-x-auto overscroll-x-contain">
+            <div className="min-w-[720px]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -446,7 +460,7 @@ export default function ArtworkManager() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex flex-col items-stretch sm:flex-row sm:items-center sm:justify-end gap-1.5 sm:gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -487,12 +501,14 @@ export default function ArtworkManager() {
               ))}
             </TableBody>
           </Table>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-2xl sm:w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>
               {editingArtwork ? 'Update Painting' : 'Add New Painting'}
@@ -520,7 +536,7 @@ export default function ArtworkManager() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
                     <Select
@@ -553,6 +569,31 @@ export default function ArtworkManager() {
                       placeholder="e.g., Acrylic on Canvas"
                     />
                   </div>
+                  <div className="col-span-2 space-y-2">
+                    <Label htmlFor="orientation">
+                      Orientation <span className="text-muted-foreground font-normal text-xs">(determines frame shape)</span>
+                    </Label>
+                    <Select
+                      value={formData.orientation}
+                      onValueChange={(val) => handleInputChange('orientation', val as OrientationOption)}
+                    >
+                      <SelectTrigger id="orientation">
+                        <SelectValue placeholder="Select orientation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ORIENTATION_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            <span className="font-medium">{opt.label}</span>
+                            <span className="ml-2 text-xs text-muted-foreground">{opt.hint}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      This controls which frame designs are applied when displaying the painting. After you upload an image,
+                      orientation is auto-detected from its pixels; you can override it here.
+                    </p>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="height">Height (inch) *</Label>
                     <Input
@@ -581,9 +622,9 @@ export default function ArtworkManager() {
                   </div>
                 </div>
 
-                <div className="border-t pt-6">
+                  <div className="border-t pt-6">
                   <h3 className="text-sm font-semibold text-primary mb-4">Weight & Packaging</h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="packagingType">Packaging Type</Label>
                       <Select
@@ -634,11 +675,16 @@ export default function ArtworkManager() {
 
                 <div className="space-y-2">
                   <Label>Upload Image *</Label>
-                  <ArtworkImageUpload 
-                    onImageUpload={(url) => handleInputChange('image_url', url)}
+                  <ArtworkImageUpload
+                    onImageUpload={(url) => {
+                      handleInputChange('image_url', url);
+                      void detectOrientationFromUrl(url).then((o) =>
+                        handleInputChange('orientation', o)
+                      );
+                    }}
                   />
                   {formData.image_url && (
-                    <div className="text-sm text-green-600 font-medium">
+                    <div className="text-sm text-green-600 font-medium break-all">
                       ✓ Image: {formData.image_url}
                     </div>
                   )}
@@ -646,7 +692,7 @@ export default function ArtworkManager() {
               </TabsContent>
 
               <TabsContent value="details" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Price (INR) *</Label>
                     <Input
@@ -692,7 +738,7 @@ export default function ArtworkManager() {
                 <div className="border-t pt-6">
                   <h3 className="text-sm font-semibold text-primary mb-4">Price & Details</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="status">Status</Label>
                       <Input
@@ -744,7 +790,7 @@ export default function ArtworkManager() {
                   {/* Additional Details */}
                   <div className="border-t mt-6 pt-6">
                     <h4 className="text-sm font-semibold text-primary mb-4">Additional Details</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="numberOfPanels">Number of Panels</Label>
                         <Input

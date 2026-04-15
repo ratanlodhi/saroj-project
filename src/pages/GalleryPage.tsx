@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
+import PaintingFrame from '@/components/PaintingFrame';
+import type { Orientation } from '@/components/PaintingFrame';
 
 export default function GalleryPage() {
   const [activeMedium, setActiveMedium] = useState<string>('all');
@@ -98,27 +100,34 @@ export default function GalleryPage() {
                   className="break-inside-avoid animate-fade-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <button
-                    onClick={() => setSelectedArtwork(artwork)}
-                    className="group gallery-item w-full text-left artistic-border rounded-sm overflow-hidden"
-                  >
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={artwork.image}
-                        alt={artwork.title}
-                        className="w-full h-auto transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="group gallery-item w-full relative">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedArtwork(artwork)}
+                      className="w-full cursor-pointer text-left block"
+                    >
+                      <div className="overflow-hidden bg-secondary/20 rounded-sm">
+                        <img
+                          src={artwork.image || ''}
+                          alt={artwork.title}
+                          className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                    </button>
+                    {/* Hover overlay for title */}
+                    <div
+                      className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
+                    >
+                      <div className="bg-charcoal/75 backdrop-blur-sm rounded-sm px-3 py-2">
                         <span className="text-xs tracking-widest uppercase text-cream/70 font-sans">
                           {artwork.medium}
                         </span>
-                        <h3 className="font-serif text-lg text-cream mt-1">
+                        <h3 className="font-serif text-base text-cream mt-0.5 leading-tight">
                           {artwork.title}
                         </h3>
                       </div>
                     </div>
-                  </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -129,31 +138,34 @@ export default function GalleryPage() {
       {/* Lightbox */}
       {selectedArtwork && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in overflow-y-auto overscroll-contain"
           onClick={() => setSelectedArtwork(null)}
         >
           <div className="absolute inset-0 bg-charcoal/90 backdrop-blur-sm" />
           <div
-            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col md:flex-row bg-card rounded-sm overflow-hidden shadow-elegant animate-scale-in"
+            className="relative my-auto w-full max-w-5xl max-h-[min(100dvh,900px)] min-h-0 flex flex-col md:flex-row bg-card rounded-sm overflow-hidden shadow-elegant animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedArtwork(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-background/80 flex items-center justify-center text-primary hover:bg-background transition-colors"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-background/80 flex items-center justify-center text-primary hover:bg-background transition-colors"
               aria-label="Close lightbox"
             >
               <X size={20} />
             </button>
 
-            <div className="md:w-2/3 bg-muted/20 flex items-center justify-center p-4">
-              <img
-                src={selectedArtwork.image}
+            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] flex items-center justify-center bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
+              <PaintingFrame
+                imageUrl={selectedArtwork.image || ''}
                 alt={selectedArtwork.title}
-                className="w-full h-auto max-h-[70vh] md:max-h-[85vh] object-contain"
+                orientation={(selectedArtwork.orientation as Orientation) || undefined}
+                allowFrameSwitch={true}
+                compact
+                className="w-full max-h-full min-h-0"
               />
             </div>
 
-            <div className="md:w-1/3 p-6 md:p-8 flex flex-col justify-start overflow-y-auto max-h-[85vh]">
+            <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border md:max-h-[min(90vh,900px)]">
               {/* Price */}
               <p className="font-serif text-2xl md:text-3xl font-semibold text-primary">
                 {formatPrice(selectedArtwork.price)}

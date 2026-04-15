@@ -206,7 +206,7 @@ export default function HomePage() {
               >
                 <div className="aspect-[3/4] overflow-hidden bg-secondary/20 mb-4 flex items-center justify-center">
                   <img
-                    src={artwork.image}
+                    src={artwork.image || ''}
                     alt={artwork.title}
                     className="max-h-full w-full h-full object-contain md:object-cover transition-transform duration-500 md:group-hover:scale-105"
                   />

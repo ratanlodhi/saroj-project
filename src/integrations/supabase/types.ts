@@ -52,6 +52,7 @@ export type Database = {
           image_url: string
           medium: string
           number_of_panels: number
+          orientation: string
           packaging_type: string
           price: number
           quantity: number
@@ -77,6 +78,7 @@ export type Database = {
           image_url: string
           medium: string
           number_of_panels?: number
+          orientation?: string
           packaging_type?: string
           price: number
           quantity?: number
@@ -102,6 +104,7 @@ export type Database = {
           image_url?: string
           medium?: string
           number_of_panels?: number
+          orientation?: string
           packaging_type?: string
           price?: number
           quantity?: number

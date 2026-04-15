@@ -143,18 +143,18 @@ export default function ShippingInsuranceSettings() {
   const sampleInternationalShipping = Math.round((sampleSubtotal * internationalPercentage) / 100);
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 space-y-6">
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-6 space-y-6 min-w-0">
       <div>
-        <h2 className="font-serif text-2xl font-medium text-primary">Shipping & Insurance</h2>
-        <p className="text-muted-foreground font-sans mt-1">
+        <h2 className="font-serif text-xl sm:text-2xl font-medium text-primary">Shipping & Insurance</h2>
+        <p className="text-muted-foreground font-sans mt-1 text-sm sm:text-base">
           India addresses always get Rs 0 shipping and insurance at checkout. Addresses outside India pay the
           international percentage of the order subtotal. The domestic % is kept in settings for reference only.
         </p>
       </div>
 
-      <div className="max-w-sm space-y-2">
+      <div className="max-w-sm w-full space-y-2">
         <Label htmlFor="domestic-shipping-percentage">India (domestic) %</Label>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Input
             id="domestic-shipping-percentage"
             type="number"
@@ -172,9 +172,9 @@ export default function ShippingInsuranceSettings() {
         </p>
       </div>
 
-      <div className="max-w-sm space-y-2">
+      <div className="max-w-sm w-full space-y-2">
         <Label htmlFor="international-shipping-percentage">Outside India (international) %</Label>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Input
             id="international-shipping-percentage"
             type="number"
