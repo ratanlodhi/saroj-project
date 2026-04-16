@@ -31,7 +31,6 @@ const FRAME_CONFIGS: Record<
     outer: React.CSSProperties;
     /** Thin liner between frame face and canvas */
     liner: React.CSSProperties;
-    /** Inner canvas background */
     canvas: React.CSSProperties;
   }
 > = {
@@ -49,9 +48,7 @@ const FRAME_CONFIGS: Record<
       background: '#0D0600',
       padding: '3px',
     },
-    canvas: {
-      background: '#F5F0E8',
-    },
+    canvas: {},
   },
 
   'ornate-gold': {
@@ -68,9 +65,7 @@ const FRAME_CONFIGS: Record<
       background: '#2A1E00',
       padding: '4px',
     },
-    canvas: {
-      background: '#FDFAF2',
-    },
+    canvas: {},
   },
 
   'modern-slate': {
@@ -86,9 +81,7 @@ const FRAME_CONFIGS: Record<
       background: '#080A0E',
       padding: '2px',
     },
-    canvas: {
-      background: '#F8F8F8',
-    },
+    canvas: {},
   },
 
   'gallery-white': {
@@ -104,9 +97,7 @@ const FRAME_CONFIGS: Record<
       background: '#B0A898',
       padding: '2px',
     },
-    canvas: {
-      background: '#FFFEFB',
-    },
+    canvas: {},
   },
 };
 
@@ -223,33 +214,21 @@ export function PaintingFrame({
       <div style={outerStyle} className="w-full max-w-full transition-all duration-300">
         {/* ── Liner strip ── */}
         <div style={linerStyle} className="w-full max-w-full">
-          {/* ── Canvas / painting area — fixed aspect per orientation; image is letterboxed inside ── */}
+          {/* ── Canvas / painting area — sized by the image itself ── */}
           <div
-            style={cfg.canvas}
             className={cn(
-              'relative w-full max-w-full overflow-hidden',
-              orientation === 'horizontal' && 'aspect-[16/10]',
-              orientation === 'square' && 'aspect-square',
-              orientation === 'vertical' && 'aspect-[3/4]',
+              'w-full max-w-full overflow-hidden',
               compact && 'max-h-[min(40dvh,20rem)] sm:max-h-[min(46dvh,24rem)] md:max-h-none',
             )}
           >
-            {/* Mat: inner padding so the art never touches the liner; object-contain sits inside this inset */}
-            <div
+            <img
+              src={imageUrl}
+              alt={alt}
               className={cn(
-                'absolute inset-0 box-border flex items-center justify-center',
-                compact ? 'p-[clamp(5px,2.2vmin,18px)]' : 'p-[clamp(12px,5.5vmin,32px)]',
+                'block w-full h-auto transition-transform duration-500',
+                imgClassName,
               )}
-            >
-              <img
-                src={imageUrl}
-                alt={alt}
-                className={cn(
-                  'block max-h-full max-w-full h-auto w-auto object-contain object-center transition-transform duration-500',
-                  imgClassName,
-                )}
-              />
-            </div>
+            />
           </div>
         </div>
       </div>
