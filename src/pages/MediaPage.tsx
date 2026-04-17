@@ -67,6 +67,7 @@ export default function MediaPage() {
   const { toast } = useToast();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -74,10 +75,18 @@ export default function MediaPage() {
   }, []);
 
   const loadArticles = async () => {
+    setFetchError(null);
     const { data, error } = await supabase
       .from('articles')
       .select('*')
       .order('published_at', { ascending: false });
+
+    if (error) {
+      console.error('[MediaPage] articles fetch error:', error);
+      setFetchError(error.message || 'Failed to load articles');
+      setLoading(false);
+      return;
+    }
 
     if (!error && data) {
       const authorIds = [...new Set(data.map(article => article.author_id))];
@@ -260,6 +269,11 @@ export default function MediaPage() {
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : fetchError ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm">Unable to load articles: {fetchError}</p>
+              <button onClick={loadArticles} className="mt-3 text-sm text-accent underline">Retry</button>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
