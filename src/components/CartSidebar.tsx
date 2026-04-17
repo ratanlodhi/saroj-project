@@ -5,7 +5,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 export function CartSidebar() {
   const {
     items,
@@ -102,11 +102,17 @@ export function CartSidebar() {
                   key={item.artwork.id}
                   className="flex gap-4 p-3 bg-secondary/30 rounded-sm"
                 >
-                  <img
-                    src={item.artwork.image}
-                    alt={item.artwork.title}
-                    className="w-20 h-20 object-cover rounded-sm"
-                  />
+                  <Link
+                    to={`/paintings?artwork=${encodeURIComponent(item.artwork.id)}`}
+                    onClick={() => setIsCartOpen(false)}
+                    className="shrink-0"
+                  >
+                    <img
+                      src={item.artwork.image}
+                      alt={item.artwork.title}
+                      className="w-20 h-20 object-cover rounded-sm hover:opacity-90 transition-opacity"
+                    />
+                  </Link>
                   <div className="flex-1 min-w-0 flex items-stretch justify-between gap-3">
                     <div className="min-w-0">
                       <h4 className="font-serif text-sm font-medium text-primary truncate">

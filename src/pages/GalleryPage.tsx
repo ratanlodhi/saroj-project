@@ -15,8 +15,8 @@ export default function GalleryPage() {
   const { addToCart } = useCart();
   const { artworks, loading } = useArtworks();
 
-  const filteredArtworks = activeMedium === 'all'
-    ? artworks
+  const filteredArtworks = (activeMedium === 'all'
+    ? [...artworks].sort((a, b) => a.medium.localeCompare(b.medium))
     : artworks.filter((a) => {
         const lowerMedium = a.medium.toLowerCase();
         if (activeMedium === 'acrylic') return lowerMedium.includes('acrylic');
@@ -27,7 +27,7 @@ export default function GalleryPage() {
         if (activeMedium === 'charcoal') return lowerMedium.includes('charcoal');
         if (activeMedium === 'soft-pastel') return lowerMedium.includes('pastel');
         return true;
-      });
+      }));
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
