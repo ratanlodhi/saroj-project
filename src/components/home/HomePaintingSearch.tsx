@@ -117,6 +117,9 @@ export default function HomePaintingSearch() {
           </ul>
         )}
       </form>
+      <p className="text-center text-xs sm:text-sm italic text-muted-foreground font-sans tracking-wide mt-4">
+        Powered by Rasayan Studio
+      </p>
     </div>
   );
 }
