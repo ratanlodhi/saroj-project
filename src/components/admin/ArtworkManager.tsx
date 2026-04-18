@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
+import { filterArtworksByAdminSearch } from '@/lib/artworkSearch';
 import { useAuth } from '@/hooks/useAuth';
 import { useCategories } from '@/hooks/useCategories';
 import { ArtworkImageUpload } from '@/components/article-editor/ArtworkImageUpload';
@@ -171,11 +172,7 @@ export default function ArtworkManager() {
   const [formData, setFormData] = useState<ArtworkFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const filteredArtworks = artworks.filter(artwork =>
-    artwork.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    artwork.medium.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (artwork.artist || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredArtworks = filterArtworksByAdminSearch(artworks, searchQuery);
 
   const sortedArtworks = useMemo(() => {
     const directionMultiplier = sortDirection === 'asc' ? 1 : -1;

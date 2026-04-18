@@ -7,6 +7,9 @@ import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
+import { POWERED_BY_RASAYAN_TAGLINE, shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
+import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
+import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 import PaintingFrame from '@/components/PaintingFrame';
 import type { Artwork } from '@/hooks/useArtworks';
@@ -23,6 +26,8 @@ export default function PaintingsPage() {
   const { formatPrice } = useCurrency();
   const { artworks, loading } = useArtworks();
   const { categories } = useCategories();
+
+  const poweredByFor = (artwork: Artwork) => shouldShowPoweredByRasayan(artwork, categories);
   const searchTerm = searchParams.get('search')?.trim().toLowerCase() ?? '';
   const artworkId = searchParams.get('artwork')?.trim() ?? '';
 
@@ -168,9 +173,9 @@ export default function PaintingsPage() {
                         <p className="font-serif text-xl font-semibold text-primary">
                           {formatPrice(artwork.price)}
                         </p>
-                        {artwork.sold && (
-                          <span className="px-2 py-0.5 text-xs font-medium bg-highlight text-highlight-foreground rounded">
-                            Not available for sale
+                        {poweredByFor(artwork) && (
+                          <span className="px-2 py-0.5 text-xs font-medium bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
+                            {POWERED_BY_RASAYAN_TAGLINE}
                           </span>
                         )}
                       </div>
@@ -179,17 +184,14 @@ export default function PaintingsPage() {
                       </h2>
                       <div className="mt-3 space-y-1 text-sm text-muted-foreground">
                         <p>{artwork.medium}</p>
-                        <p>{artwork.size}</p>
+                        <p>{formatArtworkSizeDisplay(artwork.size)}</p>
                       </div>
                       <p className="mt-4 text-muted-foreground font-sans text-sm leading-relaxed line-clamp-2">
                         {artwork.description}
                       </p>
-                      <div className="mt-4 flex items-center gap-3">
-                        {artwork.sold ? (
-                          <Button size="sm" disabled className="gap-2 opacity-50 text-xs">
-                            <ShoppingCart size={16} />
-                            Not available for sale
-                          </Button>
+                      <div className="mt-4 flex flex-wrap items-center gap-3">
+                        {poweredByFor(artwork) ? (
+                          <PoweredByRasayanTagline />
                         ) : (
                           <Button
                             onClick={() => handleAddToCart(artwork)}
@@ -260,7 +262,7 @@ export default function PaintingsPage() {
               {/* Medium & Size */}
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>{selectedArtwork.medium}</p>
-                <p>{selectedArtwork.size}</p>
+                <p>{formatArtworkSizeDisplay(selectedArtwork.size)}</p>
               </div>
 
               {/* Description */}
@@ -273,15 +275,20 @@ export default function PaintingsPage() {
                 <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
               </div>
 
-              {/* Add to Cart Button */}
-              <Button 
-                onClick={() => handleAddToCart(selectedArtwork)}
-                className="mt-8 w-full gap-2"
-                size="lg"
-              >
-                <ShoppingCart size={18} />
-                Add to Cart
-              </Button>
+              {poweredByFor(selectedArtwork) ? (
+                <div className="mt-8 w-full border border-border rounded-sm px-4 py-3 text-center">
+                  <PoweredByRasayanTagline className="text-sm" />
+                </div>
+              ) : (
+                <Button
+                  onClick={() => handleAddToCart(selectedArtwork)}
+                  className="mt-8 w-full gap-2"
+                  size="lg"
+                >
+                  <ShoppingCart size={18} />
+                  Add to Cart
+                </Button>
+              )}
             </div>
           </div>
         </div>

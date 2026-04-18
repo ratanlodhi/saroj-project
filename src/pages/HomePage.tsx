@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import HomePaintingSearch from '@/components/home/HomePaintingSearch';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import heroImage from '@/assets/hero-cover.jpg';
@@ -87,6 +88,12 @@ export default function HomePage() {
         <p className="text-right text-muted-foreground italic py-2 md:py-4 text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 lg:px-12 max-w-3xl ml-auto">
           A fervent storyteller trying to tell the story of silence
         </p>
+      </section>
+
+      <section className="py-10 md:py-12 bg-background border-b border-border/50">
+        <div className="container mx-auto px-4 sm:px-6 max-w-xl">
+          <HomePaintingSearch />
+        </div>
       </section>
 
       {/* Recent Work - Horizontal Scroll Section */}

@@ -5,6 +5,10 @@ import { X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
+import { useCategories } from '@/hooks/useCategories';
+import { shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
+import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
+import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 import PaintingFrame from '@/components/PaintingFrame';
 import type { Orientation } from '@/components/PaintingFrame';
@@ -14,6 +18,7 @@ export default function GalleryPage() {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const { addToCart } = useCart();
   const { artworks, loading } = useArtworks();
+  const { categories } = useCategories();
 
   const filteredArtworks = (activeMedium === 'all'
     ? [...artworks].sort((a, b) => a.medium.localeCompare(b.medium))
@@ -38,10 +43,12 @@ export default function GalleryPage() {
   };
 
   const handleAddToCart = () => {
-    if (selectedArtwork) {
+    if (selectedArtwork && !shouldShowPoweredByRasayan(selectedArtwork, categories)) {
       addToCart(selectedArtwork);
     }
   };
+
+  const poweredByFor = (artwork: Artwork) => shouldShowPoweredByRasayan(artwork, categories);
 
   return (
     <div className="min-h-screen pb-20">
@@ -93,7 +100,7 @@ export default function GalleryPage() {
               {activeMedium === 'all' ? 'No artworks found' : `No ${activeMedium} artworks found`}
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6">
               {filteredArtworks.map((artwork, index) => (
                 <div
                   key={artwork.id}
@@ -179,7 +186,7 @@ export default function GalleryPage() {
               {/* Medium & Size */}
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>{selectedArtwork.medium}</p>
-                <p>{selectedArtwork.size}</p>
+                <p>{formatArtworkSizeDisplay(selectedArtwork.size)}</p>
               </div>
 
               {/* Description */}
@@ -192,15 +199,16 @@ export default function GalleryPage() {
                 <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
               </div>
 
-              {/* Add to Cart Button */}
-              <Button 
-                onClick={handleAddToCart}
-                className="mt-8 w-full gap-2"
-                size="lg"
-              >
-                <ShoppingCart size={18} />
-                Add to Cart
-              </Button>
+              {poweredByFor(selectedArtwork) ? (
+                <div className="mt-8 w-full border border-border rounded-sm px-4 py-3 text-center">
+                  <PoweredByRasayanTagline className="text-sm" />
+                </div>
+              ) : (
+                <Button onClick={handleAddToCart} className="mt-8 w-full gap-2" size="lg">
+                  <ShoppingCart size={18} />
+                  Add to Cart
+                </Button>
+              )}
             </div>
           </div>
         </div>
