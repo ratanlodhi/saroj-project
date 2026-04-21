@@ -38,12 +38,17 @@ function getSupabaseAnonKey(): string {
 }
 
 /**
- * Fetches raw RSS via Supabase Edge Function (blogspot-feed) — no browser CORS.
- * Override with VITE_BLOG_FEED_API_URL if needed.
+ * Blog RSS: production → Supabase Edge Function `blogspot-feed`.
+ * Dev → same-origin `/dev/blogspot-feed` (Vite plugin fetches RSS in Node; no deployment needed).
+ *
+ * Override anytime with VITE_BLOG_FEED_API_URL.
  */
-function blogFeedProxyUrl(): string {
+function blogFeedFetchUrl(): string {
   const custom = import.meta.env.VITE_BLOG_FEED_API_URL as string | undefined;
   if (custom) return custom;
+  if (import.meta.env.DEV) {
+    return '/dev/blogspot-feed';
+  }
   return `${getSupabaseUrl()}/functions/v1/blogspot-feed`;
 }
 
@@ -144,16 +149,23 @@ export function useBlogFeed(feedUrl?: string): UseBlogFeedState {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
 
-        const anon = getSupabaseAnonKey();
-        const headers: HeadersInit = {
-          Accept: 'application/xml, text/xml, */*',
-        };
-        if (anon) {
-          (headers as Record<string, string>).Authorization = `Bearer ${anon}`;
-          (headers as Record<string, string>).apikey = anon;
+        const useDevProxy =
+          import.meta.env.DEV && !import.meta.env.VITE_BLOG_FEED_API_URL;
+
+        let init: RequestInit | undefined;
+        if (!useDevProxy) {
+          const h: Record<string, string> = {
+            Accept: 'application/xml, text/xml, */*',
+          };
+          const anon = getSupabaseAnonKey();
+          if (anon) {
+            h.Authorization = `Bearer ${anon}`;
+            h.apikey = anon;
+          }
+          init = { headers: h };
         }
 
-        const response = await fetch(blogFeedProxyUrl(), { headers });
+        const response = await fetch(blogFeedFetchUrl(), init);
 
         const text = await response.text();
 

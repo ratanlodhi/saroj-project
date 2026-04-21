@@ -9,8 +9,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, accept",
+  "Access-Control-Max-Age": "86400",
 };
 
 const DEFAULT_FEED_URL =
@@ -18,7 +20,7 @@ const DEFAULT_FEED_URL =
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   const feedUrl = Deno.env.get("BLOGSPOT_FEED_URL") ?? DEFAULT_FEED_URL;

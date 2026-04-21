@@ -31,3 +31,10 @@ verify_jwt = false
 
 [functions.verify-razorpay-payment]
 verify_jwt = true
+
+# Public proxies: browser preflight (OPTIONS) has no JWT — must not verify at the gateway.
+[functions.blogspot-feed]
+verify_jwt = false
+
+[functions.medium-posts]
+verify_jwt = false
