@@ -199,16 +199,15 @@ export default function GalleryPage() {
                 <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
               </div>
 
-              {poweredByFor(selectedArtwork) ? (
-                <div className="mt-8 w-full border border-border rounded-sm px-4 py-3 text-center">
-                  <PoweredByRasayanTagline className="text-sm" />
-                </div>
-              ) : (
+              {!poweredByFor(selectedArtwork) && (
                 <Button onClick={handleAddToCart} className="mt-8 w-full gap-2" size="lg">
                   <ShoppingCart size={18} />
                   Add to Cart
                 </Button>
               )}
+              <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
+                <PoweredByRasayanTagline className="text-sm" />
+              </div>
             </div>
           </div>
         </div>

@@ -49,10 +49,6 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <SiteLogo imageClassName="h-12" />
-            <p className="mt-4 text-muted-foreground font-sans text-sm leading-relaxed max-w-md">
-              Exploring the depths of human emotion through art. Each painting is a journey, 
-              each brushstroke a whisper of the soul.
-            </p>
             <div className="flex flex-wrap gap-3 mt-6">
               {socialLinks.map((social) => (
                 <a

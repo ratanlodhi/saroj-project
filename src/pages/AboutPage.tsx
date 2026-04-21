@@ -32,9 +32,6 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="prose prose-lg prose-stone max-w-none">
-              <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary mb-6">
-                About the Artist
-              </h2>
               <p className="text-muted-foreground font-sans leading-relaxed mb-6">
                 Saroj Prakash Bandi is a modern and contemporary visual artist based in Maharashtra. 
                 With formal training in chemical engineering and an MBA in operations, her intellectual 
@@ -71,58 +68,6 @@ export default function AboutPage() {
                 and searching, disciplined yet open-ended.
               </p>
             </div>
-
-            {/* Quote */}
-            <blockquote className="my-12 p-8 bg-secondary/50 rounded-sm border-l-4 border-accent">
-              <p className="font-serif text-xl md:text-2xl text-primary italic leading-relaxed">
-                "Art is not what you see, but what you make others see."
-              </p>
-              <cite className="block mt-4 text-muted-foreground text-sm font-sans not-italic">
-                — Edgar Degas
-              </cite>
-            </blockquote>
-          </div>
-        </div>
-      </section>
-
-      {/* Values */}
-      <section className="py-12 md:py-20 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary">
-              Our Values
-            </h2>
-            <div className="section-divider mt-6" />
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                title: 'Authenticity',
-                description: 'Every piece is created with genuine emotion and honest expression, never following trends for their own sake.',
-              },
-              {
-                title: 'Craftsmanship',
-                description: 'We honor traditional techniques while embracing innovation, ensuring each work meets the highest standards.',
-              },
-              {
-                title: 'Connection',
-                description: 'Art should move people. We create work that resonates emotionally and creates lasting impressions.',
-              },
-            ].map((value, index) => (
-              <div
-                key={value.title}
-                className="text-center p-6 animate-fade-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <h3 className="font-serif text-xl font-medium text-primary mb-3">
-                  {value.title}
-                </h3>
-                <p className="text-muted-foreground text-sm font-sans leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

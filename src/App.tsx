@@ -12,6 +12,7 @@ import GalleryPage from "./pages/GalleryPage";
 import PaintingsPage from "./pages/PaintingsPage";
 import MediaPage from "./pages/MediaPage";
 import BlogPage from "./pages/BlogPage";
+import MediumPage from "./pages/MediumPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
@@ -54,6 +55,7 @@ const App = () => (
                 <Route path="/paintings" element={<PaintingsPage />} />
                 <Route path="/media" element={<MediaPage />} />
                 <Route path="/blog" element={<BlogPage />} />
+                <Route path="/medium" element={<MediumPage />} />
                 <Route path="/blog/:id" element={<BlogDetailPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />

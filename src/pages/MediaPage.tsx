@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, ExternalLink, Plus, Edit, Trash2, Settings } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,67 +56,65 @@ interface Article {
   content: string;
   cover_image_url: string | null;
   author_id: string;
-  author_name?: string;
+  author_name: string;
   published_at: string;
   slug: string;
   source: string | null;
   external_url: string | null;
 }
 
+/** Single query — author_name is already stored on the articles row. */
+async function fetchArticles(): Promise<Article[]> {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('id, title, subtitle, content, cover_image_url, author_id, author_name, published_at, slug, source, external_url')
+    .order('published_at', { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Article[];
+}
+
+/** Skeleton card matching the existing article card shape. */
+function ArticleSkeleton() {
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm animate-pulse">
+      <div className="px-4 py-2 border-b border-border/50">
+        <div className="h-3 w-10 bg-muted rounded" />
+      </div>
+      <div className="aspect-[16/9] bg-muted" />
+      <div className="p-4 flex flex-col gap-2">
+        <div className="h-4 bg-muted rounded w-full" />
+        <div className="h-4 bg-muted rounded w-4/5" />
+        <div className="h-3 bg-muted rounded w-3/5 mt-1" />
+        <div className="h-3 bg-muted rounded w-1/3" />
+      </div>
+    </div>
+  );
+}
+
 export default function MediaPage() {
   const { isAdmin } = useAuth();
   const { toast } = useToast();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadArticles();
-  }, []);
-
-  const loadArticles = async () => {
-    setFetchError(null);
-    const { data, error } = await supabase
-      .from('articles')
-      .select('*')
-      .order('published_at', { ascending: false });
-
-    if (error) {
-      console.error('[MediaPage] articles fetch error:', error);
-      setFetchError(error.message || 'Failed to load articles');
-      setLoading(false);
-      return;
-    }
-
-    if (!error && data) {
-      const authorIds = [...new Set(data.map(article => article.author_id))];
-
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, email')
-        .in('id', authorIds);
-
-      const profileById = new Map(
-        (profiles || []).map(profile => [
-          profile.id,
-          profile.display_name || 'Saroj Prakash Bandi',
-        ]),
-      );
-
-      const normalized = data.map(article => ({
-        ...article,
-        author_name: profileById.get(article.author_id) || 'Saroj Prakash Bandi',
-      }));
-
-      setArticles(normalized);
-    }
-    setLoading(false);
-  };
+  const {
+    data: articles = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<Article[], Error>({
+    queryKey: ['press-articles'],
+    queryFn: fetchArticles,
+    staleTime: 2 * 60 * 1000,  // treat as fresh for 2 minutes — re-visits are instant
+    gcTime: 5 * 60 * 1000,
+    retry: 2,
+  });
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    
+
     const { error } = await supabase
       .from('articles')
       .delete()
@@ -132,7 +131,10 @@ export default function MediaPage() {
       return;
     }
 
-    setArticles(articles.filter(a => a.id !== id));
+    // Optimistically remove from cache — no refetch needed
+    queryClient.setQueryData<Article[]>(['press-articles'], (prev) =>
+      (prev ?? []).filter((a) => a.id !== id),
+    );
     toast({
       title: 'Deleted',
       description: 'Article deleted successfully',
@@ -266,17 +268,21 @@ export default function MediaPage() {
           </div>
 
           {/* Database Articles */}
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : fetchError ? (
+          {isError ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p className="text-sm">Unable to load articles: {fetchError}</p>
-              <button onClick={loadArticles} className="mt-3 text-sm text-accent underline">Retry</button>
+              <p className="text-sm">Unable to load articles: {error?.message}</p>
+              <button onClick={() => refetch()} className="mt-3 text-sm text-accent underline">Retry</button>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {/* Skeleton placeholders while loading */}
+              {isLoading && (
+                <>
+                  <ArticleSkeleton />
+                  <ArticleSkeleton />
+                </>
+              )}
+
               {/* Articles from database */}
               {articles.map((article, index) => (
                 <div
@@ -399,19 +405,6 @@ export default function MediaPage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Coming Soon */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4 text-center">
-          <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Coming Soon</span>
-          <h2 className="font-serif text-2xl md:text-3xl font-medium text-primary mt-4 mb-4">
-            More Content on the Way
-          </h2>
-          <p className="text-muted-foreground font-sans max-w-md mx-auto">
-            Subscribe to our newsletter to be notified when new videos and articles are released.
-          </p>
         </div>
       </section>
     </div>

@@ -7,7 +7,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
-import { POWERED_BY_RASAYAN_TAGLINE, shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
+import { shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
 import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
 import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
@@ -175,7 +175,7 @@ export default function PaintingsPage() {
                         </p>
                         {poweredByFor(artwork) && (
                           <span className="px-2 py-0.5 text-xs font-medium bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
-                            {POWERED_BY_RASAYAN_TAGLINE}
+                            Not for sale
                           </span>
                         )}
                       </div>
@@ -190,9 +190,7 @@ export default function PaintingsPage() {
                         {artwork.description}
                       </p>
                       <div className="mt-4 flex flex-wrap items-center gap-3">
-                        {poweredByFor(artwork) ? (
-                          <PoweredByRasayanTagline />
-                        ) : (
+                        {!poweredByFor(artwork) && (
                           <Button
                             onClick={() => handleAddToCart(artwork)}
                             size="sm"
@@ -202,6 +200,7 @@ export default function PaintingsPage() {
                             Add to Cart
                           </Button>
                         )}
+                        <PoweredByRasayanTagline />
                         <button
                           onClick={() => setSelectedArtwork(artwork)}
                           className="text-sm text-accent hover:text-primary transition-colors font-sans"
@@ -275,11 +274,7 @@ export default function PaintingsPage() {
                 <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
               </div>
 
-              {poweredByFor(selectedArtwork) ? (
-                <div className="mt-8 w-full border border-border rounded-sm px-4 py-3 text-center">
-                  <PoweredByRasayanTagline className="text-sm" />
-                </div>
-              ) : (
+              {!poweredByFor(selectedArtwork) && (
                 <Button
                   onClick={() => handleAddToCart(selectedArtwork)}
                   className="mt-8 w-full gap-2"
@@ -289,6 +284,9 @@ export default function PaintingsPage() {
                   Add to Cart
                 </Button>
               )}
+              <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
+                <PoweredByRasayanTagline className="text-sm" />
+              </div>
             </div>
           </div>
         </div>
