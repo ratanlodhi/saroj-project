@@ -269,21 +269,21 @@ export default function PaintingsPage() {
                 {selectedArtwork.description}
               </p>
 
-              {/* Price & Details Section */}
-              <div className="mt-8">
-                <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
-              </div>
-
               {!poweredByFor(selectedArtwork) && (
                 <Button
                   onClick={() => handleAddToCart(selectedArtwork)}
-                  className="mt-8 w-full gap-2"
+                  className="mt-6 w-full gap-2"
                   size="lg"
                 >
                   <ShoppingCart size={18} />
                   Add to Cart
                 </Button>
               )}
+
+              {/* Price & Details Section */}
+              <div className="mt-8">
+                <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
+              </div>
               <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
                 <PoweredByRasayanTagline className="text-sm" />
               </div>
