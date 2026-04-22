@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const blogspotFeedUrl =
     env.VITE_BLOGSPOT_FEED_URL ||
-    "https://sarojprakashbandi.blogspot.com/feeds/posts/default?alt=rss";
+    "https://medium.com/feed/@sarojprakashbandi";
   const supabaseUrl =
     env.VITE_SUPABASE_URL || "https://dcrfsaggvdfjjvinryxt.supabase.co";
   const supabaseAnon =

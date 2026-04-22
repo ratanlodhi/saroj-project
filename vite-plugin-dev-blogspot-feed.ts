@@ -1,7 +1,7 @@
 import type { Plugin } from "vite";
 
 const BLOGSPOT_FEED_DEFAULT =
-  "https://sarojprakashbandi.blogspot.com/feeds/posts/default?alt=rss";
+  "https://medium.com/feed/@sarojprakashbandi";
 
 /**
  * In dev, respond to GET /dev/blogspot-feed by fetching the Blogger RSS in Node
@@ -28,14 +28,21 @@ export function devBlogspotFeedPlugin(
         }
 
         void fetch(feedUrl, {
-          headers: { "User-Agent": "ViteDevBlogspotFeed/1.0" },
+          redirect: "follow",
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (compatible; ViteDevBlogspotFeed/1.0; +https://github.com)",
+            Accept:
+              "application/rss+xml, application/xml, text/xml, application/atom+xml, */*",
+            "Accept-Language": "en-US,en;q=0.9",
+          },
         })
           .then(async (upstream) => {
             const text = await upstream.text();
             const ct =
               upstream.headers.get("content-type") ??
               "application/xml; charset=utf-8";
-            res.statusCode = upstream.ok ? 200 : 502;
+            res.statusCode = upstream.status;
             res.setHeader("Content-Type", ct);
             res.end(text);
           })
