@@ -93,7 +93,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <section className="py-12 md:py-20">
+      {/* <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Get in Touch</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
@@ -104,7 +104,7 @@ export default function ContactPage() {
           </p>
           <div className="section-divider mt-8" />
         </div>
-      </section>
+      </section> */}
 
       {/* Content */}
       <section className="py-8">
@@ -215,18 +215,6 @@ export default function ContactPage() {
                     >
                       studio@sarojprakashbandi.com
                     </a>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 text-[#5b4538]">
-                    <MapPin className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-sans font-medium text-primary">Studio Location</h3>
-                    <p className="text-muted-foreground">
-                      Available for studio visits by appointment
-                    </p>
                   </div>
                 </div>
 

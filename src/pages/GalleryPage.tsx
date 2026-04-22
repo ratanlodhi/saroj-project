@@ -53,7 +53,7 @@ export default function GalleryPage() {
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <section className="py-12 md:py-20">
+      {/* <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Collection</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
@@ -64,7 +64,7 @@ export default function GalleryPage() {
           </p>
           <div className="section-divider mt-8" />
         </div>
-      </section>
+      </section> */}
 
       {/* Medium Filters */}
       <section className="py-4 sticky top-36 lg:top-24 z-30 bg-background/95 backdrop-blur-sm border-b border-border">

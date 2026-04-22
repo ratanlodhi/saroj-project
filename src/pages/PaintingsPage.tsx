@@ -78,7 +78,7 @@ export default function PaintingsPage() {
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <section className="py-12 md:py-20">
+      {/* <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Complete Collection</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
@@ -94,7 +94,7 @@ export default function PaintingsPage() {
           )}
           <div className="section-divider mt-8" />
         </div>
-      </section>
+      </section> */}
 
       {/* Filters */}
       <section className="py-4 border-b border-border">
