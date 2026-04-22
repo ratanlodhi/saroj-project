@@ -155,12 +155,12 @@ export default function PaintingsPage() {
                         onClick={() => setSelectedArtwork(artwork)}
                         className="w-full cursor-pointer block text-left"
                       >
-                        {/* Listing thumbnail: fixed frame keeps row height sensible; full detail in lightbox */}
-                        <div className="overflow-hidden bg-secondary/20 rounded-sm flex h-[200px] sm:h-[210px] md:h-[200px] lg:h-[220px] w-full items-center justify-center p-2">
+                        {/* On mobile, let image drive height to avoid empty boxed space around portrait works. */}
+                        <div className="overflow-hidden rounded-sm w-full sm:bg-secondary/20 sm:flex sm:h-[210px] md:h-[200px] lg:h-[220px] sm:items-center sm:justify-center sm:p-2">
                           <img
                             src={artwork.image || ''}
                             alt={artwork.title}
-                            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-auto object-contain sm:max-h-full sm:max-w-full transition-transform duration-500 group-hover:scale-105"
                           />
                         </div>
                       </button>
