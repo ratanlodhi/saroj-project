@@ -6,7 +6,6 @@ import HomePaintingSearch from '@/components/home/HomePaintingSearch';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import heroImage from '@/assets/hero-cover.jpg';
-import studioImage from '@/assets/studio.jpg';
 
 // Recent Work images
 import recentWork1 from '@/assets/recent-work/recent-1.jpg';
@@ -230,25 +229,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Bottom Lifestyle Images */}
-      <section className="bg-background">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          <div className="relative aspect-[4/3] w-full overflow-hidden md:aspect-auto md:min-h-[400px]">
-            <img
-              src={studioImage}
-              alt="Artwork in living space"
-              className="block h-full w-full object-cover md:min-h-[400px]"
-            />
-          </div>
-          <div className="relative aspect-[4/3] w-full overflow-hidden md:aspect-auto md:min-h-[400px]">
-            <img
-              src="/gallery/mixed-media-1.jpg"
-              alt="Studio materials"
-              className="block h-full w-full object-cover md:min-h-[400px]"
-            />
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
