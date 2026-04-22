@@ -119,11 +119,11 @@ const buildSizeFromDimensions = (height: string, width: string) => {
   const trimmedWidth = width.trim();
 
   if (trimmedHeight && trimmedWidth) {
-    return `${trimmedHeight} x ${trimmedWidth} inch`;
+    return `${trimmedHeight} x ${trimmedWidth} inches`;
   }
 
   if (trimmedHeight || trimmedWidth) {
-    return `${trimmedHeight || trimmedWidth} inch`;
+    return `${trimmedHeight || trimmedWidth} inches`;
   }
 
   return '';
@@ -589,7 +589,7 @@ export default function ArtworkManager() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="height">Height (inch) *</Label>
+                    <Label htmlFor="height">Height (inches) *</Label>
                     <Input
                       id="height"
                       type="number"
@@ -602,7 +602,7 @@ export default function ArtworkManager() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="width">Width (inch) *</Label>
+                    <Label htmlFor="width">Width (inches) *</Label>
                     <Input
                       id="width"
                       type="number"

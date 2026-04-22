@@ -26,7 +26,7 @@ export default function ReturnPolicyPage() {
             <h4 className="font-medium text-primary mb-3">Exclusions:</h4>
             <ul className="list-disc list-inside text-muted-foreground space-y-2 mb-4">
               <li>Final sale items are not eligible for free returns. This includes Special Collection, Photography, Artist Produced Limited Edition and Open Edition artworks and any other products designated as final sale on the website.</li>
-              <li>Oversized artworks are not eligible for free returns. This includes any oversize product where the longest length is greater than 60 inches (152 cm) or items requiring special shipping and handling. Note: Oversized artworks are still eligible for the 14-day satisfaction guarantee. Please contact us at <a href="mailto:sarojbandi31@gmail.com" className="text-primary hover:text-accent">sarojbandi31@gmail.com</a> if you have any questions or concerns.</li>
+              <li>Oversized artworks are not eligible for free returns. This includes any oversize product where the longest length is greater than 60 incheses (152 cm) or items requiring special shipping and handling. Note: Oversized artworks are still eligible for the 14-day satisfaction guarantee. Please contact us at <a href="mailto:sarojbandi31@gmail.com" className="text-primary hover:text-accent">sarojbandi31@gmail.com</a> if you have any questions or concerns.</li>
             </ul>
           </section>
 

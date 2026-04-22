@@ -101,11 +101,6 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <Link to="/about" className="hover:text-primary transition-colors">
-                  About the Studio
-                </Link>
-              </li>
-              <li>
                 <Link to="/contact" className="hover:text-primary transition-colors">
                   Get in Touch
                 </Link>
