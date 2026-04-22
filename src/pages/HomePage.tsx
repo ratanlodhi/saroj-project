@@ -81,7 +81,7 @@ export default function HomePage() {
           <img
             src={heroImage}
             alt="Hero artwork by Rasayan"
-            className="w-full max-h-[70vh] md:max-h-[85vh] h-auto object-contain md:object-cover"
+            className="w-full max-h-[70vh] md:max-h-[85vh] h-auto object-contain"
           />
         </div>
         <p className="text-right text-muted-foreground italic py-2 md:py-4 text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 lg:px-12 max-w-3xl ml-auto">
@@ -119,7 +119,7 @@ export default function HomePage() {
                   <img
                     src={image}
                     alt={`Recent work ${index + 1}`}
-                    className="max-h-full w-full h-full object-contain md:object-cover"
+                    className="max-h-full w-full h-full object-contain"
                   />
                 </div>
               </div>
@@ -133,9 +133,9 @@ export default function HomePage() {
           {/* Image Side */}
           <div className="aspect-[4/5] md:aspect-auto md:min-h-[500px] lg:min-h-[600px] overflow-hidden bg-secondary/20 flex items-center justify-center">
             <img
-              src="/gallery/abstract-1.jpg"
+              src="/media/saroj.jpg"
               alt="Studio sale artwork"
-              className="max-h-full w-full h-full object-contain md:object-cover"
+              className="max-h-full w-full h-full object-contain"
             />
           </div>
 
@@ -214,7 +214,7 @@ export default function HomePage() {
                   <img
                     src={artwork.image || ''}
                     alt={artwork.title}
-                    className="max-h-full w-full h-full object-contain md:object-cover transition-transform duration-500 md:group-hover:scale-105"
+                    className="max-h-full w-full h-full object-contain transition-transform duration-500 md:group-hover:scale-105"
                   />
                 </div>
                 <h3 className="font-sans text-sm md:text-base text-primary mb-1 group-hover:underline">

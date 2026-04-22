@@ -40,7 +40,7 @@ export default function CartPage() {
                     <img
                       src={item.artwork.image || item.artwork.image_url}
                       alt={item.artwork.title}
-                      className="w-20 h-20 object-cover rounded-sm shrink-0 transition-opacity group-hover:opacity-90"
+                      className="w-20 h-20 object-contain rounded-sm shrink-0 transition-opacity group-hover:opacity-90"
                     />
                     <div className="flex-1 min-w-0">
                       <h2 className="font-serif text-lg text-primary group-hover:underline">

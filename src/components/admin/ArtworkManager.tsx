@@ -417,7 +417,7 @@ export default function ArtworkManager() {
                         <img
                           src={artwork.image}
                           alt={artwork.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       ) : (
                         <ImageIcon size={20} className="text-muted-foreground" />

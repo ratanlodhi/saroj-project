@@ -110,7 +110,7 @@ export function CartSidebar() {
                     <img
                       src={item.artwork.image}
                       alt={item.artwork.title}
-                      className="w-20 h-20 object-cover rounded-sm hover:opacity-90 transition-opacity"
+                      className="w-20 h-20 object-contain rounded-sm hover:opacity-90 transition-opacity"
                     />
                   </Link>
                   <div className="flex-1 min-w-0 flex items-stretch justify-between gap-3">
