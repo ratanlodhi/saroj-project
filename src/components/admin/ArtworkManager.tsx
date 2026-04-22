@@ -47,9 +47,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { detectOrientationFromUrl } from '@/components/PaintingFrame';
+import { detectOrientationFromUrl, type Orientation } from '@/lib/imageOrientation';
 
-type OrientationOption = 'horizontal' | 'square' | 'vertical';
+type OrientationOption = Orientation;
 
 interface ArtworkFormData {
   title: string;
@@ -71,7 +71,6 @@ interface ArtworkFormData {
   shipping_weight: number;
   number_of_panels: number;
   ready_to_hang: boolean;
-  decorative_frame: boolean;
   orientation: OrientationOption;
 }
 
@@ -156,7 +155,6 @@ const initialFormData: ArtworkFormData = {
   shipping_weight: 0,
   number_of_panels: 1,
   ready_to_hang: false,
-  decorative_frame: false,
   orientation: 'horizontal',
 };
 
@@ -244,7 +242,6 @@ export default function ArtworkManager() {
         shipping_weight: artwork.shipping_weight || 0,
         number_of_panels: artwork.number_of_panels || 1,
         ready_to_hang: artwork.ready_to_hang || false,
-        decorative_frame: artwork.decorative_frame || false,
         orientation: (artwork.orientation as OrientationOption) || 'horizontal',
       });
     } else {
@@ -811,14 +808,6 @@ export default function ArtworkManager() {
                           onCheckedChange={(checked) => handleInputChange('ready_to_hang', checked)}
                         />
                         <Label htmlFor="readyToHang">Ready to Hang</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="decorativeFrame"
-                          checked={formData.decorative_frame}
-                          onCheckedChange={(checked) => handleInputChange('decorative_frame', checked)}
-                        />
-                        <Label htmlFor="decorativeFrame">Decorative Frame</Label>
                       </div>
                     </div>
                   </div>

@@ -32,7 +32,6 @@ export interface Artwork {
   shipping_weight?: number;
   number_of_panels?: number;
   ready_to_hang?: boolean;
-  decorative_frame?: boolean;
   orientation?: 'horizontal' | 'square' | 'vertical';
 }
 
@@ -74,7 +73,6 @@ export function useArtworks() {
       shipping_weight: artwork?.shipping_weight ?? 0,
       number_of_panels: artwork?.number_of_panels ?? 1,
       ready_to_hang: artwork?.ready_to_hang ?? false,
-      decorative_frame: artwork?.decorative_frame ?? false,
       orientation: (['horizontal', 'square', 'vertical'] as const).includes(artwork?.orientation)
         ? artwork.orientation
         : 'horizontal',
@@ -135,7 +133,6 @@ export function useArtworks() {
       payload.number_of_panels = Number.isFinite(parsedPanels) && parsedPanels > 0 ? parsedPanels : 1;
     }
     if ('ready_to_hang' in payload) payload.ready_to_hang = Boolean(payload.ready_to_hang);
-    if ('decorative_frame' in payload) payload.decorative_frame = Boolean(payload.decorative_frame);
     if ('orientation' in payload) {
       const validOrientations = ['horizontal', 'square', 'vertical'];
       payload.orientation = validOrientations.includes(payload.orientation) ? payload.orientation : 'horizontal';

@@ -45,7 +45,7 @@ export type Database = {
           category_id: string | null
           commission_percentage: number
           created_at: string
-          decorative_frame: boolean
+
           description: string
           featured: boolean | null
           id: string
@@ -71,7 +71,6 @@ export type Database = {
           category_id?: string | null
           commission_percentage?: number
           created_at?: string
-          decorative_frame?: boolean
           description: string
           featured?: boolean | null
           id?: string
@@ -97,7 +96,6 @@ export type Database = {
           category_id?: string | null
           commission_percentage?: number
           created_at?: string
-          decorative_frame?: boolean
           description?: string
           featured?: boolean | null
           id?: string

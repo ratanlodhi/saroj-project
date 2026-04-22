@@ -10,8 +10,6 @@ import { shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
 import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
 import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
-import PaintingFrame from '@/components/PaintingFrame';
-import type { Orientation } from '@/components/PaintingFrame';
 
 export default function GalleryPage() {
   const [activeMedium, setActiveMedium] = useState<string>('all');
@@ -162,13 +160,10 @@ export default function GalleryPage() {
             </button>
 
             <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] flex items-center justify-center bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
-              <PaintingFrame
-                imageUrl={selectedArtwork.image || ''}
+              <img
+                src={selectedArtwork.image || ''}
                 alt={selectedArtwork.title}
-                orientation={(selectedArtwork.orientation as Orientation) || undefined}
-                allowFrameSwitch={true}
-                compact
-                className="w-full max-h-full min-h-0"
+                className="w-full max-h-full object-contain min-h-0"
               />
             </div>
 

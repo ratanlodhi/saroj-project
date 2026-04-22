@@ -121,12 +121,6 @@ export default function PriceAndDetailsSection({
                 {artwork.ready_to_hang ? 'Yes' : 'No'}
               </p>
             </div>
-            <div className="flex justify-between items-center">
-              <p className="text-sm text-gray-600">Decorative Frame</p>
-              <p className="text-base font-medium text-gray-900">
-                {artwork.decorative_frame ? 'Yes' : 'No'}
-              </p>
-            </div>
           </div>
         </div>
       </CardContent>
