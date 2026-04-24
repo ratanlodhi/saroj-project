@@ -16,7 +16,7 @@ const corsHeaders = {
 };
 
 const DEFAULT_FEED_URL =
-  "https://sarojprakashbandi.blogspot.com/feeds/posts/default?alt=rss";
+  "https://medium.com/feed/@sarojprakashbandi";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
