@@ -11,6 +11,30 @@ import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
 import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 
+const mediumMatcherByCategory: Record<string, (medium: string) => boolean> = {
+  acrylic: (medium) => medium.includes('acrylic'),
+  oil: (medium) => medium.includes('oil'),
+  ink: (medium) => medium.includes('ink'),
+  gouache: (medium) => medium.includes('gouache'),
+  'mixed-media': (medium) => medium.includes('mixed media'),
+  charcoal: (medium) => medium.includes('charcoal'),
+  'soft-pastel': (medium) => medium.includes('pastel'),
+  other: (medium) => medium.includes('other'),
+};
+
+const mediumOrder = mediumCategories.filter((medium) => medium.id !== 'all').map((medium) => medium.id);
+
+const resolveMediumCategory = (rawMedium: string): string | null => {
+  const normalizedMedium = rawMedium.toLowerCase();
+
+  for (const mediumId of mediumOrder) {
+    const matcher = mediumMatcherByCategory[mediumId];
+    if (matcher?.(normalizedMedium)) return mediumId;
+  }
+
+  return null;
+};
+
 export default function GalleryPage() {
   const [activeMedium, setActiveMedium] = useState<string>('all');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
@@ -18,19 +42,23 @@ export default function GalleryPage() {
   const { artworks, loading } = useArtworks();
   const { categories } = useCategories();
 
-  const filteredArtworks = (activeMedium === 'all'
-    ? [...artworks].sort((a, b) => a.medium.localeCompare(b.medium))
+  const filteredArtworks = activeMedium === 'all'
+    ? [...artworks].sort((a, b) => {
+        const categoryA = resolveMediumCategory(a.medium);
+        const categoryB = resolveMediumCategory(b.medium);
+        const orderA = categoryA ? mediumOrder.indexOf(categoryA) : Number.MAX_SAFE_INTEGER;
+        const orderB = categoryB ? mediumOrder.indexOf(categoryB) : Number.MAX_SAFE_INTEGER;
+
+        if (orderA !== orderB) return orderA - orderB;
+
+        // Keep ordering stable within each medium group.
+        return a.title.localeCompare(b.title);
+      })
     : artworks.filter((a) => {
-        const lowerMedium = a.medium.toLowerCase();
-        if (activeMedium === 'acrylic') return lowerMedium.includes('acrylic');
-        if (activeMedium === 'oil') return lowerMedium.includes('oil');
-        if (activeMedium === 'ink') return lowerMedium.includes('ink');
-        if (activeMedium === 'gouache') return lowerMedium.includes('gouache');
-        if (activeMedium === 'mixed-media') return lowerMedium.includes('mixed media');
-        if (activeMedium === 'charcoal') return lowerMedium.includes('charcoal');
-        if (activeMedium === 'soft-pastel') return lowerMedium.includes('pastel');
-        return true;
-      }));
+        const matcher = mediumMatcherByCategory[activeMedium];
+        if (!matcher) return true;
+        return matcher(a.medium.toLowerCase());
+      });
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -98,11 +126,11 @@ export default function GalleryPage() {
               {activeMedium === 'all' ? 'No artworks found' : `No ${activeMedium} artworks found`}
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredArtworks.map((artwork, index) => (
                 <div
                   key={artwork.id}
-                  className="break-inside-avoid animate-fade-up"
+                  className="animate-fade-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <div className="group gallery-item w-full relative">
