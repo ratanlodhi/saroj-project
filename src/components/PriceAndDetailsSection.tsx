@@ -122,6 +122,23 @@ export default function PriceAndDetailsSection({
               </p>
             </div>
           </div>
+          <div className="border-b border-gray-200" />
+        </div>
+
+        {/* Support Section */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+            Support
+          </h3>
+          <p className="text-sm text-gray-600">
+            If you have any questions or issues with this painting, please contact us:
+          </p>
+          <a
+            href="mailto:support@sarojprakashbandi.com"
+            className="text-sm font-medium text-accent hover:text-accent/80 transition-colors"
+          >
+            support@sarojprakashbandi.com
+          </a>
         </div>
       </CardContent>
     </Card>

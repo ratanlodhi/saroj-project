@@ -8,7 +8,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Our Story</span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
-            About the Studio
+            About the Artist
           </h1>
           <div className="section-divider mt-8" />
         </div>
