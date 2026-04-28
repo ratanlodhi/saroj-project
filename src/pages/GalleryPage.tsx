@@ -3,6 +3,13 @@ import { mediumCategories } from '@/data/artworks';
 import { cn } from '@/lib/utils';
 import { X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { useCart } from '@/contexts/CartContext';
 import { useArtworks, type Artwork } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
@@ -10,6 +17,16 @@ import { shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
 import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
 import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
+
+const parseArtworkImages = (artwork: Artwork): string[] => {
+  const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
+  const images = rawSources
+    .flatMap((source) => source.split(/[\n,|]+/))
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(images));
+};
 
 const mediumMatcherByCategory: Record<string, (medium: string) => boolean> = {
   acrylic: (medium) => medium.includes('acrylic'),
@@ -170,6 +187,11 @@ export default function GalleryPage() {
 
       {/* Lightbox */}
       {selectedArtwork && (
+        (() => {
+          const artworkImages = parseArtworkImages(selectedArtwork);
+          const primaryImage = artworkImages[0] || selectedArtwork.image_url || selectedArtwork.image || '';
+
+          return (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in overflow-y-auto overscroll-contain"
           onClick={() => setSelectedArtwork(null)}
@@ -187,12 +209,34 @@ export default function GalleryPage() {
               <X size={20} />
             </button>
 
-            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] flex items-center justify-center bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
-              <img
-                src={selectedArtwork.image || ''}
-                alt={selectedArtwork.title}
-                className="w-full max-h-full object-contain min-h-0"
-              />
+            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
+              {artworkImages.length > 1 ? (
+                <Carousel opts={{ loop: true }} className="w-full min-h-[220px]">
+                  <CarouselContent>
+                    {artworkImages.map((imageSrc, imageIndex) => (
+                      <CarouselItem key={`${selectedArtwork.id}-image-${imageIndex}`}>
+                        <div className="h-full min-h-[220px] flex items-center justify-center">
+                          <img
+                            src={imageSrc}
+                            alt={`${selectedArtwork.title} image ${imageIndex + 1}`}
+                            className="w-full max-h-[min(46dvh,460px)] md:max-h-[min(70dvh,620px)] object-contain min-h-0"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2 sm:left-3" />
+                  <CarouselNext className="right-2 sm:right-3" />
+                </Carousel>
+              ) : (
+                <div className="h-full min-h-[220px] flex items-center justify-center">
+                  <img
+                    src={primaryImage}
+                    alt={selectedArtwork.title}
+                    className="w-full max-h-[min(46dvh,460px)] md:max-h-[min(70dvh,620px)] object-contain min-h-0"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border md:max-h-[min(90vh,900px)]">
@@ -210,6 +254,7 @@ export default function GalleryPage() {
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>{selectedArtwork.medium}</p>
                 <p>{formatArtworkSizeDisplay(selectedArtwork.size)}</p>
+                <p className="text-xs">Height × Width (inches)</p>
               </div>
 
               {/* Description */}
@@ -234,6 +279,8 @@ export default function GalleryPage() {
             </div>
           </div>
         </div>
+          );
+        })()
       )}
     </div>
   );

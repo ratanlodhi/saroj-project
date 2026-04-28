@@ -3,6 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { X, Filter, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
@@ -13,12 +18,54 @@ import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 import type { Artwork } from '@/hooks/useArtworks';
 
+const parseArtworkImages = (artwork: Artwork): string[] => {
+  const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
+
+  const images = rawSources
+    .flatMap((source) => {
+      const normalized = source.trim();
+      if (!normalized) return [];
+
+      if (normalized.includes('\n') || normalized.includes('|')) {
+        return normalized.split(/[\n|]+/).map((value) => value.trim());
+      }
+
+      const commaParts = normalized.split(',').map((value) => value.trim()).filter(Boolean);
+      const looksLikeUrl = (value: string) => /^https?:\/\//i.test(value) || value.startsWith('/');
+      if (commaParts.length > 1 && commaParts.every(looksLikeUrl)) {
+        return commaParts;
+      }
+
+      return [normalized];
+    })
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const uniqueImages = Array.from(new Set(images));
+  return uniqueImages;
+};
+
+const parseHeightWidthInches = (size: string): { height: string; width: string } | null => {
+  const normalized = formatArtworkSizeDisplay(size);
+  const pair = normalized.match(/^(\d+(?:\.\d+)?)\s+inches\s*\*\s*(\d+(?:\.\d+)?)\s+inches$/i);
+
+  if (!pair) {
+    return null;
+  }
+
+  return {
+    height: pair[1],
+    width: pair[2],
+  };
+};
+
 export default function PaintingsPage() {
 
   const [searchParams] = useSearchParams();
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'price-low' | 'price-high'>('price-low');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
+  const [selectedViewIndex, setSelectedViewIndex] = useState(0);
   const openedArtworkIdRef = useRef<string | null>(null);
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
@@ -40,6 +87,10 @@ export default function PaintingsPage() {
       openedArtworkIdRef.current = artworkId;
     }
   }, [artworkId, artworks, loading]);
+
+  useEffect(() => {
+    setSelectedViewIndex(0);
+  }, [selectedArtwork?.id]);
 
   const filteredArtworks = artworks.filter((a) => {
     const matchesCategory = activeCategoryId === 'all' || a.category_id === activeCategoryId;
@@ -217,13 +268,24 @@ export default function PaintingsPage() {
 
       {/* Lightbox */}
       {selectedArtwork && (
+        (() => {
+          const artworkImages = parseArtworkImages(selectedArtwork);
+          const primaryImage = artworkImages[0] || selectedArtwork.image_url || selectedArtwork.image || '';
+          const dimensions = parseHeightWidthInches(selectedArtwork.size);
+          const displaySlides = [
+            { id: 'normal', src: primaryImage, label: 'Normal', showDimensions: false },
+            { id: 'dimensions', src: primaryImage, label: 'Height/Width', showDimensions: true },
+          ] as const;
+          const activeSlide = displaySlides[selectedViewIndex] || displaySlides[0];
+
+          return (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in overflow-y-auto overscroll-contain"
+          className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 animate-fade-in overflow-y-auto overscroll-contain"
           onClick={() => setSelectedArtwork(null)}
         >
           <div className="absolute inset-0 bg-charcoal/90 backdrop-blur-sm" />
           <div
-            className="relative my-auto w-full max-w-5xl max-h-[min(100dvh,900px)] min-h-0 flex flex-col md:flex-row bg-card rounded-sm overflow-hidden shadow-elegant animate-scale-in"
+            className="relative my-auto w-full max-w-5xl h-[100dvh] md:h-auto max-h-[100dvh] md:max-h-[min(100dvh,900px)] min-h-0 flex flex-col md:flex-row bg-card rounded-none sm:rounded-sm overflow-hidden shadow-elegant animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -234,15 +296,67 @@ export default function PaintingsPage() {
               <X size={20} />
             </button>
 
-            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] flex items-center justify-center bg-muted/20 px-3 pt-12 pb-4 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden">
-              <img
-                src={selectedArtwork.image_url || selectedArtwork.image || ''}
-                alt={selectedArtwork.title}
-                className="w-full max-h-full object-contain min-h-0"
-              />
+            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-3 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
+              <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center">
+                <div className="relative inline-block pr-14 pb-12 sm:pr-16 sm:pb-12">
+                  <img
+                    src={activeSlide.src}
+                    alt={selectedArtwork.title}
+                    className="block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
+                  />
+                  {dimensions && activeSlide.showDimensions && (
+                    <>
+                      <div className="pointer-events-none absolute left-2 right-14 sm:right-16 bottom-8 border-b border-primary/45" />
+                      <div className="pointer-events-none absolute left-0 bottom-[25px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
+                      <div className="pointer-events-none absolute right-14 sm:right-16 bottom-[25px] w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-primary/45" />
+                      <p className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
+                        {dimensions.width} inches
+                      </p>
+
+                      <div className="pointer-events-none absolute top-2 bottom-12 right-8 border-r border-primary/45" />
+                      <div className="pointer-events-none absolute top-0 right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-b-[7px] border-l-transparent border-r-transparent border-b-primary/45" />
+                      <div className="pointer-events-none absolute bottom-12 right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent border-t-primary/45" />
+                      <p className="pointer-events-none absolute top-1/2 -right-6 sm:-right-7 -translate-y-1/2 rotate-90 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
+                        {dimensions.height} inches
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-2 sm:mt-4">
+                <Carousel opts={{ align: 'start' }} className="w-full px-4 sm:px-8">
+                  <CarouselContent className="-ml-2">
+                    {displaySlides.map((slide, slideIndex) => (
+                      <CarouselItem
+                        key={`${selectedArtwork.id}-thumb-${slide.id}`}
+                        className="pl-2 basis-1/3 sm:basis-1/4"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelectedViewIndex(slideIndex)}
+                          className={cn(
+                            'w-full overflow-hidden rounded-sm border transition-all text-left',
+                            selectedViewIndex === slideIndex
+                              ? 'border-primary ring-1 ring-primary'
+                              : 'border-border hover:border-primary/50'
+                          )}
+                          aria-label={`View ${slide.label}`}
+                        >
+                          <img
+                            src={slide.src}
+                            alt={`${selectedArtwork.title} ${slide.label}`}
+                            className="w-full h-12 sm:h-16 object-cover"
+                          />
+                        </button>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              </div>
             </div>
 
-            <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-4 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border md:max-h-[min(90vh,900px)]">
+            <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-3 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border max-h-[48dvh] md:max-h-[min(90vh,900px)]">
               {/* Price */}
               <p className="font-serif text-2xl md:text-3xl font-semibold text-primary">
                 {formatPrice(selectedArtwork.price)}
@@ -285,6 +399,8 @@ export default function PaintingsPage() {
             </div>
           </div>
         </div>
+          );
+        })()
       )}
     </div>
   );
