@@ -298,7 +298,7 @@ export default function PaintingsPage() {
 
             <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-3 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
               <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center">
-                <div className="relative inline-block pr-14 pb-12 sm:pr-16 sm:pb-12">
+                <div className="relative inline-block pr-14 pt-10 pb-12 sm:pr-16 sm:pt-10 sm:pb-12">
                   <img
                     src={activeSlide.src}
                     alt={selectedArtwork.title}
@@ -306,15 +306,15 @@ export default function PaintingsPage() {
                   />
                   {dimensions && activeSlide.showDimensions && (
                     <>
-                      <div className="pointer-events-none absolute left-2 right-14 sm:right-16 bottom-8 border-b border-primary/45" />
-                      <div className="pointer-events-none absolute left-0 bottom-[25px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
-                      <div className="pointer-events-none absolute right-14 sm:right-16 bottom-[25px] w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-primary/45" />
-                      <p className="pointer-events-none absolute left-1/2 bottom-0 -translate-x-1/2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
+                      <div className="pointer-events-none absolute left-2 right-14 sm:right-16 top-5 border-b border-primary/45" />
+                      <div className="pointer-events-none absolute left-0 top-[15px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
+                      <div className="pointer-events-none absolute right-14 sm:right-16 top-[15px] w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-primary/45" />
+                      <p className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
                         {dimensions.width} inches
                       </p>
 
-                      <div className="pointer-events-none absolute top-2 bottom-12 right-8 border-r border-primary/45" />
-                      <div className="pointer-events-none absolute top-0 right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-b-[7px] border-l-transparent border-r-transparent border-b-primary/45" />
+                      <div className="pointer-events-none absolute top-10 bottom-12 right-8 border-r border-primary/45" />
+                      <div className="pointer-events-none absolute top-[33px] right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-b-[7px] border-l-transparent border-r-transparent border-b-primary/45" />
                       <div className="pointer-events-none absolute bottom-12 right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent border-t-primary/45" />
                       <p className="pointer-events-none absolute top-1/2 -right-6 sm:-right-7 -translate-y-1/2 rotate-90 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
                         {dimensions.height} inches

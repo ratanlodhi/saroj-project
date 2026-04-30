@@ -120,8 +120,8 @@ export function Header() {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
         isScrolled
-          ? 'bg-[#bba472]/95 backdrop-blur-sm shadow-soft py-3'
-          : 'bg-[#bba472] py-5'
+          ? 'bg-[#c8b489]/95 backdrop-blur-sm shadow-soft py-3'
+          : 'bg-[#c8b489] py-5'
       )}
     >
       <div className="container mx-auto px-3 sm:px-4">
