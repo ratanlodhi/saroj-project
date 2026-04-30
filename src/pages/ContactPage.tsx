@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, MapPin, Instagram, Facebook, Youtube, Linkedin, Twitter } from 'lucide-react';
+import { Mail, Instagram, Facebook, Youtube, Linkedin, Twitter } from 'lucide-react';
 import { GoodreadsBrandIcon, MediumBrandIcon } from '@/components/icons/BrandSocialIcons';
 
 const socialLinks = [
@@ -74,33 +74,25 @@ export default function ContactPage() {
     }));
   };
 
+  const emailAddresses = [
+    { address: 'contact@sarojprakashbandi.com', label: 'General' },
+    { address: 'support@sarojprakashbandi.com', label: 'Support' },
+    { address: 'studio@sarojprakashbandi.com', label: 'Studio' },
+  ];
+
   return (
     <div className="min-h-screen pb-20">
-      {/* Header */}
-      {/* <section className="py-12 md:py-20">
-        <div className="container mx-auto px-4 text-center">
-          <span className="text-xs tracking-[0.3em] uppercase text-accent font-sans">Get in Touch</span>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium text-primary mt-4">
-            Contact
-          </h1>
-          <p className="text-muted-foreground font-sans mt-4 max-w-xl mx-auto">
-            Have a question about the work? We'd love to hear from you.
-          </p>
-          <div className="section-divider mt-8" />
-        </div>
-      </section> */}
-
       {/* Content */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20">
+      <section className="py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-20">
             {/* Contact Form */}
             <div className="animate-fade-up">
               <h2 className="font-serif text-2xl font-medium text-primary mb-6">
                 Send a Message
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="name" className="block text-sm font-sans text-primary mb-2">
                     Name
@@ -167,23 +159,32 @@ export default function ContactPage() {
               </h2>
 
               <div className="space-y-8">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center flex-shrink-0 text-[#5b4538]">
-                    <Mail className="w-6 h-6" />
-                  </div>
-                  <div>
+                {/* Email Section */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Mail className="w-4 h-4 text-[#5b4538] flex-shrink-0" />
                     <h3 className="font-sans font-medium text-primary">Email</h3>
-                    <a
-                      href="mailto:contact@sarojprakashbandi.com"
-                      className="text-muted-foreground hover:text-accent transition-colors"
-                    >
-                      contact@sarojprakashbandi.com
-                    </a>
+                  </div>
+                  <div className="space-y-2 pl-6">
+                    {emailAddresses.map(({ address, label }) => (
+                      <div key={address} className="flex flex-col xs:flex-row xs:items-center gap-1 xs:gap-3">
+                        <span className="text-xs font-sans text-muted-foreground/70 uppercase tracking-wide min-w-[52px]">
+                          {label}
+                        </span>
+                        <a
+                          href={`mailto:${address}`}
+                          className="text-sm font-sans text-muted-foreground hover:text-[#5b4538] transition-colors duration-200 break-all"
+                        >
+                          {address}
+                        </a>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 <div className="section-divider !mx-0 !w-full" />
 
+                {/* Social Links */}
                 <div>
                   <h3 className="font-sans font-medium text-primary mb-4">Follow Us</h3>
                   <div className="flex flex-wrap gap-3">
@@ -202,7 +203,6 @@ export default function ContactPage() {
                     ))}
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
