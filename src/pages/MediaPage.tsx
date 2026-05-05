@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, ExternalLink, Plus, Edit, Trash2, Settings } from 'lucide-react';
+import { ExternalLink, Plus, Edit, Trash2, Settings } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,37 +17,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-
-const videos = [
-  {
-    id: '1',
-    title: 'Abstract Painting Process',
-    description: 'Watch the creation of "Whispers of Dawn" from first brushstroke to completion.',
-    thumbnail: '/gallery/abstract-1.jpg',
-    duration: '12:34',
-  },
-  {
-    id: '2',
-    title: 'Portrait Study Timelapse',
-    description: 'A mesmerizing timelapse of classical portrait techniques in action.',
-    thumbnail: '/gallery/portrait-1.jpg',
-    duration: '8:45',
-  },
-  {
-    id: '3',
-    title: 'Studio Tour',
-    description: 'An intimate look inside the  workspace.',
-    thumbnail: '/gallery/realism-1.jpg',
-    duration: '15:20',
-  },
-  {
-    id: '4',
-    title: 'Color Mixing Masterclass',
-    description: 'Learn the secrets of creating harmonious color palettes.',
-    thumbnail: '/gallery/abstract-2.jpg',
-    duration: '22:15',
-  },
-];
+import { YouTubeEmbed } from '@/components/media/YouTubeEmbed';
+import {
+  MEDIA_FEATURED_VIDEO,
+  MEDIA_MORE_VIDEOS,
+} from '@/data/mediaVideos';
 
 interface Article {
   id: string;
@@ -163,31 +137,28 @@ export default function MediaPage() {
         </div>
       </section> */}
 
-      {/* Featured Video */}
+      {/* Featured Video — YouTube embed (muted autoplay for browser policy compliance) */}
       <section className="py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-video rounded-sm overflow-hidden shadow-elegant group cursor-pointer">
-              <img
-                src="/gallery/abstract-1.jpg"
-                alt="Featured video thumbnail"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            <div className="relative aspect-video rounded-sm overflow-hidden shadow-elegant bg-charcoal">
+              <YouTubeEmbed
+                videoId={MEDIA_FEATURED_VIDEO.youtubeId}
+                title={MEDIA_FEATURED_VIDEO.title}
+                autoplay
+                lazy={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-full bg-accent/90 flex items-center justify-center shadow-elegant group-hover:scale-110 transition-transform duration-300">
-                  <Play size={32} className="text-accent-foreground ml-1" fill="currentColor" />
-                </div>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <span className="text-xs tracking-widest uppercase text-cream/70 font-sans">Featured</span>
-                <h2 className="font-serif text-2xl md:text-3xl text-cream mt-2">
-                  The Art of Abstract Expression
-                </h2>
-                <p className="text-cream/80 text-sm mt-2 max-w-lg">
-                  A documentary exploring the philosophy and technique behind our abstract work.
-                </p>
-              </div>
+            </div>
+            <div className="mt-6">
+              <span className="text-xs tracking-widest uppercase text-accent font-sans">
+                Featured
+              </span>
+              <h2 className="font-serif text-2xl md:text-3xl text-primary mt-2">
+                {MEDIA_FEATURED_VIDEO.title}
+              </h2>
+              <p className="text-muted-foreground text-sm mt-2 max-w-lg">
+                {MEDIA_FEATURED_VIDEO.description}
+              </p>
             </div>
           </div>
         </div>
@@ -201,35 +172,23 @@ export default function MediaPage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {videos.map((video, index) => (
+            {MEDIA_MORE_VIDEOS.map((video, index) => (
               <article
                 key={video.id}
-                className="group cursor-pointer animate-fade-up"
+                className="animate-fade-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="relative aspect-video rounded-sm overflow-hidden shadow-elegant">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                <div className="relative aspect-video rounded-sm overflow-hidden shadow-elegant bg-charcoal">
+                  <YouTubeEmbed
+                    videoId={video.youtubeId}
+                    title={video.title}
+                    autoplay
+                    lazy
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent" />
-                  
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full bg-accent/80 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Play size={24} className="text-accent-foreground ml-0.5" fill="currentColor" />
-                    </div>
-                  </div>
-
-                  {/* Duration Badge */}
-                  <div className="absolute bottom-3 right-3 bg-charcoal/80 px-2 py-1 rounded text-xs text-cream font-sans">
-                    {video.duration}
-                  </div>
                 </div>
 
                 <div className="mt-4">
-                  <h3 className="font-serif text-lg text-primary group-hover:text-accent transition-colors">
+                  <h3 className="font-serif text-lg text-primary">
                     {video.title}
                   </h3>
                   <p className="text-muted-foreground text-sm font-sans mt-1">
