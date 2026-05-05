@@ -1,22 +1,87 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { blogPosts as localBlogPosts } from '@/data/blogs';
 import { useBlogFeed, type BlogPost } from '@/hooks/useBlogFeed';
+import { useMediumPosts, type MediumPost } from '@/hooks/useMediumPosts';
 import { BLOG_CONFIG } from '@/data/blogConfig';
 import { ArrowRight, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+const PLACEHOLDER_IMAGE = '/placeholder.svg';
+
 /** Remote RSS posts use the post URL as their ID; local posts use numeric strings. */
 const isExternal = (post: BlogPost) => post.id.startsWith('http');
 
-export default function BlogPage() {
-  const { posts: remotePosts, loading, error } = useBlogFeed(BLOG_CONFIG.feedUrl);
-  
-  // Use remote posts if available, otherwise fallback to local posts
-  const blogPosts = (BLOG_CONFIG.enableBlogspotFeed && remotePosts.length > 0) || !BLOG_CONFIG.useFallbackData
-    ? remotePosts
-    : localBlogPosts;
+function BlogPostImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
+  return (
+    <img
+      src={src || PLACEHOLDER_IMAGE}
+      alt={alt}
+      className={className}
+      onError={(e) => {
+        (e.currentTarget as HTMLImageElement).src = PLACEHOLDER_IMAGE;
+      }}
+    />
+  );
+}
 
-  const showNetworkError = error && BLOG_CONFIG.enableBlogspotFeed && BLOG_CONFIG.useFallbackData;
+function mediumPostToBlogPost(post: MediumPost): BlogPost {
+  const date = post.pubDate
+    ? new Date(post.pubDate).toISOString().split('T')[0]
+    : '';
+  /** Never use feed.image here — it is the publication/author logo, not the article cover. */
+  const image = post.thumbnail.trim() || PLACEHOLDER_IMAGE;
+  return {
+    id: post.link,
+    title: post.title,
+    excerpt: post.description,
+    content: '',
+    date,
+    image,
+    author: post.author,
+  };
+}
+
+export default function BlogPage() {
+  const { data: mediumData, isLoading: mediumLoading } = useMediumPosts();
+  const { posts: remotePosts, loading: blogspotLoading, error } = useBlogFeed(BLOG_CONFIG.feedUrl);
+
+  const mediumBlogPosts = useMemo(() => {
+    if (!mediumData?.posts?.length) return [];
+    return mediumData.posts.map((p) => mediumPostToBlogPost(p));
+  }, [mediumData]);
+
+  const showMedium = !mediumLoading && mediumBlogPosts.length > 0;
+
+  const fallbackPosts =
+    (BLOG_CONFIG.enableBlogspotFeed && remotePosts.length > 0) || !BLOG_CONFIG.useFallbackData
+      ? remotePosts
+      : localBlogPosts;
+
+  const blogPosts = showMedium
+    ? mediumBlogPosts.slice(0, 10)
+    : mediumLoading
+      ? []
+      : fallbackPosts;
+
+  const loading =
+    (mediumLoading && blogPosts.length === 0) ||
+    (!mediumLoading &&
+      !showMedium &&
+      blogspotLoading &&
+      remotePosts.length === 0 &&
+      BLOG_CONFIG.enableBlogspotFeed);
+
+  const showNetworkError =
+    !showMedium && error && BLOG_CONFIG.enableBlogspotFeed && BLOG_CONFIG.useFallbackData;
 
   return (
     <div className="min-h-screen pb-20">
@@ -83,7 +148,7 @@ export default function BlogPage() {
               >
               <article className="grid md:grid-cols-2 gap-8 items-center bg-card rounded-sm overflow-hidden shadow-soft hover:shadow-elegant transition-all duration-300">
                 <div className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden">
-                  <img
+                  <BlogPostImage
                     src={blogPosts[0].image}
                     alt={blogPosts[0].title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -118,7 +183,7 @@ export default function BlogPage() {
               >
               <article className="grid md:grid-cols-2 gap-8 items-center bg-card rounded-sm overflow-hidden shadow-soft hover:shadow-elegant transition-all duration-300">
                 <div className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden">
-                  <img
+                  <BlogPostImage
                     src={blogPosts[0].image}
                     alt={blogPosts[0].title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -160,7 +225,7 @@ export default function BlogPage() {
                 const articleContent = (
                   <article className="bg-card rounded-sm overflow-hidden shadow-soft hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
                     <div className="aspect-[16/10] overflow-hidden">
-                      <img
+                      <BlogPostImage
                         src={post.image}
                         alt={post.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

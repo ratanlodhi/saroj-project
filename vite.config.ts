@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { devBlogspotFeedPlugin } from "./vite-plugin-dev-blogspot-feed";
+import { devMediumFeedPlugin } from "./vite-plugin-dev-medium-feed";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -10,6 +11,8 @@ export default defineConfig(({ mode }) => {
   const blogspotFeedUrl =
     env.VITE_BLOGSPOT_FEED_URL ||
     "https://medium.com/feed/@sarojprakashbandi";
+  const mediumFeedUrl =
+    env.VITE_MEDIUM_FEED_URL || "https://sarojprakashbandi.medium.com/feed";
   const supabaseUrl =
     env.VITE_SUPABASE_URL || "https://dcrfsaggvdfjjvinryxt.supabase.co";
   const supabaseAnon =
@@ -43,6 +46,7 @@ export default defineConfig(({ mode }) => {
   },
   plugins: [
     mode === "development" && devBlogspotFeedPlugin(blogspotFeedUrl),
+    mode === "development" && devMediumFeedPlugin(mediumFeedUrl),
     react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),

@@ -83,16 +83,93 @@ function normalizeItems(item: any): any[] {
   return Array.isArray(item) ? item : [item];
 }
 
-function thumbnailFromItem(
+/** Small Medium CDN squares are usually author avatars, not article covers (matches client hook). */
+function isLikelyAuthorAvatar(url: string): boolean {
+  const u = decodeURIComponent(url).toLowerCase();
+  if (/avatar|gravatar|profile-photo|profile_images/.test(u)) return true;
+  const fit = /\/fit\/c\/(\d+)\/(\d+)\//.exec(u);
+  if (!fit) return false;
+  const w = parseInt(fit[1], 10);
+  const h = parseInt(fit[2], 10);
+  if (Number.isNaN(w) || Number.isNaN(h)) return false;
+  if (Math.max(w, h) >= 400) return false;
+  if (w <= 320 && h <= 320) return true;
+  return false;
+}
+
+function scoreArticleImageUrl(url: string): number {
+  let s = 0;
+  if (url.includes("miro.medium.com")) s += 80;
+  if (url.includes("/max/")) s += 60;
+  const resize = /resize:fit:(\d+)/i.exec(url);
+  if (resize) s += parseInt(resize[1], 10) / 20;
+  const fit = /\/fit\/c\/(\d+)\/(\d+)\//.exec(url);
+  if (fit) {
+    const w = parseInt(fit[1], 10);
+    const h = parseInt(fit[2], 10);
+    s += Math.min(w, h) / 50;
+  }
+  return s;
+}
+
+function pickBestArticleImage(urls: string[]): string {
+  const uniq = [...new Set(urls.map((u) => u.trim()).filter(Boolean))];
+  const preferred = uniq.filter((u) => !isLikelyAuthorAvatar(u));
+  const pool = preferred.length > 0 ? preferred : uniq;
+  if (pool.length === 0) return "";
+  let best = pool[0]!;
+  for (let i = 1; i < pool.length; i++) {
+    const u = pool[i]!;
+    if (scoreArticleImageUrl(u) > scoreArticleImageUrl(best)) best = u;
+  }
+  return best;
+}
+
+function extractImgSrcsFromHtml(html: string): string[] {
+  if (!html) return [];
+  const out: string[] = [];
+  const re = /<img[^>]+src\s*=\s*["']([^"']+)["']/gi;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    out.push(m[1]);
+  }
+  return out;
+}
+
+function getMediaContentUrl(
+  // deno-lint-ignore no-explicit-any
+  item: Record<string, any>,
+): string {
+  const content = item["media:content"];
+  if (content?.["@_url"]) return String(content["@_url"]).trim();
+  return "";
+}
+
+function getMediaThumbnailUrl(
   // deno-lint-ignore no-explicit-any
   item: Record<string, any>,
 ): string {
   const thumb = item["media:thumbnail"];
-  const content = item["media:content"];
-  if (thumb?.["@_url"]) return String(thumb["@_url"]);
-  if (content?.["@_url"]) return String(content["@_url"]);
-  if (typeof thumb === "string") return thumb;
+  if (thumb?.["@_url"]) return String(thumb["@_url"]).trim();
+  if (typeof thumb === "string") return thumb.trim();
   return "";
+}
+
+function resolveArticleThumbnail(
+  // deno-lint-ignore no-explicit-any
+  item: Record<string, any>,
+  rawDesc: string,
+): string {
+  const rawEncoded =
+    typeof item["content:encoded"] === "string" ? item["content:encoded"] : "";
+  const fromHtml = [
+    ...extractImgSrcsFromHtml(rawEncoded),
+    ...extractImgSrcsFromHtml(rawDesc),
+  ];
+  const fromMedia = [getMediaContentUrl(item), getMediaThumbnailUrl(item)];
+  const picked = pickBestArticleImage([...fromHtml, ...fromMedia]);
+  if (picked) return picked;
+  return fromMedia[0] ?? fromHtml[0] ?? "";
 }
 
 function categoriesFromItem(
@@ -170,7 +247,7 @@ serve(async (req) => {
           title: typeof item.title === "string" ? item.title : "",
           link: typeof item.link === "string" ? item.link : "",
           pubDate: typeof item.pubDate === "string" ? item.pubDate : "",
-          thumbnail: thumbnailFromItem(item),
+          thumbnail: resolveArticleThumbnail(item, rawDesc),
           description: truncate(stripHtml(rawDesc), 200),
           categories: categoriesFromItem(item),
           author: author.trim(),
