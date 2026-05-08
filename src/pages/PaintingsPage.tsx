@@ -18,6 +18,9 @@ import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 import type { Artwork } from '@/hooks/useArtworks';
 
+/** Lifestyle / in-room photo shown as the fourth carousel view (see `public/media/room.jpeg`). */
+const ROOM_CAROUSEL_IMAGE = '/media/room.jpeg';
+
 const parseArtworkImages = (artwork: Artwork): string[] => {
   const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
 
@@ -273,10 +276,12 @@ export default function PaintingsPage() {
           const primaryImage = artworkImages[0] || selectedArtwork.image_url || selectedArtwork.image || '';
           const dimensions = parseHeightWidthInches(selectedArtwork.size);
           const displaySlides = [
-            { id: 'normal', src: primaryImage, label: 'Normal', showDimensions: false },
-            { id: 'dimensions', src: primaryImage, label: 'Height/Width', showDimensions: true },
-          ] as const;
-          const activeSlide = displaySlides[selectedViewIndex] || displaySlides[0];
+            { id: 'normal', variant: 'normal' as const, src: primaryImage, label: 'Normal' },
+            { id: 'dimensions', variant: 'dimensions' as const, src: primaryImage, label: 'Height/Width' },
+            { id: 'frame', variant: 'frame' as const, src: primaryImage, label: 'Frame' },
+            { id: 'room', variant: 'room' as const, src: ROOM_CAROUSEL_IMAGE, label: 'Room' },
+          ];
+          const activeSlide = displaySlides[selectedViewIndex] ?? displaySlides[0];
 
           return (
         <div
@@ -299,12 +304,30 @@ export default function PaintingsPage() {
             <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-3 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
               <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center">
                 <div className="relative inline-block pr-14 pt-10 pb-12 sm:pr-16 sm:pt-10 sm:pb-12">
-                  <img
-                    src={activeSlide.src}
-                    alt={selectedArtwork.title}
-                    className="block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
-                  />
-                  {dimensions && activeSlide.showDimensions && (
+                  {activeSlide.variant === 'frame' ? (
+                    <div className="relative mx-auto max-w-full rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10">
+                      <div className="rounded-[3px] bg-primary p-3 sm:p-4 md:p-6">
+                        <div className="rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner">
+                          <img
+                            src={activeSlide.src}
+                            alt={selectedArtwork.title}
+                            className="block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={activeSlide.src}
+                      alt={
+                        activeSlide.variant === 'room'
+                          ? `${selectedArtwork.title} — room setting`
+                          : selectedArtwork.title
+                      }
+                      className="block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
+                    />
+                  )}
+                  {dimensions && activeSlide.variant === 'dimensions' && (
                     <>
                       <div className="pointer-events-none absolute left-2 right-14 sm:right-16 top-5 border-b border-primary/45" />
                       <div className="pointer-events-none absolute left-0 top-[15px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
@@ -330,7 +353,7 @@ export default function PaintingsPage() {
                     {displaySlides.map((slide, slideIndex) => (
                       <CarouselItem
                         key={`${selectedArtwork.id}-thumb-${slide.id}`}
-                        className="pl-2 basis-1/3 sm:basis-1/4"
+                        className="pl-2 basis-1/4"
                       >
                         <button
                           type="button"
@@ -343,11 +366,27 @@ export default function PaintingsPage() {
                           )}
                           aria-label={`View ${slide.label}`}
                         >
-                          <img
-                            src={slide.src}
-                            alt={`${selectedArtwork.title} ${slide.label}`}
-                            className="w-full h-12 sm:h-16 object-cover"
-                          />
+                          {slide.variant === 'frame' ? (
+                            <div className="w-full overflow-hidden rounded-sm bg-primary p-1 sm:p-1.5 shadow-sm ring-1 ring-black/10">
+                              <div className="rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner">
+                                <img
+                                  src={slide.src}
+                                  alt={`${selectedArtwork.title} ${slide.label}`}
+                                  className="w-full h-9 sm:h-12 object-cover"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <img
+                              src={slide.src}
+                              alt={
+                                slide.variant === 'room'
+                                  ? `${selectedArtwork.title} room setting thumbnail`
+                                  : `${selectedArtwork.title} ${slide.label}`
+                              }
+                              className="w-full h-12 sm:h-16 object-cover"
+                            />
+                          )}
                         </button>
                       </CarouselItem>
                     ))}
