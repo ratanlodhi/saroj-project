@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, LogOut, Loader2, Search, User, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ShoppingCart, LogOut, Loader2, User, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency, currencies } from '@/contexts/CurrencyContext';
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SiteLogo } from './SiteLogo';
+import HomePaintingSearch from '@/components/home/HomePaintingSearch';
 
 const accountIconClass =
   'w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]';
@@ -78,7 +79,6 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const { getItemCount, setIsCartOpen } = useCart();
@@ -103,29 +103,16 @@ export function Header() {
     setIsMobileMenuOpen(false);
   }, [location]);
 
-  const handlePaintingsSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-
-    if (!query) {
-      navigate('/paintings');
-      return;
-    }
-
-    navigate(`/paintings?search=${encodeURIComponent(query)}`);
-  };
-
   return (
     <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
         isScrolled
-          ? 'bg-[#c8b489]/95 backdrop-blur-sm shadow-soft py-3'
-          : 'bg-[#c8b489] py-5'
+          ? 'bg-[#dfd4ae]/95 backdrop-blur-sm shadow-soft py-3'
+          : 'bg-[#dfd4ae] py-5'
       )}
     >
       <div className="container mx-auto px-3 sm:px-4">
-        <div className="flex flex-col gap-3 lg:gap-0">
           <nav className="flex items-center justify-between gap-2 min-w-0">
           <SiteLogo imageClassName="h-10 w-auto sm:h-12 md:h-16 shrink-0" />
 
@@ -149,28 +136,6 @@ export function Header() {
                 </Link>
               </li>
             ))}
-            <li>
-              <form onSubmit={handlePaintingsSearch} className="flex items-center gap-2">
-                <label htmlFor="header-painting-search" className="sr-only">
-                  Search paintings
-                </label>
-                <div className="relative">
-                  <Search
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/65"
-                    aria-hidden="true"
-                  />
-                  <input
-                    id="header-painting-search"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search paintings"
-                    className="w-44 rounded-sm border border-primary/30 bg-cream/90 py-1.5 pl-9 pr-2 text-sm font-sans text-primary placeholder:text-primary/55 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/45"
-                  />
-                </div>
-              </form>
-            </li>
           </ul>
 
           {/* Right side actions */}
@@ -247,32 +212,13 @@ export function Header() {
           </div>
         </nav>
 
-          {/* Search: always visible below header row on phones & tablets */}
-          <form
-            onSubmit={handlePaintingsSearch}
-            className="lg:hidden w-full min-w-0"
-          >
-            <label htmlFor="header-painting-search-bar" className="sr-only">
-              Search paintings
-            </label>
-            <div className="relative">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/65 pointer-events-none"
-                aria-hidden="true"
-              />
-              <input
-                id="header-painting-search-bar"
-                type="search"
-                enterKeyHint="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search paintings"
-                className="w-full rounded-sm border border-primary/30 bg-cream/90 py-2 pl-9 pr-3 text-sm font-sans text-primary placeholder:text-primary/55 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/45"
-              />
+        {location.pathname === '/' && (
+          <div className="mt-3 border-t border-primary/25 pt-3">
+            <div className="max-w-xl mx-auto w-full">
+              <HomePaintingSearch compact />
             </div>
-          </form>
-        </div>
+          </div>
+        )}
 
         {/* Mobile Navigation */}
         <div

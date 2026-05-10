@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import HomePaintingSearch from '@/components/home/HomePaintingSearch';
 import { useArtworks } from '@/hooks/useArtworks';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import heroImage from '@/assets/hero-cover.jpg';
@@ -77,21 +76,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Full-width Hero Image */}
       <section className="w-full">
-        <div className="w-full overflow-hidden bg-secondary/20 flex justify-center max-h-[70vh] md:max-h-[85vh]">
+        <div className="relative w-full overflow-hidden bg-secondary/20">
           <img
             src={heroImage}
             alt="Hero artwork by Rasayan"
-            className="w-full max-h-[70vh] md:max-h-[85vh] h-auto object-contain"
+            className="w-full h-[min(50vh,400px)] sm:h-[min(52vh,460px)] md:h-[min(58vh,540px)] lg:h-[min(62vh,620px)] object-cover object-center"
           />
-        </div>
-        <p className="text-right text-muted-foreground italic py-2 md:py-4 text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 lg:px-12 max-w-3xl ml-auto">
-          A fervent storyteller trying to tell the story of silence
-        </p>
-      </section>
-
-      <section className="py-10 md:py-12 bg-background border-b border-border/50">
-        <div className="container mx-auto px-4 sm:px-6 max-w-xl">
-          <HomePaintingSearch />
+          <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-4 pb-3 pt-12 text-right text-sm italic text-cream sm:px-6 sm:pb-4 sm:text-base md:px-8 md:text-lg lg:px-12 lg:text-xl">
+            A fervent storyteller trying to tell the story of silence
+          </p>
         </div>
       </section>
 

@@ -162,7 +162,7 @@ export default function ContactPage() {
                 {/* Email Section */}
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <Mail className="w-4 h-4 text-[#5b4538] flex-shrink-0" />
+                    <Mail className="w-4 h-4 text-primary flex-shrink-0" />
                     <h3 className="font-sans font-medium text-primary">Email</h3>
                   </div>
                   <div className="space-y-2 pl-6">
@@ -173,7 +173,7 @@ export default function ContactPage() {
                         </span>
                         <a
                           href={`mailto:${address}`}
-                          className="text-sm font-sans text-muted-foreground hover:text-[#5b4538] transition-colors duration-200 break-all"
+                          className="text-sm font-sans text-muted-foreground hover:text-primary transition-colors duration-200 break-all"
                         >
                           {address}
                         </a>
@@ -194,7 +194,7 @@ export default function ContactPage() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
+                        className="w-10 h-10 flex items-center justify-center text-primary hover:text-primary/75 transition-colors duration-300"
                         aria-label={social.label}
                         title={social.label}
                       >

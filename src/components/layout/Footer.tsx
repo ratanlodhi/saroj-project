@@ -56,7 +56,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
+                  className="w-10 h-10 flex items-center justify-center text-primary hover:text-primary/75 transition-colors duration-300"
                   aria-label={social.label}
                   title={social.label}
                 >
@@ -65,7 +65,7 @@ export function Footer() {
               ))}
               <a
                 href="mailto:studio@sarojprakashbandi.com"
-                className="w-10 h-10 flex items-center justify-center text-[#5b4538] hover:text-[#7a5845] transition-colors duration-300"
+                className="w-10 h-10 flex items-center justify-center text-primary hover:text-primary/75 transition-colors duration-300"
                 aria-label="Email"
                 title="Email"
               >

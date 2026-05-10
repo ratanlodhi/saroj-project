@@ -7,7 +7,12 @@ import { cn } from '@/lib/utils';
 
 const MAX_SUGGESTIONS = 8;
 
-export default function HomePaintingSearch() {
+type HomePaintingSearchProps = {
+  /** Tighter layout for the fixed header on the home page */
+  compact?: boolean;
+};
+
+export default function HomePaintingSearch({ compact = false }: HomePaintingSearchProps) {
   const { artworks, loading } = useArtworks();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -60,7 +65,14 @@ export default function HomePaintingSearch() {
 
   return (
     <div className="w-full">
-      <h2 className="font-serif text-xl md:text-2xl text-primary text-center mb-4">
+      <h2
+        className={cn(
+          'font-serif text-primary text-center',
+          compact
+            ? 'sr-only'
+            : 'text-xl md:text-2xl mb-4'
+        )}
+      >
         Search paintings
       </h2>
       <form onSubmit={handleSubmit} className="relative w-full">
@@ -84,7 +96,8 @@ export default function HomePaintingSearch() {
             onBlur={handleBlur}
             placeholder="Search paintings by title, medium, or artist..."
             className={cn(
-              'w-full rounded-sm border border-border bg-card py-3 pl-10 pr-3 text-sm font-sans text-foreground',
+              'w-full rounded-sm border border-border bg-card pl-10 pr-3 text-sm font-sans text-foreground',
+              compact ? 'py-2' : 'py-3',
               'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent'
             )}
           />
@@ -117,9 +130,11 @@ export default function HomePaintingSearch() {
           </ul>
         )}
       </form>
-      <p className="text-center text-xs sm:text-sm italic text-muted-foreground font-sans tracking-wide mt-4">
-        Powered by Rasayan Studio
-      </p>
+      {!compact && (
+        <p className="text-center text-xs sm:text-sm italic text-muted-foreground font-sans tracking-wide mt-4">
+          Powered by Rasayan Studio
+        </p>
+      )}
     </div>
   );
 }
