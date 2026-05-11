@@ -121,6 +121,18 @@ export default function PriceAndDetailsSection({
                 {artwork.ready_to_hang ? 'Yes' : 'No'}
               </p>
             </div>
+            <div className="flex justify-between items-start gap-4">
+              <p className="text-sm text-gray-600 shrink-0">Rarity</p>
+              <p className="text-base font-medium text-gray-900 text-right">
+                One of its kind
+              </p>
+            </div>
+            <div className="flex justify-between items-start gap-4">
+              <p className="text-sm text-gray-600 shrink-0">Authenticity</p>
+              <p className="text-base font-medium text-gray-900 text-right">
+                Certificate is provided in the box
+              </p>
+            </div>
           </div>
           <div className="border-b border-gray-200" />
         </div>
