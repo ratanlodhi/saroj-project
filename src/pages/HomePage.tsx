@@ -80,7 +80,7 @@ export default function HomePage() {
           <img
             src={heroImage}
             alt="Hero artwork by Rasayan"
-            className="w-full h-[min(50vh,400px)] sm:h-[min(52vh,460px)] md:h-[min(58vh,540px)] lg:h-[min(62vh,620px)] object-cover object-center"
+            className="w-full h-[min(36vh,220px)] sm:h-[min(50vh,400px)] md:h-[min(58vh,540px)] lg:h-[min(62vh,620px)] object-cover object-center"
           />
           <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-4 pb-3 pt-12 text-right text-sm italic text-cream sm:px-6 sm:pb-4 sm:text-base md:px-8 md:text-lg lg:px-12 lg:text-xl">
             A fervent storyteller trying to tell the story of silence
