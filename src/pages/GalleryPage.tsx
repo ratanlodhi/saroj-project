@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { mediumCategories } from '@/data/artworks';
 import { cn } from '@/lib/utils';
 import { X, ShoppingCart } from 'lucide-react';
@@ -15,6 +16,7 @@ import { useArtworks, type Artwork } from '@/hooks/useArtworks';
 import { useCategories } from '@/hooks/useCategories';
 import { shouldShowPoweredByRasayan } from '@/lib/artworkAvailability';
 import { formatArtworkSizeDisplay } from '@/lib/formatArtworkSize';
+import { filterArtworkByMedium, mediumOrder, resolveMediumCategory } from '@/lib/mediumCategories';
 import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 
@@ -28,54 +30,46 @@ const parseArtworkImages = (artwork: Artwork): string[] => {
   return Array.from(new Set(images));
 };
 
-const mediumMatcherByCategory: Record<string, (medium: string) => boolean> = {
-  acrylic: (medium) => medium.includes('acrylic'),
-  oil: (medium) => medium.includes('oil'),
-  ink: (medium) => medium.includes('ink'),
-  gouache: (medium) => medium.includes('gouache'),
-  'mixed-media': (medium) => medium.includes('mixed media'),
-  charcoal: (medium) => medium.includes('charcoal'),
-  'soft-pastel': (medium) => medium.includes('pastel'),
-  other: (medium) => medium.includes('other'),
-};
+const GALLERY_PREVIEW_LIMIT = 4;
 
-const mediumOrder = mediumCategories.filter((medium) => medium.id !== 'all').map((medium) => medium.id);
+const sortArtworksForGallery = (items: Artwork[]) =>
+  [...items].sort((a, b) => {
+    const categoryA = resolveMediumCategory(a.medium);
+    const categoryB = resolveMediumCategory(b.medium);
+    const orderA = categoryA ? mediumOrder.indexOf(categoryA) : Number.MAX_SAFE_INTEGER;
+    const orderB = categoryB ? mediumOrder.indexOf(categoryB) : Number.MAX_SAFE_INTEGER;
 
-const resolveMediumCategory = (rawMedium: string): string | null => {
-  const normalizedMedium = rawMedium.toLowerCase();
+    if (orderA !== orderB) return orderA - orderB;
 
-  for (const mediumId of mediumOrder) {
-    const matcher = mediumMatcherByCategory[mediumId];
-    if (matcher?.(normalizedMedium)) return mediumId;
-  }
-
-  return null;
-};
+    return a.title.localeCompare(b.title);
+  });
 
 export default function GalleryPage() {
+  const [searchParams] = useSearchParams();
   const [activeMedium, setActiveMedium] = useState<string>('all');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const { addToCart } = useCart();
   const { artworks, loading } = useArtworks();
   const { categories } = useCategories();
 
+  useEffect(() => {
+    const mediumFromQuery = searchParams.get('medium')?.trim().toLowerCase();
+    if (!mediumFromQuery) return;
+    if (mediumCategories.some((medium) => medium.id === mediumFromQuery)) {
+      setActiveMedium(mediumFromQuery);
+    }
+  }, [searchParams]);
+
   const filteredArtworks = activeMedium === 'all'
-    ? [...artworks].sort((a, b) => {
-        const categoryA = resolveMediumCategory(a.medium);
-        const categoryB = resolveMediumCategory(b.medium);
-        const orderA = categoryA ? mediumOrder.indexOf(categoryA) : Number.MAX_SAFE_INTEGER;
-        const orderB = categoryB ? mediumOrder.indexOf(categoryB) : Number.MAX_SAFE_INTEGER;
+    ? sortArtworksForGallery(artworks)
+    : sortArtworksForGallery(artworks.filter((artwork) => filterArtworkByMedium(artwork.medium, activeMedium)));
 
-        if (orderA !== orderB) return orderA - orderB;
+  const visibleMediums = activeMedium === 'all'
+    ? mediumCategories.filter((medium) => medium.id !== 'all')
+    : mediumCategories.filter((medium) => medium.id === activeMedium);
 
-        // Keep ordering stable within each medium group.
-        return a.title.localeCompare(b.title);
-      })
-    : artworks.filter((a) => {
-        const matcher = mediumMatcherByCategory[activeMedium];
-        if (!matcher) return true;
-        return matcher(a.medium.toLowerCase());
-      });
+  const artworksForMedium = (mediumId: string) =>
+    sortArtworksForGallery(artworks.filter((artwork) => filterArtworkByMedium(artwork.medium, mediumId))).slice(0, GALLERY_PREVIEW_LIMIT);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -142,45 +136,112 @@ export default function GalleryPage() {
             <div className="text-center py-12 text-muted-foreground">
               {activeMedium === 'all' ? 'No artworks found' : `No ${activeMedium} artworks found`}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredArtworks.map((artwork, index) => (
-                <div
-                  key={artwork.id}
-                  className="animate-fade-up"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <div className="group gallery-item w-full relative">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedArtwork(artwork)}
-                      className="w-full cursor-pointer text-left block"
-                    >
-                      <div className="overflow-hidden bg-secondary/20 rounded-sm">
-                        <img
-                          src={artwork.image || ''}
-                          alt={artwork.title}
-                          className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
-                        />
+          ) : activeMedium === 'all' ? (
+            <div className="space-y-10">
+              {visibleMediums.map((medium) => {
+                const mediumArtworks = artworksForMedium(medium.id);
+                const totalForMedium = artworks.filter((artwork) => filterArtworkByMedium(artwork.medium, medium.id)).length;
+
+                if (mediumArtworks.length === 0) return null;
+
+                return (
+                  <section key={medium.id} className="rounded-sm border border-border/40 bg-background/30 p-4 md:p-5">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <div>
+                        <h2 className="font-serif text-2xl text-primary">{medium.label}</h2>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Showing {Math.min(GALLERY_PREVIEW_LIMIT, mediumArtworks.length)} of {totalForMedium} paintings
+                        </p>
                       </div>
-                    </button>
-                    {/* Hover overlay for title */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none"
-                    >
-                      <div className="bg-charcoal/75 backdrop-blur-sm rounded-sm px-3 py-2">
-                        <span className="text-xs tracking-widest uppercase text-cream/70 font-sans">
-                          {artwork.medium}
-                        </span>
-                        <h3 className="font-serif text-base text-cream mt-0.5 leading-tight">
-                          {artwork.title}
-                        </h3>
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/gallery?medium=${encodeURIComponent(medium.id)}`}>See more</Link>
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                      {mediumArtworks.map((artwork, index) => (
+                        <div
+                          key={artwork.id}
+                          className="animate-fade-up"
+                          style={{ animationDelay: `${index * 0.05}s` }}
+                        >
+                          <div className="group gallery-item w-full relative">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedArtwork(artwork)}
+                              className="w-full cursor-pointer text-left block"
+                            >
+                              <div className="overflow-hidden bg-secondary/20 rounded-sm">
+                                <img
+                                  src={artwork.image || ''}
+                                  alt={artwork.title}
+                                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                                />
+                              </div>
+                            </button>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                              <div className="bg-charcoal/75 backdrop-blur-sm rounded-sm px-3 py-2">
+                                <span className="text-xs tracking-widest uppercase text-cream/70 font-sans">
+                                  {artwork.medium}
+                                </span>
+                                <h3 className="font-serif text-base text-cream mt-0.5 leading-tight">
+                                  {artwork.title}
+                                </h3>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          ) : (
+            <>
+              <div className="mb-4">
+                <h2 className="font-serif text-2xl text-primary">{mediumCategories.find((medium) => medium.id === activeMedium)?.label ?? activeMedium}</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Showing all {filteredArtworks.length} paintings
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {filteredArtworks.map((artwork, index) => (
+                  <div
+                    key={artwork.id}
+                    className="animate-fade-up"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <div className="group gallery-item w-full relative">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedArtwork(artwork)}
+                        className="w-full cursor-pointer text-left block"
+                      >
+                        <div className="overflow-hidden bg-secondary/20 rounded-sm">
+                          <img
+                            src={artwork.image || ''}
+                            alt={artwork.title}
+                            className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                        <div className="bg-charcoal/75 backdrop-blur-sm rounded-sm px-3 py-2">
+                          <span className="text-xs tracking-widest uppercase text-cream/70 font-sans">
+                            {artwork.medium}
+                          </span>
+                          <h3 className="font-serif text-base text-cream mt-0.5 leading-tight">
+                            {artwork.title}
+                          </h3>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>
