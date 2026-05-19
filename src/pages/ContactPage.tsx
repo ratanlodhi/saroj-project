@@ -6,7 +6,7 @@ import { GoodreadsBrandIcon, MediumBrandIcon } from '@/components/icons/BrandSoc
 
 const socialLinks = [
   {
-    href: 'https://www.instagram.com/_saroj_b?igsh=Y3FzdTB4bnV2Njls',
+    href: 'https://www.instagram.com/rasayan_studios?igsh=Y3FzdTB4bnV2Njls',
     label: 'Instagram',
     icon: Instagram,
   },
