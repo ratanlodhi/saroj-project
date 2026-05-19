@@ -80,7 +80,7 @@ export default function HomePage() {
           <img
             src={heroImage}
             alt="Hero artwork by Rasayan"
-            className="w-full h-[min(36vh,220px)] sm:h-[min(50vh,400px)] md:h-[min(58vh,540px)] lg:h-[min(62vh,620px)] object-cover object-center"
+            className="w-full h-[min(30vh,180px)] sm:h-[min(44vh,320px)] md:h-[min(48vh,420px)] lg:h-[min(54vh,520px)] object-cover object-center"
           />
           <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-4 pb-3 pt-12 text-right text-sm italic text-cream sm:px-6 sm:pb-4 sm:text-base md:px-8 md:text-lg lg:px-12 lg:text-xl">
             A fervent storyteller trying to tell the story of silence
@@ -106,7 +106,7 @@ export default function HomePage() {
             {recentWorkImages.map((image, index) => (
               <div
                 key={index}
-                className="box-border block max-md:w-full max-md:min-w-full max-md:max-w-full shrink-0 grow-0 max-md:basis-full snap-start snap-always md:w-[calc(80%-8px)] md:min-w-[280px] md:max-w-[500px] md:basis-auto md:snap-start"
+                className="box-border block max-md:w-[82%] max-md:min-w-[200px] max-md:max-w-[82%] shrink-0 grow-0 max-md:basis-[82%] snap-start snap-always md:w-[calc(72%-8px)] md:min-w-[260px] md:max-w-[420px] md:basis-auto md:snap-start"
               >
                 <div className="aspect-[4/3] overflow-hidden bg-secondary/20 flex items-center justify-center">
                   <img
@@ -197,11 +197,11 @@ export default function HomePage() {
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            {latestArtworks.map((artwork) => (
+                {latestArtworks.map((artwork) => (
               <Link
                 key={artwork.id}
                 to="/paintings"
-                className="group box-border block max-md:w-full max-md:min-w-full max-md:max-w-full shrink-0 grow-0 max-md:basis-full snap-start snap-always md:w-[calc(50%-12px)] md:min-w-[280px] md:max-w-[400px] md:basis-auto md:snap-start"
+                className="group box-border block max-md:w-[82%] max-md:min-w-[200px] max-md:max-w-[82%] shrink-0 grow-0 max-md:basis-[82%] snap-start snap-always md:w-[calc(45%-12px)] md:min-w-[240px] md:max-w-[360px] md:basis-auto md:snap-start"
               >
                 <div className="aspect-[3/4] overflow-hidden bg-secondary/20 mb-4 flex items-center justify-center">
                   <img
