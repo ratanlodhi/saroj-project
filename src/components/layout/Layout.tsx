@@ -13,7 +13,7 @@ export function Layout({ children }: LayoutProps) {
   const isHome = pathname === '/';
 
   return (
-    <div className="min-h-screen flex flex-col paper-texture overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
       <Header />
       <main
         className={cn(
