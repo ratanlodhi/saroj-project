@@ -89,9 +89,9 @@ export default function HomePage() {
       </section>
 
       {/* Recent Work - Horizontal Scroll Section */}
-      <section className="py-12 md:py-16 lg:py-20 bg-background">
+      <section className="py-6 md:py-12 lg:py-16 bg-background">
         <div className="px-4 sm:px-6 md:px-8 lg:px-12">
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl font-normal text-primary mb-8 md:mb-10">
+          <h2 className="font-serif text-lg md:text-2xl lg:text-3xl font-normal text-primary mb-4 md:mb-8">
             Recent Work
           </h2>
           
@@ -133,8 +133,8 @@ export default function HomePage() {
           </div>
 
           {/* Text Side */}
-          <div className="flex flex-col justify-center px-5 sm:px-8 py-12 sm:py-16 md:px-12 lg:px-20 xl:px-28 bg-secondary/30">
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal text-primary mb-6 leading-tight">
+          <div className="flex flex-col justify-center px-5 sm:px-8 py-8 sm:py-16 md:px-12 lg:px-20 xl:px-28 bg-secondary/30">
+            <h2 className="font-serif text-xl md:text-3xl lg:text-4xl font-normal text-primary mb-4 leading-tight">
               Latest<br />Update
             </h2>
             <p className="text-muted-foreground font-sans text-sm md:text-base leading-relaxed mb-8 max-w-md">
@@ -156,7 +156,7 @@ export default function HomePage() {
       </section>
 
       {/* Latest Paintings - Horizontal Scroll Section */}
-      <section className="py-16 md:py-20 lg:py-24 bg-background">
+      <section className="py-10 md:py-18 lg:py-20 bg-background">
         <div className="px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
             <h2 className="font-sans text-sm md:text-base font-normal text-primary tracking-wide">

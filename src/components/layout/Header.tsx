@@ -108,13 +108,13 @@ export function Header() {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
         isScrolled
-          ? 'bg-[#dfd4ae]/95 backdrop-blur-sm shadow-soft py-3'
-          : 'bg-[#dfd4ae] py-5'
+          ? 'bg-[#dfd4ae]/95 backdrop-blur-sm shadow-soft py-2.5 sm:py-3'
+          : 'bg-[#dfd4ae] py-3.5 sm:py-5'
       )}
     >
       <div className="container mx-auto px-3 sm:px-4">
           <nav className="flex items-center justify-between gap-2 min-w-0">
-          <SiteLogo imageClassName="h-10 w-auto sm:h-12 md:h-16 shrink-0" />
+          <SiteLogo imageClassName="h-8 w-auto sm:h-12 md:h-16 shrink-0" />
 
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-8">
@@ -213,7 +213,7 @@ export function Header() {
         </nav>
 
         {location.pathname === '/' && (
-          <div className="mt-3 border-t border-primary/25 pt-3">
+          <div className="mt-0.5 border-t border-primary/25 pt-0.5 sm:pt-2">
             <div className="max-w-xl mx-auto w-full">
               <HomePaintingSearch compact />
             </div>

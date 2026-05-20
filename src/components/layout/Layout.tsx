@@ -18,7 +18,7 @@ export function Layout({ children }: LayoutProps) {
       <main
         className={cn(
           'flex-1 min-w-0',
-          isHome ? 'pt-44 sm:pt-[11.5rem] lg:pt-40' : 'pt-36 lg:pt-24'
+          isHome ? 'pt-28 sm:pt-[11.5rem] lg:pt-40' : 'pt-36 lg:pt-24'
         )}
       >
         {children}
