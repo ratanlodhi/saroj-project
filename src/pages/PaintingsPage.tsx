@@ -20,6 +20,14 @@ import type { Artwork } from '@/hooks/useArtworks';
 
 /** Lifestyle / in-room photo shown as the fourth carousel view (see `public/media/room.jpeg`). */
 const ROOM_CAROUSEL_IMAGE = '/media/room.jpeg';
+/** Wall mockup shown after the frame view (see `public/media/wall.jpg`). */
+const WALL_CAROUSEL_IMAGE = '/media/wall.jpg';
+/** Compositing region on wall.jpg (includes frame/mat; 1000×1000 mockup). */
+const WALL_ART_FRAME = {
+  top: '5.5%',
+  width: '49%',
+  height: '37%',
+} as const;
 
 const parseArtworkImages = (artwork: Artwork): string[] => {
   const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
@@ -279,6 +287,7 @@ export default function PaintingsPage() {
             { id: 'normal', variant: 'normal' as const, src: primaryImage, label: 'Normal' },
             { id: 'dimensions', variant: 'dimensions' as const, src: primaryImage, label: 'Height/Width' },
             { id: 'frame', variant: 'frame' as const, src: primaryImage, label: 'Frame' },
+            { id: 'wall', variant: 'wall' as const, src: WALL_CAROUSEL_IMAGE, label: 'Wall' },
             { id: 'room', variant: 'room' as const, src: ROOM_CAROUSEL_IMAGE, label: 'Room' },
           ];
           const activeSlide = displaySlides[selectedViewIndex] ?? displaySlides[0];
@@ -302,25 +311,54 @@ export default function PaintingsPage() {
             </button>
 
             <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-3 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
-              <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center">
-                <div className="relative inline-block pr-14 pt-10 pb-12 sm:pr-16 sm:pt-10 sm:pb-12">
+              <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center w-full">
+                <div
+                  className={cn(
+                    'relative w-full',
+                    activeSlide.variant === 'dimensions'
+                      ? 'inline-block max-w-full pr-14 pt-10 pb-12 sm:pr-16 sm:pt-10 sm:pb-12'
+                      : 'mx-auto flex justify-center'
+                  )}
+                >
                   {activeSlide.variant === 'frame' ? (
                     <div className="relative mx-auto max-w-full rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10">
                       <div className="rounded-[3px] bg-primary p-3 sm:p-4 md:p-6">
                         <div className="rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner">
                           <img
-                            src={activeSlide.src}
+                            src={primaryImage}
                             alt={selectedArtwork.title}
                             className="block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0"
                           />
                         </div>
                       </div>
                     </div>
+                  ) : activeSlide.variant === 'wall' ? (
+                    <div className="relative mx-auto w-full max-w-full">
+                      <img
+                        src={WALL_CAROUSEL_IMAGE}
+                        alt={`${selectedArtwork.title} — wall display`}
+                        className="block mx-auto w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
+                      />
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2 overflow-hidden"
+                        style={{
+                          top: WALL_ART_FRAME.top,
+                          width: WALL_ART_FRAME.width,
+                          height: WALL_ART_FRAME.height,
+                        }}
+                      >
+                        <img
+                          src={primaryImage}
+                          alt={selectedArtwork.title}
+                          className="h-full w-full scale-[1.08] object-cover object-center"
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <img
                       src={activeSlide.src}
                       alt={
-                        activeSlide.variant === 'room'
+                          activeSlide.variant === 'room'
                           ? `${selectedArtwork.title} — room setting`
                           : selectedArtwork.title
                       }
@@ -370,9 +408,31 @@ export default function PaintingsPage() {
                             <div className="w-full overflow-hidden rounded-sm bg-primary p-1 sm:p-1.5 shadow-sm ring-1 ring-black/10">
                               <div className="rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner">
                                 <img
-                                  src={slide.src}
+                                  src={primaryImage}
                                   alt={`${selectedArtwork.title} ${slide.label}`}
                                   className="w-full h-9 sm:h-12 object-cover"
+                                />
+                              </div>
+                            </div>
+                          ) : slide.variant === 'wall' ? (
+                            <div className="w-full h-9 sm:h-12 overflow-hidden rounded-sm relative">
+                              <img
+                                src={WALL_CAROUSEL_IMAGE}
+                                alt={`${selectedArtwork.title} wall thumbnail`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div
+                                className="absolute left-1/2 -translate-x-1/2 overflow-hidden"
+                                style={{
+                                  top: WALL_ART_FRAME.top,
+                                  width: WALL_ART_FRAME.width,
+                                  height: WALL_ART_FRAME.height,
+                                }}
+                              >
+                                <img
+                                  src={primaryImage}
+                                  alt={`${selectedArtwork.title} ${slide.label}`}
+                                  className="h-full w-full scale-[1.08] object-cover object-center"
                                 />
                               </div>
                             </div>
@@ -380,7 +440,7 @@ export default function PaintingsPage() {
                             <img
                               src={slide.src}
                               alt={
-                                slide.variant === 'room'
+                                  slide.variant === 'room'
                                   ? `${selectedArtwork.title} room setting thumbnail`
                                   : `${selectedArtwork.title} ${slide.label}`
                               }
