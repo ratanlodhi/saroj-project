@@ -410,7 +410,7 @@ export default function PaintingsPage() {
                                 <img
                                   src={primaryImage}
                                   alt={`${selectedArtwork.title} ${slide.label}`}
-                                  className="w-full h-9 sm:h-12 object-cover"
+                                  className="w-full h-9 sm:h-12 object-contain"
                                 />
                               </div>
                             </div>
@@ -419,7 +419,7 @@ export default function PaintingsPage() {
                               <img
                                 src={WALL_CAROUSEL_IMAGE}
                                 alt={`${selectedArtwork.title} wall thumbnail`}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                               />
                               <div
                                 className="absolute left-1/2 -translate-x-1/2 overflow-hidden"
@@ -444,7 +444,7 @@ export default function PaintingsPage() {
                                   ? `${selectedArtwork.title} room setting thumbnail`
                                   : `${selectedArtwork.title} ${slide.label}`
                               }
-                              className="w-full h-12 sm:h-16 object-cover"
+                              className="w-full h-12 sm:h-16 object-contain"
                             />
                           )}
                         </button>
