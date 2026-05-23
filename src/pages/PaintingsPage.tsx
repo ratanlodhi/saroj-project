@@ -350,7 +350,7 @@ export default function PaintingsPage() {
                         <img
                           src={primaryImage}
                           alt={selectedArtwork.title}
-                          className="h-full w-full scale-[1.08] object-cover object-center"
+                          className="h-full w-full object-contain object-center"
                         />
                       </div>
                     </div>
@@ -432,7 +432,7 @@ export default function PaintingsPage() {
                                 <img
                                   src={primaryImage}
                                   alt={`${selectedArtwork.title} ${slide.label}`}
-                                  className="h-full w-full scale-[1.08] object-cover object-center"
+                                  className="h-full w-full object-contain object-center"
                                 />
                               </div>
                             </div>
