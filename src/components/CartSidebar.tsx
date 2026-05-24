@@ -175,7 +175,7 @@ export function CartSidebar() {
               </div>
 
               <Button
-                className="w-full"
+                className="w-full font-serif"
                 size="lg"
                 onClick={handleCheckout}
               >

@@ -396,7 +396,7 @@ export default function CheckoutPage() {
               </label>
             </div>
 
-            <Button className="w-full mt-6" size="lg" disabled={!canCheckout || isLoading} onClick={handlePlaceOrder}>
+            <Button className="w-full mt-6 font-serif" size="lg" disabled={!canCheckout || isLoading} onClick={handlePlaceOrder}>
               {isLoading ? 'Processing...' : 'Pay and Place Order'}
             </Button>
 

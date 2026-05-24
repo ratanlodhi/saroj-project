@@ -234,7 +234,7 @@ export default function PaintingsPage() {
                           {formatPrice(artwork.price)}
                         </p>
                         {poweredByFor(artwork) && (
-                          <span className="px-2 py-0.5 text-xs font-medium bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
+                          <span className="px-2 py-0.5 text-xs font-medium font-serif bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
                             Not for sale
                           </span>
                         )}
@@ -254,7 +254,7 @@ export default function PaintingsPage() {
                           <Button
                             onClick={() => handleAddToCart(artwork)}
                             size="sm"
-                            className="gap-2"
+                            className="gap-2 font-serif"
                           >
                             <ShoppingCart size={16} />
                             Add to Cart
@@ -480,7 +480,7 @@ export default function PaintingsPage() {
               {!poweredByFor(selectedArtwork) && (
                 <Button
                   onClick={() => handleAddToCart(selectedArtwork)}
-                  className="mt-6 w-full gap-2"
+                  className="mt-6 w-full gap-2 font-serif"
                   size="lg"
                 >
                   <ShoppingCart size={18} />

@@ -324,7 +324,7 @@ export default function GalleryPage() {
               </p>
 
               {!poweredByFor(selectedArtwork) && (
-                <Button onClick={handleAddToCart} className="mt-6 w-full gap-2" size="lg">
+                <Button onClick={handleAddToCart} className="mt-6 w-full gap-2 font-serif" size="lg">
                   <ShoppingCart size={18} />
                   Add to Cart
                 </Button>
