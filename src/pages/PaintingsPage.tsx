@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { X, Filter, ShoppingCart } from 'lucide-react';
@@ -20,14 +20,59 @@ import type { Artwork } from '@/hooks/useArtworks';
 
 /** Lifestyle / in-room photo shown as the fourth carousel view (see `public/media/room.jpeg`). */
 const ROOM_CAROUSEL_IMAGE = '/media/room.jpeg';
-/** Wall mockup shown after the frame view (see `public/media/wall.jpg`). */
-const WALL_CAROUSEL_IMAGE = '/media/wall.jpg';
-/** Compositing region on wall.jpg (includes frame/mat; 1000×1000 mockup). */
-const WALL_ART_FRAME = {
-  top: '5.5%',
-  width: '49%',
-  height: '37%',
+/** Wall mockup shown after the frame view (using sofa mockup). */
+const WALL_CAROUSEL_IMAGE = '/media/sofa.avif';
+/** Compositing bounds on wall.jpg (includes frame/mat; 1000x1000 mockup). */
+const WALL_ART_FRAME_BOUNDS = {
+  top: 5.5,
+  width: 49,
+  height: 37,
 } as const;
+
+const getArtworkAspectRatio = (artwork: Artwork): number => {
+  const dimensions = parseHeightWidthInches(artwork.size);
+  if (dimensions) {
+    const width = Number(dimensions.width);
+    const height = Number(dimensions.height);
+    if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+      return width / height;
+    }
+  }
+
+  if (artwork.orientation === 'vertical') return 0.75;
+  if (artwork.orientation === 'horizontal') return 1.5;
+  return 1;
+};
+
+const WALL_FRAME_SCALE = 0.48; // scale down the composited frame so it appears smaller on the mockup
+const WALL_FRAME_TOP_NUDGE = -6; // percent points to nudge the frame upward (negative moves up)
+
+const getWallFrameStyle = (artwork: Artwork): CSSProperties => {
+  const boundsAspect = WALL_ART_FRAME_BOUNDS.width / WALL_ART_FRAME_BOUNDS.height;
+  const artworkAspect = Math.min(Math.max(getArtworkAspectRatio(artwork), 0.35), 3);
+
+  // Compute the raw width/height (percent of the mockup area)
+  let width = WALL_ART_FRAME_BOUNDS.width;
+  let height = WALL_ART_FRAME_BOUNDS.height;
+
+  if (artworkAspect > boundsAspect) {
+    height = width / artworkAspect;
+  } else {
+    width = height * artworkAspect;
+  }
+
+  // Apply scale to make the frame smaller and center it vertically within bounds
+  const scaledWidth = width * WALL_FRAME_SCALE;
+  const scaledHeight = height * WALL_FRAME_SCALE;
+  let top = WALL_ART_FRAME_BOUNDS.top + (WALL_ART_FRAME_BOUNDS.height - scaledHeight) / 2 + WALL_FRAME_TOP_NUDGE;
+  if (top < 0) top = 0;
+
+  return {
+    top: `${top}%`,
+    width: `${scaledWidth}%`,
+    height: `${scaledHeight}%`,
+  };
+};
 
 const parseArtworkImages = (artwork: Artwork): string[] => {
   const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
@@ -54,6 +99,65 @@ const parseArtworkImages = (artwork: Artwork): string[] => {
 
   const uniqueImages = Array.from(new Set(images));
   return uniqueImages;
+};
+
+type FrameVariant = 'default' | 'wall' | 'thumbnail' | 'tight';
+
+const FramedPainting = ({
+  src,
+  alt,
+  variant = 'default',
+  imageClassName,
+  className,
+}: {
+  src: string;
+  alt: string;
+  variant?: FrameVariant;
+  imageClassName?: string;
+  className?: string;
+}) => {
+  const frameStyles: Record<
+    FrameVariant,
+    { shell: string; outer: string; inner: string; image: string }
+  > = {
+    default: {
+      shell: 'rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10',
+      outer: 'rounded-[3px] bg-primary p-3 sm:p-4 md:p-6',
+      inner: 'rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner',
+      image:
+        'block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0',
+    },
+    tight: {
+      shell: 'rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/8',
+      outer: 'rounded-[3px] bg-primary p-1 sm:p-1.5',
+      inner: 'rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner',
+      image: 'block w-full h-full object-contain min-h-0',
+    },
+    wall: {
+      shell: 'h-full w-full rounded-sm shadow-[0_4px_12px_rgba(0,0,0,0.25)] ring-1 ring-black/10',
+      outer: 'h-full rounded-[2px] bg-primary p-[2%]',
+      inner: 'h-full rounded-[1px] bg-muted p-[2%] shadow-inner flex items-center justify-center',
+      image: 'block h-full w-full object-contain object-center min-h-0',
+    },
+    thumbnail: {
+      shell: 'rounded-sm shadow-sm ring-1 ring-black/10',
+      outer: 'rounded-[2px] bg-primary p-1 sm:p-1.5',
+      inner: 'rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner',
+      image: 'w-full h-9 sm:h-12 object-contain',
+    },
+  };
+
+  const styles = frameStyles[variant];
+
+  return (
+    <div className={cn('relative mx-auto max-w-full', styles.shell, className)}>
+      <div className={styles.outer}>
+        <div className={styles.inner}>
+          <img src={src} alt={alt} className={cn(styles.image, imageClassName)} />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const parseHeightWidthInches = (size: string): { height: string; width: string } | null => {
@@ -84,6 +188,8 @@ export default function PaintingsPage() {
   const { categories } = useCategories();
 
   const poweredByFor = (artwork: Artwork) => shouldShowPoweredByRasayan(artwork, categories);
+  const paintingTypeFor = (artwork: Artwork) =>
+    categories.find((category) => category.id === artwork.category_id)?.name || artwork.medium;
   const searchTerm = searchParams.get('search')?.trim().toLowerCase() ?? '';
   const artworkId = searchParams.get('artwork')?.trim() ?? '';
 
@@ -283,6 +389,7 @@ export default function PaintingsPage() {
           const artworkImages = parseArtworkImages(selectedArtwork);
           const primaryImage = artworkImages[0] || selectedArtwork.image_url || selectedArtwork.image || '';
           const dimensions = parseHeightWidthInches(selectedArtwork.size);
+          const wallFrameStyle = getWallFrameStyle(selectedArtwork);
           const displaySlides = [
             { id: 'normal', variant: 'normal' as const, src: primaryImage, label: 'Normal' },
             { id: 'dimensions', variant: 'dimensions' as const, src: primaryImage, label: 'Height/Width' },
@@ -321,17 +428,11 @@ export default function PaintingsPage() {
                   )}
                 >
                   {activeSlide.variant === 'frame' ? (
-                    <div className="relative mx-auto max-w-full rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10">
-                      <div className="rounded-[3px] bg-primary p-3 sm:p-4 md:p-6">
-                        <div className="rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner">
-                          <img
-                            src={primaryImage}
-                            alt={selectedArtwork.title}
-                            className="block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <FramedPainting
+                      src={primaryImage}
+                      alt={selectedArtwork.title}
+                      variant="default"
+                    />
                   ) : activeSlide.variant === 'wall' ? (
                     <div className="relative mx-auto w-full max-w-full">
                       <img
@@ -340,25 +441,23 @@ export default function PaintingsPage() {
                         className="block mx-auto w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
                       />
                       <div
-                        className="absolute left-1/2 -translate-x-1/2 overflow-hidden"
-                        style={{
-                          top: WALL_ART_FRAME.top,
-                          width: WALL_ART_FRAME.width,
-                          height: WALL_ART_FRAME.height,
-                        }}
+                        className="absolute left-1/2 -translate-x-1/2"
+                        style={wallFrameStyle}
                       >
-                        <img
-                          src={primaryImage}
-                          alt={selectedArtwork.title}
-                          className="h-full w-full object-contain object-center"
-                        />
+                            <FramedPainting
+                              src={primaryImage}
+                              alt={selectedArtwork.title}
+                              variant="tight"
+                              className="mx-0"
+                              imageClassName="h-full w-full object-contain"
+                            />
                       </div>
                     </div>
                   ) : (
                     <img
                       src={activeSlide.src}
                       alt={
-                          activeSlide.variant === 'room'
+                        activeSlide.variant === 'room'
                           ? `${selectedArtwork.title} — room setting`
                           : selectedArtwork.title
                       }
@@ -405,15 +504,12 @@ export default function PaintingsPage() {
                           aria-label={`View ${slide.label}`}
                         >
                           {slide.variant === 'frame' ? (
-                            <div className="w-full overflow-hidden rounded-sm bg-primary p-1 sm:p-1.5 shadow-sm ring-1 ring-black/10">
-                              <div className="rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner">
-                                <img
-                                  src={primaryImage}
-                                  alt={`${selectedArtwork.title} ${slide.label}`}
-                                  className="w-full h-9 sm:h-12 object-contain"
-                                />
-                              </div>
-                            </div>
+                            <FramedPainting
+                              src={primaryImage}
+                              alt={`${selectedArtwork.title} ${slide.label}`}
+                              variant="thumbnail"
+                              className="w-full"
+                            />
                           ) : slide.variant === 'wall' ? (
                             <div className="w-full h-9 sm:h-12 overflow-hidden rounded-sm relative">
                               <img
@@ -422,17 +518,14 @@ export default function PaintingsPage() {
                                 className="w-full h-full object-contain"
                               />
                               <div
-                                className="absolute left-1/2 -translate-x-1/2 overflow-hidden"
-                                style={{
-                                  top: WALL_ART_FRAME.top,
-                                  width: WALL_ART_FRAME.width,
-                                  height: WALL_ART_FRAME.height,
-                                }}
+                                className="absolute left-1/2 -translate-x-1/2"
+                                style={wallFrameStyle}
                               >
-                                <img
+                                <FramedPainting
                                   src={primaryImage}
                                   alt={`${selectedArtwork.title} ${slide.label}`}
-                                  className="h-full w-full object-contain object-center"
+                                  variant="tight"
+                                  className="mx-0"
                                 />
                               </div>
                             </div>
@@ -490,7 +583,11 @@ export default function PaintingsPage() {
 
               {/* Price & Details Section */}
               <div className="mt-8">
-                <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
+                <PriceAndDetailsSection
+                  artwork={selectedArtwork}
+                  paintingType={paintingTypeFor(selectedArtwork)}
+                  readOnly={true}
+                />
               </div>
               <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
                 <PoweredByRasayanTagline className="text-sm" />

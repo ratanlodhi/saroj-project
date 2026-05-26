@@ -5,12 +5,14 @@ import { Edit } from 'lucide-react';
 
 interface PriceAndDetailsSectionProps {
   artwork: Artwork;
+  paintingType?: string;
   onEdit?: () => void;
   readOnly?: boolean;
 }
 
 export default function PriceAndDetailsSection({
   artwork,
+  paintingType,
   onEdit,
   readOnly = true,
 }: PriceAndDetailsSectionProps) {
@@ -109,6 +111,14 @@ export default function PriceAndDetailsSection({
             Additional Details
           </h3>
           <div className="space-y-3">
+            {paintingType && (
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-gray-600">Painting Type</p>
+                <p className="text-base font-medium text-gray-900 text-right">
+                  {paintingType}
+                </p>
+              </div>
+            )}
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-600">Number of Panels</p>
               <p className="text-base font-medium text-gray-900">

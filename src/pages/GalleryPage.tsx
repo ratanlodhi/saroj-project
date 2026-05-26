@@ -86,6 +86,8 @@ export default function GalleryPage() {
   };
 
   const poweredByFor = (artwork: Artwork) => shouldShowPoweredByRasayan(artwork, categories);
+  const paintingTypeFor = (artwork: Artwork) =>
+    categories.find((category) => category.id === artwork.category_id)?.name || artwork.medium;
 
   return (
     <div className="min-h-screen pb-20">
@@ -332,7 +334,11 @@ export default function GalleryPage() {
 
               {/* Price & Details Section */}
               <div className="mt-8">
-                <PriceAndDetailsSection artwork={selectedArtwork} readOnly={true} />
+                <PriceAndDetailsSection
+                  artwork={selectedArtwork}
+                  paintingType={paintingTypeFor(selectedArtwork)}
+                  readOnly={true}
+                />
               </div>
               <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
                 <PoweredByRasayanTagline className="text-sm" />
