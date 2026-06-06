@@ -417,7 +417,7 @@ export default function PaintingsPage() {
               <X size={20} />
             </button>
 
-            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-3 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
+            <div className="min-h-0 shrink-0 md:shrink md:flex-[1.15] bg-muted/20 px-2 pt-12 pb-1 sm:p-5 md:p-6 max-h-[min(52dvh,520px)] md:max-h-none overflow-hidden flex flex-col">
               <div className="flex-1 min-h-[190px] sm:min-h-[220px] flex items-center justify-center w-full">
                 <div
                   className={cn(
@@ -484,13 +484,13 @@ export default function PaintingsPage() {
                 </div>
               </div>
 
-              <div className="mt-2 sm:mt-4">
-                <Carousel opts={{ align: 'start' }} className="w-full px-4 sm:px-8">
-                  <CarouselContent className="-ml-2">
+              <div className="mt-1 sm:mt-2 md:mt-3">
+                <Carousel opts={{ align: 'start' }} className="w-full px-1 sm:px-4 md:px-6">
+                  <CarouselContent className="-ml-1">
                     {displaySlides.map((slide, slideIndex) => (
                       <CarouselItem
                         key={`${selectedArtwork.id}-thumb-${slide.id}`}
-                        className="pl-2 basis-1/4"
+                        className="pl-1 basis-1/4 md:basis-1/5"
                       >
                         <button
                           type="button"
@@ -511,7 +511,7 @@ export default function PaintingsPage() {
                               className="w-full"
                             />
                           ) : slide.variant === 'wall' ? (
-                            <div className="w-full h-9 sm:h-12 overflow-hidden rounded-sm relative">
+                            <div className="w-full h-10 sm:h-12 overflow-hidden rounded-sm relative">
                               <img
                                 src={WALL_CAROUSEL_IMAGE}
                                 alt={`${selectedArtwork.title} wall thumbnail`}
@@ -537,7 +537,7 @@ export default function PaintingsPage() {
                                   ? `${selectedArtwork.title} room setting thumbnail`
                                   : `${selectedArtwork.title} ${slide.label}`
                               }
-                              className="w-full h-12 sm:h-16 object-contain"
+                              className="w-full h-14 sm:h-16 object-cover"
                             />
                           )}
                         </button>
