@@ -18,8 +18,8 @@ import PoweredByRasayanTagline from '@/components/PoweredByRasayanTagline';
 import PriceAndDetailsSection from '@/components/PriceAndDetailsSection';
 import type { Artwork } from '@/hooks/useArtworks';
 
-/** Lifestyle / in-room photo shown as the fourth carousel view (see `public/media/room.jpeg`). */
-const ROOM_CAROUSEL_IMAGE = '/media/room.jpeg';
+/** Lifestyle / in-room photo shown as the fourth carousel view (see `public/media/sofa.jpg`). */
+const ROOM_CAROUSEL_IMAGE = '/media/sofa.jpg';
 /** Wall mockup shown after the frame view (using sofa mockup). */
 const WALL_CAROUSEL_IMAGE = '/media/sofa.avif';
 /** Compositing bounds on wall.jpg (includes frame/mat; 1000x1000 mockup). */
