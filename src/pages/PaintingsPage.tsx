@@ -28,6 +28,13 @@ const WALL_ART_FRAME_BOUNDS = {
   width: 49,
   height: 37,
 } as const;
+/** Compositing bounds on sofa.jpg where painting should appear in the room slide. */
+const ROOM_ART_FRAME_BOUNDS = {
+  top: 8.5,
+  left: 41,
+  width: 33,
+  height: 35,
+} as const;
 
 const getArtworkAspectRatio = (artwork: Artwork): number => {
   const dimensions = parseHeightWidthInches(artwork.size);
@@ -71,6 +78,30 @@ const getWallFrameStyle = (artwork: Artwork): CSSProperties => {
     top: `${top}%`,
     width: `${scaledWidth}%`,
     height: `${scaledHeight}%`,
+  };
+};
+
+const getRoomFrameStyle = (artwork: Artwork): CSSProperties => {
+  const boundsAspect = ROOM_ART_FRAME_BOUNDS.width / ROOM_ART_FRAME_BOUNDS.height;
+  const artworkAspect = Math.min(Math.max(getArtworkAspectRatio(artwork), 0.35), 3);
+
+  let width = ROOM_ART_FRAME_BOUNDS.width;
+  let height = ROOM_ART_FRAME_BOUNDS.height;
+
+  if (artworkAspect > boundsAspect) {
+    height = width / artworkAspect;
+  } else {
+    width = height * artworkAspect;
+  }
+
+  const left = ROOM_ART_FRAME_BOUNDS.left + (ROOM_ART_FRAME_BOUNDS.width - width) / 2;
+  const top = ROOM_ART_FRAME_BOUNDS.top + (ROOM_ART_FRAME_BOUNDS.height - height) / 2;
+
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${width}%`,
+    height: `${height}%`,
   };
 };
 
@@ -360,7 +391,7 @@ export default function PaintingsPage() {
                           <Button
                             onClick={() => handleAddToCart(artwork)}
                             size="sm"
-                            className="gap-2 font-serif"
+                            className="gap-2 font-serif rounded-full px-5"
                           >
                             <ShoppingCart size={16} />
                             Add to Cart
@@ -390,6 +421,7 @@ export default function PaintingsPage() {
           const primaryImage = artworkImages[0] || selectedArtwork.image_url || selectedArtwork.image || '';
           const dimensions = parseHeightWidthInches(selectedArtwork.size);
           const wallFrameStyle = getWallFrameStyle(selectedArtwork);
+          const roomFrameStyle = getRoomFrameStyle(selectedArtwork);
           const displaySlides = [
             { id: 'normal', variant: 'normal' as const, src: primaryImage, label: 'Normal' },
             { id: 'dimensions', variant: 'dimensions' as const, src: primaryImage, label: 'Height/Width' },
@@ -423,7 +455,7 @@ export default function PaintingsPage() {
                   className={cn(
                     'relative w-full',
                     activeSlide.variant === 'dimensions'
-                      ? 'inline-block max-w-full pr-14 pt-10 pb-12 sm:pr-16 sm:pt-10 sm:pb-12'
+                      ? 'inline-block max-w-full pr-8 pt-7 pb-0 sm:pr-10 sm:pt-8 sm:pb-0'
                       : 'mx-auto flex justify-center'
                   )}
                 >
@@ -453,6 +485,21 @@ export default function PaintingsPage() {
                             />
                       </div>
                     </div>
+                  ) : activeSlide.variant === 'room' ? (
+                    <div className="relative mx-auto w-full max-w-full">
+                      <img
+                        src={ROOM_CAROUSEL_IMAGE}
+                        alt={`${selectedArtwork.title} — room setting`}
+                        className="block mx-auto w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0"
+                      />
+                      <div className="absolute" style={roomFrameStyle}>
+                        <img
+                          src={primaryImage}
+                          alt={selectedArtwork.title}
+                          className="block h-full w-full object-contain"
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <img
                       src={activeSlide.src}
@@ -466,17 +513,17 @@ export default function PaintingsPage() {
                   )}
                   {dimensions && activeSlide.variant === 'dimensions' && (
                     <>
-                      <div className="pointer-events-none absolute left-2 right-14 sm:right-16 top-5 border-b border-primary/45" />
-                      <div className="pointer-events-none absolute left-0 top-[15px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
-                      <div className="pointer-events-none absolute right-14 sm:right-16 top-[15px] w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-primary/45" />
+                      <div className="pointer-events-none absolute left-2 right-8 sm:right-10 top-3 border-b border-primary/45" />
+                      <div className="pointer-events-none absolute left-0 top-[7px] w-0 h-0 border-t-[5px] border-b-[5px] border-r-[7px] border-t-transparent border-b-transparent border-r-primary/45" />
+                      <div className="pointer-events-none absolute right-8 sm:right-10 top-[7px] w-0 h-0 border-t-[5px] border-b-[5px] border-l-[7px] border-t-transparent border-b-transparent border-l-primary/45" />
                       <p className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
                         {dimensions.width} inches
                       </p>
 
-                      <div className="pointer-events-none absolute top-10 bottom-12 right-8 border-r border-primary/45" />
-                      <div className="pointer-events-none absolute top-[33px] right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-b-[7px] border-l-transparent border-r-transparent border-b-primary/45" />
-                      <div className="pointer-events-none absolute bottom-12 right-[27px] w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent border-t-primary/45" />
-                      <p className="pointer-events-none absolute top-1/2 -right-6 sm:-right-7 -translate-y-1/2 rotate-90 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
+                      <div className="pointer-events-none absolute top-7 bottom-0 right-3 sm:right-4 border-r border-primary/45" />
+                      <div className="pointer-events-none absolute top-[20px] right-[10px] sm:right-[12px] w-0 h-0 border-l-[5px] border-r-[5px] border-b-[7px] border-l-transparent border-r-transparent border-b-primary/45" />
+                      <div className="pointer-events-none absolute bottom-0 right-[10px] sm:right-[12px] w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent border-t-primary/45" />
+                      <p className="pointer-events-none absolute top-1/2 -right-4 sm:-right-5 -translate-y-1/2 rotate-90 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap">
                         {dimensions.height} inches
                       </p>
                     </>
@@ -504,34 +551,20 @@ export default function PaintingsPage() {
                           aria-label={`View ${slide.label}`}
                         >
                           {slide.variant === 'frame' ? (
-                            <FramedPainting
+                            <img
                               src={primaryImage}
                               alt={`${selectedArtwork.title} ${slide.label}`}
-                              variant="thumbnail"
-                              className="w-full"
+                              className="w-full h-14 sm:h-16 object-cover"
                             />
                           ) : slide.variant === 'wall' ? (
-                            <div className="w-full h-10 sm:h-12 overflow-hidden rounded-sm relative">
-                              <img
-                                src={WALL_CAROUSEL_IMAGE}
-                                alt={`${selectedArtwork.title} wall thumbnail`}
-                                className="w-full h-full object-contain"
-                              />
-                              <div
-                                className="absolute left-1/2 -translate-x-1/2"
-                                style={wallFrameStyle}
-                              >
-                                <FramedPainting
-                                  src={primaryImage}
-                                  alt={`${selectedArtwork.title} ${slide.label}`}
-                                  variant="tight"
-                                  className="mx-0"
-                                />
-                              </div>
-                            </div>
+                            <img
+                              src={primaryImage}
+                              alt={`${selectedArtwork.title} wall thumbnail`}
+                              className="w-full h-14 sm:h-16 object-cover"
+                            />
                           ) : (
                             <img
-                              src={slide.src}
+                              src={slide.variant === 'room' ? primaryImage : slide.src}
                               alt={
                                   slide.variant === 'room'
                                   ? `${selectedArtwork.title} room setting thumbnail`
