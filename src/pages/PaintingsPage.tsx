@@ -176,34 +176,34 @@ const FramedPainting = ({
   > = {
     default: {
       shell: 'rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10',
-      outer: 'rounded-[3px] bg-primary p-3 sm:p-4 md:p-6',
+      outer: 'rounded-[3px] bg-[#964B00] p-3 sm:p-4 md:p-6',
       inner: 'rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner',
       image:
         'block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0',
     },
     tight: {
       shell: 'rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/8',
-      outer: 'rounded-[3px] bg-primary p-1 sm:p-1.5',
+      outer: 'rounded-[3px] bg-[#964B00] p-1 sm:p-1.5',
       inner: 'rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner',
       image: 'block w-full h-full object-contain min-h-0',
     },
     mockup: {
       shell: 'h-full w-full rounded-[1px] shadow-[0_2px_8px_rgba(0,0,0,0.18)] box-border overflow-hidden',
-      outer: 'box-border h-full w-full rounded-[1px] border-[5px] border-primary bg-primary',
+      outer: 'box-border h-full w-full rounded-[1px] border-[5px] border-[#964B00] bg-[#964B00]',
       inner: 'box-border h-full w-full border-[5px] border-muted bg-muted overflow-hidden',
       image: 'block h-full w-full object-cover object-center min-h-0',
     },
     wall: {
       shell: 'h-full w-full rounded-sm shadow-[0_4px_12px_rgba(0,0,0,0.25)] ring-1 ring-black/10',
-      outer: 'h-full rounded-[2px] bg-primary p-[2%]',
+      outer: 'h-full rounded-[2px] bg-[#964B00] p-[2%]',
       inner: 'h-full rounded-[1px] bg-muted p-[2%] shadow-inner flex items-center justify-center',
       image: 'block h-full w-full object-contain object-center min-h-0',
     },
     thumbnail: {
-      shell: 'h-full w-full max-h-full rounded-sm shadow-sm ring-1 ring-black/10',
-      outer: 'h-full rounded-[2px] bg-primary p-[2px] flex items-center justify-center',
-      inner: 'h-full rounded-[1px] bg-muted p-[2px] shadow-inner flex items-center justify-center overflow-hidden',
-      image: 'max-h-full max-w-full h-full w-full object-contain',
+      shell: 'h-full w-full rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.16)] ring-1 ring-black/10',
+      outer: 'h-full rounded-[3px] bg-[#964B00] p-1 sm:p-1.5',
+      inner: 'h-full rounded-[1px] bg-muted p-0.5 sm:p-1 shadow-inner flex items-center justify-center overflow-hidden',
+      image: 'block h-full w-full object-contain min-h-0',
     },
   };
 
@@ -221,7 +221,7 @@ const FramedPainting = ({
 };
 
 const THUMB_PREVIEW_CLASS =
-  'relative h-14 sm:h-16 w-full overflow-hidden flex items-center justify-center bg-muted/20';
+  'relative h-14 sm:h-16 w-full overflow-hidden flex items-center justify-center bg-transparent';
 
 const ThumbPreviewShell = ({
   children,
@@ -250,13 +250,13 @@ const DimensionOverlay = ({
   <>
     <div
       className={cn(
-        'pointer-events-none absolute border-b border-primary/45',
+        'pointer-events-none absolute border-b border-[#964B00]/45',
         compact ? 'left-1 right-4 top-1.5' : 'left-2 right-8 sm:right-10 top-3'
       )}
     />
     <div
       className={cn(
-        'pointer-events-none absolute w-0 h-0 border-t-transparent border-b-transparent border-r-primary/45',
+        'pointer-events-none absolute w-0 h-0 border-t-transparent border-b-transparent border-r-[#964B00]/45',
         compact
           ? 'left-0 top-[3px] border-t-[3px] border-b-[3px] border-r-[4px]'
           : 'left-0 top-[7px] border-t-[5px] border-b-[5px] border-r-[7px]'
@@ -264,7 +264,7 @@ const DimensionOverlay = ({
     />
     <div
       className={cn(
-        'pointer-events-none absolute w-0 h-0 border-t-transparent border-b-transparent border-l-primary/45',
+        'pointer-events-none absolute w-0 h-0 border-t-transparent border-b-transparent border-l-[#964B00]/45',
         compact
           ? 'right-4 top-[3px] border-t-[3px] border-b-[3px] border-l-[4px]'
           : 'right-8 sm:right-10 top-[7px] border-t-[5px] border-b-[5px] border-l-[7px]'
@@ -272,7 +272,7 @@ const DimensionOverlay = ({
     />
     <p
       className={cn(
-        'pointer-events-none absolute left-1/2 -translate-x-1/2 font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap',
+        'pointer-events-none absolute left-1/2 -translate-x-1/2 font-semibold uppercase tracking-[0.18em] text-[#964B00]/80 whitespace-nowrap',
         compact ? 'top-0 text-[6px]' : 'top-0 text-[10px] sm:text-xs'
       )}
     >
@@ -281,13 +281,13 @@ const DimensionOverlay = ({
 
     <div
       className={cn(
-        'pointer-events-none absolute border-r border-primary/45',
+        'pointer-events-none absolute border-r border-[#964B00]/45',
         compact ? 'top-3 bottom-0 right-1.5' : 'top-7 bottom-0 right-3 sm:right-4'
       )}
     />
     <div
       className={cn(
-        'pointer-events-none absolute w-0 h-0 border-l-transparent border-r-transparent border-b-primary/45',
+        'pointer-events-none absolute w-0 h-0 border-l-transparent border-r-transparent border-b-[#964B00]/45',
         compact
           ? 'top-[10px] right-[4px] border-l-[3px] border-r-[3px] border-b-[4px]'
           : 'top-[20px] right-[10px] sm:right-[12px] border-l-[5px] border-r-[5px] border-b-[7px]'
@@ -295,7 +295,7 @@ const DimensionOverlay = ({
     />
     <div
       className={cn(
-        'pointer-events-none absolute w-0 h-0 border-l-transparent border-r-transparent border-t-primary/45',
+        'pointer-events-none absolute w-0 h-0 border-l-transparent border-r-transparent border-t-[#964B00]/45',
         compact
           ? 'bottom-0 right-[4px] border-l-[3px] border-r-[3px] border-t-[4px]'
           : 'bottom-0 right-[10px] sm:right-[12px] border-l-[5px] border-r-[5px] border-t-[7px]'
@@ -303,7 +303,7 @@ const DimensionOverlay = ({
     />
     <p
       className={cn(
-        'pointer-events-none absolute -translate-y-1/2 rotate-90 font-semibold uppercase tracking-[0.18em] text-primary/80 whitespace-nowrap',
+        'pointer-events-none absolute -translate-y-1/2 rotate-90 font-semibold uppercase tracking-[0.18em] text-[#964B00]/80 whitespace-nowrap',
         compact ? 'top-1/2 -right-2 text-[6px]' : 'top-1/2 -right-4 sm:-right-5 text-[10px] sm:text-xs'
       )}
     >
@@ -319,6 +319,7 @@ const ArtworkSlidePreview = ({
   dimensions,
   wallFrameStyle,
   roomFrameStyle,
+  thumbIndex,
   size = 'main',
 }: {
   slide: Pick<DisplaySlide, 'variant' | 'src'>;
@@ -327,26 +328,24 @@ const ArtworkSlidePreview = ({
   dimensions: { height: string; width: string } | null;
   wallFrameStyle: CSSProperties;
   roomFrameStyle: CSSProperties;
+  thumbIndex?: number;
   size?: 'main' | 'thumb';
 }) => {
   const isThumb = size === 'thumb';
   const mainImageClass =
     'block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0';
 
-  if (slide.variant === 'frame') {
-    if (isThumb) {
-      return (
-        <ThumbPreviewShell>
-          <FramedPainting
-            src={primaryImage}
-            alt={title}
-            variant="thumbnail"
-            className="h-full w-full"
-          />
-        </ThumbPreviewShell>
-      );
-    }
+  if (isThumb) {
+    return (
+      <ThumbPreviewShell>
+        <div className="flex h-full w-full items-center justify-center bg-background/70 text-primary font-serif text-lg sm:text-xl font-semibold">
+          {thumbIndex ?? 1}
+        </div>
+      </ThumbPreviewShell>
+    );
+  }
 
+  if (slide.variant === 'frame') {
     return (
       <FramedPainting
         src={primaryImage}
@@ -357,28 +356,6 @@ const ArtworkSlidePreview = ({
   }
 
   if (slide.variant === 'wall') {
-    if (isThumb) {
-      return (
-        <ThumbPreviewShell>
-          <div className="relative h-full w-full">
-            <img
-              src={WALL_CAROUSEL_IMAGE}
-              alt={`${title} — wall display`}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute left-1/2 -translate-x-1/2" style={wallFrameStyle}>
-              {/* <FramedPainting
-                src={primaryImage}
-                alt={title}
-                variant="mockup"
-                className="mx-0"
-              /> */}
-            </div>
-          </div>
-        </ThumbPreviewShell>
-      );
-    }
-
     return (
       <div className="relative mx-auto w-full max-w-full">
         <img
@@ -399,28 +376,6 @@ const ArtworkSlidePreview = ({
   }
 
   if (slide.variant === 'room') {
-    if (isThumb) {
-      return (
-        <ThumbPreviewShell>
-          <div className="relative h-full w-full">
-            <img
-              src={ROOM_CAROUSEL_IMAGE}
-              alt={`${title} — room setting`}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute" style={roomFrameStyle}>
-              {/* <FramedPainting
-                src={primaryImage}
-                alt={title}
-                variant="mockup"
-                className="mx-0"
-              /> */}
-            </div>
-          </div>
-        </ThumbPreviewShell>
-      );
-    }
-
     return (
       <div className="relative mx-auto w-full max-w-full">
         <img
@@ -437,17 +392,6 @@ const ArtworkSlidePreview = ({
           />
         </div>
       </div>
-    );
-  }
-
-  if (isThumb) {
-    return (
-      <ThumbPreviewShell>
-        <img src={slide.src} alt={title} className="h-full w-full object-contain" />
-        {dimensions && slide.variant === 'dimensions' && (
-          <DimensionOverlay dimensions={dimensions} compact />
-        )}
-      </ThumbPreviewShell>
     );
   }
 
@@ -788,6 +732,7 @@ export default function PaintingsPage() {
                             dimensions={dimensions}
                             wallFrameStyle={wallFrameStyle}
                             roomFrameStyle={roomFrameStyle}
+                            thumbIndex={slideIndex + 1}
                             size="thumb"
                           />
                         </button>
@@ -839,9 +784,7 @@ export default function PaintingsPage() {
                   readOnly={true}
                 />
               </div>
-              <div className="mt-4 w-full border border-border rounded-sm px-4 py-3 text-center">
-                <PoweredByRasayanTagline className="text-sm" />
-              </div>
+              <PoweredByRasayanTagline className="mt-4 text-sm text-center" />
             </div>
           </div>
         </div>
