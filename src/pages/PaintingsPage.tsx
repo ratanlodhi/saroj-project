@@ -22,19 +22,6 @@ import type { Artwork } from '@/hooks/useArtworks';
 const ROOM_CAROUSEL_IMAGE = '/media/sofa.jpg';
 /** Wall mockup shown after the frame view (using sofa mockup). */
 const WALL_CAROUSEL_IMAGE = '/media/sofa.avif';
-/** Compositing bounds on wall.jpg (includes frame/mat; 1000x1000 mockup). */
-const WALL_ART_FRAME_BOUNDS = {
-  top: 5.5,
-  width: 49,
-  height: 37,
-} as const;
-/** Compositing bounds on sofa.jpg where painting should appear in the room slide. */
-const ROOM_ART_FRAME_BOUNDS = {
-  top: 8.5,
-  left: 41,
-  width: 33,
-  height: 35,
-} as const;
 
 const parseHeightWidthInches = (size: string): { height: string; width: string } | null => {
   const normalized = formatArtworkSizeDisplay(size);
@@ -71,13 +58,28 @@ const getArtworkAspectRatio = (artwork: Artwork): number => {
 
 const clampAspectRatio = (aspect: number) => Math.min(Math.max(aspect, 0.35), 3);
 
-const getWallFrameStyle = (artwork: Artwork, aspectOverride?: number | null): CSSProperties => {
-  const boundsAspect = WALL_ART_FRAME_BOUNDS.width / WALL_ART_FRAME_BOUNDS.height;
+/** Shared compositing zone — same size/scale on wall and room mockups. */
+const MOCKUP_ART_FRAME_BOUNDS = {
+  top: 8.5,
+  width: 33,
+  height: 35,
+} as const;
+/** Horizontal center for the room mockup slot above the sofa. */
+const ROOM_FRAME_CENTER_LEFT = 57.5;
+const MOCKUP_FRAME_SCALE = 0.656;
+const MOCKUP_FRAME_TOP_NUDGE = 0;
+const WALL_FRAME_CENTER_LEFT = 50;
+
+const getMockupFrameStyle = (
+  centerLeft: number,
+  artwork: Artwork,
+  aspectOverride?: number | null,
+): CSSProperties => {
+  const boundsAspect = MOCKUP_ART_FRAME_BOUNDS.width / MOCKUP_ART_FRAME_BOUNDS.height;
   const artworkAspect = clampAspectRatio(aspectOverride ?? getArtworkAspectRatio(artwork));
 
-  // Compute the raw width/height (percent of the mockup area)
-  let width = WALL_ART_FRAME_BOUNDS.width;
-  let height = WALL_ART_FRAME_BOUNDS.height;
+  let width = MOCKUP_ART_FRAME_BOUNDS.width;
+  let height = MOCKUP_ART_FRAME_BOUNDS.height;
 
   if (artworkAspect > boundsAspect) {
     height = width / artworkAspect;
@@ -85,48 +87,27 @@ const getWallFrameStyle = (artwork: Artwork, aspectOverride?: number | null): CS
     width = height * artworkAspect;
   }
 
-  // Apply scale to make the frame smaller and center it vertically within bounds
-  const scaledWidth = width * WALL_FRAME_SCALE;
-  const scaledHeight = height * WALL_FRAME_SCALE;
-  let top = WALL_ART_FRAME_BOUNDS.top + (WALL_ART_FRAME_BOUNDS.height - scaledHeight) / 2 + WALL_FRAME_TOP_NUDGE;
-  if (top < 0) top = 0;
+  const scaledWidth = width * MOCKUP_FRAME_SCALE;
+  const boundsCenterTop =
+    MOCKUP_ART_FRAME_BOUNDS.top +
+    MOCKUP_ART_FRAME_BOUNDS.height / 2 +
+    MOCKUP_FRAME_TOP_NUDGE;
 
   return {
-    top: `${top}%`,
+    left: `${centerLeft}%`,
+    top: `${boundsCenterTop}%`,
+    transform: 'translate(-50%, -50%)',
     width: `${scaledWidth}%`,
-    height: `${scaledHeight}%`,
+    aspectRatio: artworkAspect,
+    height: 'auto',
   };
 };
 
-const WALL_FRAME_SCALE = 0.48; // scale down the composited frame so it appears smaller on the mockup
-const WALL_FRAME_TOP_NUDGE = -6; // percent points to nudge the frame upward (negative moves up)
-const ROOM_FRAME_SCALE = 0.82; // fit within the existing frame slot in the room mockup photo
+const getWallFrameStyle = (artwork: Artwork, aspectOverride?: number | null): CSSProperties =>
+  getMockupFrameStyle(WALL_FRAME_CENTER_LEFT, artwork, aspectOverride);
 
-const getRoomFrameStyle = (artwork: Artwork, aspectOverride?: number | null): CSSProperties => {
-  const boundsAspect = ROOM_ART_FRAME_BOUNDS.width / ROOM_ART_FRAME_BOUNDS.height;
-  const artworkAspect = clampAspectRatio(aspectOverride ?? getArtworkAspectRatio(artwork));
-
-  let width = ROOM_ART_FRAME_BOUNDS.width;
-  let height = ROOM_ART_FRAME_BOUNDS.height;
-
-  if (artworkAspect > boundsAspect) {
-    height = width / artworkAspect;
-  } else {
-    width = height * artworkAspect;
-  }
-
-  const scaledWidth = width * ROOM_FRAME_SCALE;
-  const scaledHeight = height * ROOM_FRAME_SCALE;
-  const left = ROOM_ART_FRAME_BOUNDS.left + (ROOM_ART_FRAME_BOUNDS.width - scaledWidth) / 2;
-  const top = ROOM_ART_FRAME_BOUNDS.top + (ROOM_ART_FRAME_BOUNDS.height - scaledHeight) / 2;
-
-  return {
-    left: `${left}%`,
-    top: `${top}%`,
-    width: `${scaledWidth}%`,
-    height: `${scaledHeight}%`,
-  };
-};
+const getRoomFrameStyle = (artwork: Artwork, aspectOverride?: number | null): CSSProperties =>
+  getMockupFrameStyle(ROOM_FRAME_CENTER_LEFT, artwork, aspectOverride);
 
 const parseArtworkImages = (artwork: Artwork): string[] => {
   const rawSources = [artwork.image_url, artwork.image].filter(Boolean) as string[];
@@ -175,11 +156,11 @@ const FramedPainting = ({
     { shell: string; outer: string; inner: string; image: string }
   > = {
     default: {
-      shell: 'rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10',
+      shell: 'w-max max-w-full rounded-md shadow-[0_14px_42px_rgba(0,0,0,0.22)] ring-1 ring-black/10',
       outer: 'rounded-[3px] bg-[#964B00] p-3 sm:p-4 md:p-6',
       inner: 'rounded-[1px] bg-muted p-2 sm:p-3 md:p-4 shadow-inner',
       image:
-        'block w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0',
+        'block w-auto h-auto max-w-full max-h-[min(32dvh,280px)] sm:max-h-[min(38dvh,380px)] md:max-h-[min(54dvh,500px)] object-contain min-h-0',
     },
     tight: {
       shell: 'rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/8',
@@ -190,14 +171,14 @@ const FramedPainting = ({
     mockup: {
       shell: 'h-full w-full rounded-[1px] shadow-[0_2px_8px_rgba(0,0,0,0.18)] box-border overflow-hidden',
       outer: 'box-border h-full w-full rounded-[1px] border-[5px] border-[#964B00] bg-[#964B00]',
-      inner: 'box-border h-full w-full border-[5px] border-muted bg-muted overflow-hidden',
+      inner: 'box-border h-full w-full overflow-hidden bg-transparent',
       image: 'block h-full w-full object-cover object-center min-h-0',
     },
     wall: {
       shell: 'h-full w-full rounded-sm shadow-[0_4px_12px_rgba(0,0,0,0.25)] ring-1 ring-black/10',
-      outer: 'h-full rounded-[2px] bg-[#964B00] p-[2%]',
-      inner: 'h-full rounded-[1px] bg-muted p-[2%] shadow-inner flex items-center justify-center',
-      image: 'block h-full w-full object-contain object-center min-h-0',
+      outer: 'h-full w-full rounded-[2px] border-[5px] border-[#964B00] bg-[#964B00] overflow-hidden',
+      inner: 'h-full w-full rounded-[1px] bg-transparent overflow-hidden',
+      image: 'block h-full w-full object-cover object-center min-h-0',
     },
     thumbnail: {
       shell: 'h-full w-full rounded-md shadow-[0_10px_30px_rgba(0,0,0,0.16)] ring-1 ring-black/10',
@@ -334,6 +315,9 @@ const ArtworkSlidePreview = ({
   const isThumb = size === 'thumb';
   const mainImageClass =
     'block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0';
+  const mockupImageClass =
+    'block w-auto h-auto max-w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0';
+  const mockupShellClass = 'relative mx-auto w-fit max-w-full overflow-hidden';
 
   if (isThumb) {
     return (
@@ -357,19 +341,21 @@ const ArtworkSlidePreview = ({
 
   if (slide.variant === 'wall') {
     return (
-      <div className="relative mx-auto w-full max-w-full">
+      <div className={mockupShellClass}>
         <img
           src={WALL_CAROUSEL_IMAGE}
           alt={`${title} — wall display`}
-          className={cn('block mx-auto', mainImageClass)}
+          className={mockupImageClass}
         />
-        <div className="absolute" style={roomFrameStyle}>
-          <FramedPainting
-            src={primaryImage}
-            alt={title}
-            variant="mockup"
-            className="mx-0"
-          />
+        <div className="absolute inset-0">
+          <div className="absolute" style={wallFrameStyle}>
+            <FramedPainting
+              src={primaryImage}
+              alt={title}
+              variant="mockup"
+              className="mx-0"
+            />
+          </div>
         </div>
       </div>
     );
@@ -377,19 +363,21 @@ const ArtworkSlidePreview = ({
 
   if (slide.variant === 'room') {
     return (
-      <div className="relative mx-auto w-full max-w-full">
+      <div className={mockupShellClass}>
         <img
           src={ROOM_CAROUSEL_IMAGE}
           alt={`${title} — room setting`}
-          className={cn('block mx-auto', mainImageClass)}
+          className={mockupImageClass}
         />
-        <div className="absolute" style={roomFrameStyle}>
-          <FramedPainting
-            src={primaryImage}
-            alt={title}
-            variant="mockup"
-            className="mx-0"
-          />
+        <div className="absolute inset-0">
+          <div className="absolute" style={roomFrameStyle}>
+            <FramedPainting
+              src={primaryImage}
+              alt={title}
+              variant="mockup"
+              className="mx-0"
+            />
+          </div>
         </div>
       </div>
     );
