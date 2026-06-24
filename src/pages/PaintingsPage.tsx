@@ -598,22 +598,24 @@ export default function PaintingsPage() {
                     </div>
 
                     <div className="min-w-0">
-                      <div className="flex items-center gap-3">
-                        <p className="font-serif text-xl font-semibold text-primary">
+                      <div className="flex items-start justify-between gap-3">
+                        <h2 className="font-serif text-lg md:text-xl font-medium text-primary leading-tight">
+                          {artwork.title} Painting
+                        </h2>
+                        <p className="font-serif text-xl font-semibold text-primary text-right whitespace-nowrap">
                           {formatPrice(artwork.price)}
                         </p>
-                        {poweredByFor(artwork) && (
-                          <span className="px-2 py-0.5 text-xs font-medium font-serif bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
-                            Not for sale
-                          </span>
-                        )}
                       </div>
-                      <h2 className="font-serif text-lg md:text-xl font-medium text-primary mt-1">
-                        {artwork.title} Painting
-                      </h2>
-                      <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-                        <p>{artwork.medium}</p>
-                        <p>{formatArtworkSizeDisplay(artwork.size)}</p>
+                      {poweredByFor(artwork) && (
+                        <span className="mt-2 inline-flex px-2 py-0.5 text-xs font-medium font-serif bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
+                          Not for sale
+                        </span>
+                      )}
+                      <div className="mt-3 flex items-start justify-between gap-3 text-sm text-muted-foreground">
+                        <p className="min-w-0 pr-3">{artwork.medium}</p>
+                        <p className="shrink-0 text-right whitespace-nowrap">
+                          {formatArtworkSizeDisplay(artwork.size)}
+                        </p>
                       </div>
                       <p className="mt-4 text-muted-foreground font-sans text-sm leading-relaxed line-clamp-2">
                         {artwork.description}
