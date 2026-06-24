@@ -1,13 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { X, Filter, ShoppingCart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Filter, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/ui/carousel';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useArtworks } from '@/hooks/useArtworks';
@@ -201,17 +196,6 @@ const FramedPainting = ({
   );
 };
 
-const THUMB_PREVIEW_CLASS =
-  'relative h-14 sm:h-16 w-full overflow-hidden flex items-center justify-center bg-transparent';
-
-const ThumbPreviewShell = ({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) => <div className={cn(THUMB_PREVIEW_CLASS, className)}>{children}</div>;
-
 type DisplaySlideVariant = 'normal' | 'dimensions' | 'frame' | 'wall' | 'room';
 
 type DisplaySlide = {
@@ -300,8 +284,6 @@ const ArtworkSlidePreview = ({
   dimensions,
   wallFrameStyle,
   roomFrameStyle,
-  thumbIndex,
-  size = 'main',
 }: {
   slide: Pick<DisplaySlide, 'variant' | 'src'>;
   primaryImage: string;
@@ -309,25 +291,12 @@ const ArtworkSlidePreview = ({
   dimensions: { height: string; width: string } | null;
   wallFrameStyle: CSSProperties;
   roomFrameStyle: CSSProperties;
-  thumbIndex?: number;
-  size?: 'main' | 'thumb';
 }) => {
-  const isThumb = size === 'thumb';
   const mainImageClass =
     'block w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0';
   const mockupImageClass =
     'block w-auto h-auto max-w-full max-h-[min(36dvh,320px)] sm:max-h-[min(42dvh,420px)] md:max-h-[min(60dvh,560px)] object-contain min-h-0';
   const mockupShellClass = 'relative mx-auto w-fit max-w-full overflow-hidden';
-
-  if (isThumb) {
-    return (
-      <ThumbPreviewShell>
-        <div className="flex h-full w-full items-center justify-center bg-background/70 text-primary font-serif text-lg sm:text-xl font-semibold">
-          {thumbIndex ?? 1}
-        </div>
-      </ThumbPreviewShell>
-    );
-  }
 
   if (slide.variant === 'frame') {
     return (
@@ -602,15 +571,17 @@ export default function PaintingsPage() {
                         <h2 className="font-serif text-lg md:text-xl font-medium text-primary leading-tight">
                           {artwork.title} Painting
                         </h2>
-                        <p className="font-serif text-xl font-semibold text-primary text-right whitespace-nowrap">
-                          {formatPrice(artwork.price)}
-                        </p>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {poweredByFor(artwork) && (
+                            <span className="px-2 py-0.5 text-xs font-medium font-serif bg-highlight text-highlight-foreground rounded leading-snug whitespace-nowrap">
+                              Not for sale
+                            </span>
+                          )}
+                          <p className="font-serif text-xl font-semibold text-primary text-right whitespace-nowrap">
+                            {formatPrice(artwork.price)}
+                          </p>
+                        </div>
                       </div>
-                      {poweredByFor(artwork) && (
-                        <span className="mt-2 inline-flex px-2 py-0.5 text-xs font-medium font-serif bg-highlight text-highlight-foreground rounded max-w-[14rem] leading-snug">
-                          Not for sale
-                        </span>
-                      )}
                       <div className="mt-3 flex items-start justify-between gap-3 text-sm text-muted-foreground">
                         <p className="min-w-0 pr-3">{artwork.medium}</p>
                         <p className="shrink-0 text-right whitespace-nowrap">
@@ -664,6 +635,12 @@ export default function PaintingsPage() {
             { id: 'room', variant: 'room', src: ROOM_CAROUSEL_IMAGE, label: 'Room' },
           ];
           const activeSlide = displaySlides[selectedViewIndex] ?? displaySlides[0];
+          const goToPreviousView = () => {
+            setSelectedViewIndex((current) => Math.max(0, current - 1));
+          };
+          const goToNextView = () => {
+            setSelectedViewIndex((current) => Math.min(displaySlides.length - 1, current + 1));
+          };
 
           return (
         <div
@@ -692,62 +669,65 @@ export default function PaintingsPage() {
                   dimensions={dimensions}
                   wallFrameStyle={wallFrameStyle}
                   roomFrameStyle={roomFrameStyle}
-                  size="main"
                 />
               </div>
 
-              <div className="mt-1 sm:mt-2 md:mt-3">
-                <Carousel opts={{ align: 'start' }} className="w-full px-1 sm:px-4 md:px-6">
-                  <CarouselContent className="-ml-1 items-stretch">
-                    {displaySlides.map((slide, slideIndex) => (
-                      <CarouselItem
-                        key={`${selectedArtwork.id}-thumb-${slide.id}`}
-                        className="pl-1 basis-1/5 flex"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSelectedViewIndex(slideIndex)}
-                          className={cn(
-                            'w-full h-14 sm:h-16 overflow-hidden rounded-sm border transition-all p-0',
-                            selectedViewIndex === slideIndex
-                              ? 'border-primary ring-1 ring-primary'
-                              : 'border-border hover:border-primary/50'
-                          )}
-                          aria-label={`View ${slide.label}`}
-                        >
-                          <ArtworkSlidePreview
-                            slide={slide}
-                            primaryImage={primaryImage}
-                            title={selectedArtwork.title}
-                            dimensions={dimensions}
-                            wallFrameStyle={wallFrameStyle}
-                            roomFrameStyle={roomFrameStyle}
-                            thumbIndex={slideIndex + 1}
-                            size="thumb"
-                          />
-                        </button>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
+              <div className="mt-2 sm:mt-3 flex items-center justify-center gap-3 sm:gap-5">
+                <button
+                  type="button"
+                  onClick={goToPreviousView}
+                  disabled={selectedViewIndex === 0}
+                  className="p-1 text-primary transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Previous view"
+                >
+                  <ChevronLeft size={22} />
+                </button>
+
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {displaySlides.map((slide, slideIndex) => (
+                    <button
+                      key={`${selectedArtwork.id}-view-${slide.id}`}
+                      type="button"
+                      onClick={() => setSelectedViewIndex(slideIndex)}
+                      className={cn(
+                        'font-serif text-base sm:text-lg tabular-nums transition-colors',
+                        selectedViewIndex === slideIndex
+                          ? 'font-semibold text-primary'
+                          : 'text-muted-foreground hover:text-primary/70'
+                      )}
+                      aria-label={`View ${slide.label}`}
+                      aria-current={selectedViewIndex === slideIndex ? 'true' : undefined}
+                    >
+                      {slideIndex + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={goToNextView}
+                  disabled={selectedViewIndex === displaySlides.length - 1}
+                  className="p-1 text-primary transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label="Next view"
+                >
+                  <ChevronRight size={22} />
+                </button>
               </div>
             </div>
 
             <div className="min-h-0 flex-1 md:w-[38%] lg:w-1/3 p-3 sm:p-6 md:p-8 flex flex-col justify-start overflow-y-auto border-t md:border-t-0 md:border-l border-border max-h-[48dvh] md:max-h-[min(90vh,900px)]">
-              {/* Price */}
-              <p className="font-serif text-2xl md:text-3xl font-semibold text-primary">
-                {formatPrice(selectedArtwork.price)}
-              </p>
-              
-              {/* Title */}
-              <h2 className="font-serif text-xl md:text-2xl font-medium text-primary mt-3">
-                {selectedArtwork.title} Painting
-              </h2>
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="min-w-0 font-serif text-xl md:text-2xl font-medium text-primary">
+                  {selectedArtwork.title} Painting
+                </h2>
+                <p className="shrink-0 font-serif text-xl md:text-2xl font-semibold text-primary">
+                  {formatPrice(selectedArtwork.price)}
+                </p>
+              </div>
 
-              {/* Medium & Size */}
-              <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-                <p>{selectedArtwork.medium}</p>
-                <p>{formatArtworkSizeDisplay(selectedArtwork.size)}</p>
+              <div className="mt-4 flex items-start justify-between gap-4 text-sm text-muted-foreground">
+                <p className="min-w-0">{selectedArtwork.medium}</p>
+                <p className="shrink-0 text-right">{formatArtworkSizeDisplay(selectedArtwork.size)}</p>
               </div>
 
               {/* Description */}
