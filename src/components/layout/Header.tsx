@@ -13,6 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { SiteLogo } from './SiteLogo';
 import HomePaintingSearch from '@/components/home/HomePaintingSearch';
 
@@ -113,11 +120,23 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-3 sm:px-4">
-          <nav className="flex items-center justify-between gap-2 min-w-0">
-          <SiteLogo imageClassName="h-8 w-auto sm:h-12 md:h-16 shrink-0" />
+          <nav className="relative flex items-center gap-2 min-w-0">
+          {/* Mobile menu — left */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden shrink-0 p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+
+          <SiteLogo
+            className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 shrink-0"
+            imageClassName="h-8 w-auto sm:h-12 md:h-16"
+          />
 
           {/* Desktop Navigation */}
-          <ul className="hidden lg:flex items-center gap-8">
+          <ul className="hidden lg:flex flex-1 items-center justify-center gap-8">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -139,7 +158,7 @@ export function Header() {
           </ul>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto lg:ml-0">
             {/* Auth: profile only when logged in; guests see sign-in only */}
             {authLoading ? (
               <div
@@ -174,18 +193,37 @@ export function Header() {
             )}
 
             {/* Currency Selector */}
-            <select
-              value={activeCurrency}
-              onChange={(e) => setActiveCurrency(e.target.value)}
-              className="bg-transparent text-primary max-w-[4.25rem] sm:max-w-none px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-sm text-xs sm:text-sm font-sans border border-border/50 focus:ring-2 focus:ring-accent focus:outline-none cursor-pointer hover:bg-background/20 transition-colors"
-              aria-label="Select currency"
-            >
-              {currencies.map((currency) => (
-                <option key={currency.id} value={currency.id} className="bg-card text-foreground">
-                  {currency.symbol}
-                </option>
-              ))}
-            </select>
+            <Select value={activeCurrency} onValueChange={setActiveCurrency}>
+              <SelectTrigger
+                aria-label="Select currency"
+                className={cn(
+                  'h-auto w-auto shrink-0 gap-0.5 rounded-full border-border/50 bg-transparent',
+                  'px-2 py-1 text-xs sm:text-sm text-primary font-sans shadow-none',
+                  'focus:ring-2 focus:ring-accent focus:ring-offset-0',
+                  'hover:bg-background/20 transition-colors',
+                  'justify-start [&>span]:flex-none [&>span]:line-clamp-none',
+                  '[&_svg]:h-3 [&_svg]:w-3 [&_svg]:opacity-70 [&_svg]:shrink-0'
+                )}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent
+                align="end"
+                position="item-aligned"
+                className="min-w-0 w-max p-0.5 [&>div:nth-child(2)]:min-w-0 [&>div:nth-child(2)]:w-max [&>div:nth-child(2)]:h-auto [&>div:nth-child(2)]:p-0.5"
+              >
+                {currencies.map((currency) => (
+                  <SelectItem
+                    key={currency.id}
+                    value={currency.id}
+                    aria-label={currency.label}
+                    className="py-0.5 pl-5 pr-2 text-xs sm:text-sm rounded-sm [&>span:first-child]:left-1 [&>span:first-child]:h-3 [&>span:first-child]:w-3 [&>span:first-child_svg]:h-3 [&>span:first-child_svg]:w-3"
+                  >
+                    {currency.symbol}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             {/* Cart Button */}
             <button
@@ -199,15 +237,6 @@ export function Header() {
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
               )}
-            </button>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-1.5 sm:p-2 text-primary hover:text-accent transition-colors"
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </nav>
